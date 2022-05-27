@@ -1,0 +1,27 @@
+import importlib
+import abc
+from src import screen
+
+class State(abc.ABC):
+    def __init__(self, game_class):
+        self.game_class = game_class
+        self.next_state = self.__class__
+        self.screen = screen
+
+    @abc.abstractmethod
+    def draw(self):
+        pass
+
+    @abc.abstractmethod
+    def handle_event(self, event):
+        pass
+
+    def update(self):
+        pass
+
+    def change_state(self, desired_state_str):
+        state_module_name, state_name = desired_state_str.split(".")
+        state_module = importlib.import_module(f"src.states.{state_module_name}")
+        self.next_state = getattr(state_module, state_name)
+
+        print(self.next_state)
