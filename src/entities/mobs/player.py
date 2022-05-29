@@ -1,11 +1,11 @@
 from src import pygame, screen, utils
-from src.entities.entity import Entity
+from src.entities.bases.entity import Entity
 
 class Player(Entity):
     PLAYER_SPEED = 250
 
-    def __init__(self, pos, game_class, state):
-        super().__init__(game_class, state)
+    def __init__(self, pos, game_class, level_state):
+        super().__init__(game_class, level_state)
 
         self.pos = pos
         self.tile_pos = utils.pixel_to_tile(self.pos)
@@ -32,12 +32,12 @@ class Player(Entity):
             self.vx *= 0.707
             self.vy *= 0.707
 
-    def get_unwalkable_rects(self):
+    def get_unwalkable_rects(self) -> list[pygame.Rect]:
         unwalkable_tile_rects = []
         for i in range(self.tile_pos[0] - 1, self.tile_pos[0] + 2):
             for j in range(self.tile_pos[1] - 1, self.tile_pos[1] + 2):
                 try:
-                    tile = self.state.tilemap.tilemap.get_tile_properties(i, j, 0)
+                    tile = self.level_state.tilemap.tilemap.get_tile_properties(i, j, 0)
                 except (Exception, ValueError):
                     # Don't flame me it's pytmx that raises Exception
                     continue
@@ -50,7 +50,9 @@ class Player(Entity):
 
         return unwalkable_tile_rects
 
-    def collide_with_unwalkables(self, direction, unwalkable_rects):
+    def collide_with_unwalkables(
+        self, direction: str, unwalkable_rects: list[pygame.Rect]
+    ):
         if direction == "x":
             for unwalkable_rect in unwalkable_rects:
                 if self.sprite.colliderect(unwalkable_rect):
@@ -83,6 +85,7 @@ class Player(Entity):
 
         unwalkable_tile_rects = []
         if self.vx or self.vy:
+            # If player moving
             self.pos = [self.sprite.x, self.sprite.y]
             self.tile_pos = utils.pixel_to_tile(self.pos)
 
