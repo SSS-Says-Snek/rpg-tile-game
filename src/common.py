@@ -1,5 +1,5 @@
-import pygame
 import pathlib
+import pygame
 
 TILE_WIDTH = 16
 TILE_HEIGHT = 16

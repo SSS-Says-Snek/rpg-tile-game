@@ -101,7 +101,7 @@
  </tile>
  <tile id="19">
   <properties>
-   <property name="unwalkable" type="bool" value="false"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="20">

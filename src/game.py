@@ -22,11 +22,11 @@ class Game:
                 # State handles event
                 self.state.handle_event(event)
 
-            # State runs other functions that get called once a frame
-            self.state.update()
-
             # State handles drawing
             self.state.draw()
+
+            # State runs other functions that get called once a frame
+            self.state.update()
 
             # State detector/switcher
             if self.state.next_state != self.state.__class__:
