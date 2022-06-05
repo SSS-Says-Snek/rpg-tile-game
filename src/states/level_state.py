@@ -4,26 +4,26 @@ from src import pygame, common
 from src.tilemap import TileMap
 from src.display.camera import Camera
 
-from src.entities.components.collision import Collidable
-from src.entities.components.position import Position
-from src.entities.components.velocity import Velocity
-from src.entities.components.graphics import Graphics
+from src.entities.component import Collidable, Position, Velocity, Graphics
 
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.graphics_system import GraphicsSystem
+from src.entities.systems.tile_interaction_system import TileInteractionSystem
 
 from .state import State
 
 class LevelState(State):
-    PLAYER_SPEED = 250
+    PLAYER_SPEED = 175
 
     def __init__(self, game_class):
         super().__init__(game_class)
 
         self.camera = Camera(common.WIDTH, common.HEIGHT)
+        self.ui = self.game_class.ui
+        self.ui.camera = self.camera
 
         self.ecs_world = esper.World()
-        self.tilemap = TileMap(common.MAP_DIR / "first_map.tmx")
+        self.tilemap = TileMap(common.MAP_DIR / "placeholder_map.tmx", self.ecs_world)
         self.map_surface = self.tilemap.make_map()
 
         # self.entities includes player
@@ -32,11 +32,12 @@ class LevelState(State):
 
         self.player = self.ecs_world.create_entity(
             Collidable(),
-            Position([400, 800]), Velocity(), Graphics(self.temp_sprite)
+            Position([200, 400]), Velocity(), Graphics(self.temp_sprite)
         )
 
         # self.ecs_world.add_processor(MovementSystem(self), priority=2)
-        self.ecs_world.add_processor(CollisionSystem(self), priority=2)
+        self.ecs_world.add_processor(CollisionSystem(self), priority=3)
+        self.ecs_world.add_processor(TileInteractionSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def draw(self):
@@ -67,7 +68,7 @@ class LevelState(State):
             player_vel.vx *= 0.707
             player_vel.vy *= 0.707
 
-        self.ecs_world.process()
+        self.ecs_world.process(self.game_class.events)
 
 
 class TestState(State):

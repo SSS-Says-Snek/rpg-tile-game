@@ -1,21 +1,28 @@
 from src import pygame, screen, common
 from src.states.level_state import LevelState
+from src.display.ui import UI
+
+pygame.init()
 
 class Game:
     def __init__(self):
         self.screen = screen
         self.clock = pygame.time.Clock()
 
+        self.ui = UI(None)
+
         self.state = LevelState(self)
         self.loaded_states = {LevelState: self.state}
         self.running = True
         self.dt = 0
+        self.events = []
 
     def run(self):
         while self.running:
             self.dt = self.clock.tick(common.FPS) / 1000
+            self.events = pygame.event.get()
 
-            for event in pygame.event.get():
+            for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
 
@@ -24,6 +31,7 @@ class Game:
 
             # State handles drawing
             self.state.draw()
+            self.ui.draw()
 
             # State runs other functions that get called once a frame
             self.state.update()
