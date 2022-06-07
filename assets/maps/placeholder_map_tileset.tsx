@@ -89,31 +89,37 @@
  <tile id="16" type="dialogue">
   <properties>
    <property name="tile" type="bool" value="true"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="17" type="dialogue">
   <properties>
    <property name="tile" type="bool" value="true"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="18" type="dialogue">
   <properties>
    <property name="tile" type="bool" value="true"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="19" type="dialogue">
   <properties>
    <property name="tile" type="bool" value="true"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="20" type="dialogue">
   <properties>
    <property name="tile" type="bool" value="true"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="21" type="dialogue">
   <properties>
    <property name="tile" type="bool" value="true"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="22">

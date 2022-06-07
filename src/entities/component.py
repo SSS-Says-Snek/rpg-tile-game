@@ -1,16 +1,13 @@
-__all__ = ["HasDialogue", "Tile", "Collidable", "Graphics", "Position", "Velocity"]
+__all__ = ["Flags", "Tile", "Graphics", "Position", "Movement"]
 
 from src import utils
 
 
-class HasDialogue:
-    def __init__(self):
-        pass
-
-
-class Collidable:
-    def __init__(self):
-        pass
+class Flags:
+    def __init__(self, has_dialogue=False, collidable=False, rotatable=False):
+        self.has_dialogue = has_dialogue
+        self.collidable = collidable
+        self.rotatable = rotatable
 
 
 class Tile:
@@ -32,7 +29,11 @@ class Position:
         self.facing = None
 
 
-class Velocity:
-    def __init__(self, vx=0, vy=0):
+class Movement:
+    def __init__(self, speed, vx=0, vy=0, acc=0, rot=0):
+        self.speed = speed
         self.vx = vx
         self.vy = vy
+
+        self.acc = acc
+        self.rot = rot

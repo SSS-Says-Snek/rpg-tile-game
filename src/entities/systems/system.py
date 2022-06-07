@@ -5,7 +5,7 @@ class System(esper.Processor):
         super().__init__()
 
         self.level_state = level_state
-        # self.event_list = []
+        self.player = self.level_state.player
 
     def process(self, event_list):
         # self.event_list = event_list

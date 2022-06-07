@@ -29,14 +29,15 @@ class TileMap:
                     self.tiles[(layer_id, (x, y))] = tile_props
                     tile_img = self.tilemap.get_tile_image_by_gid(gid)
                     components = [Tile(tile_props["width"], tile_props["height"])]
+                    flag_kwargs = {}
 
                     if tile_props.get("unwalkable"):
-                        components.append(Collidable())
+                        flag_kwargs["collidable"] = True
 
                     if tile_props.get("type") == "dialogue":
-                        components.append(HasDialogue())
+                        flag_kwargs["has_dialogue"] = True
 
-                    entity_id = self.ecs_world.create_entity(*components)
+                    entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
                     surface.blit(

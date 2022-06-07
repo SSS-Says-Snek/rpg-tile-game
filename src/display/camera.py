@@ -8,13 +8,15 @@ class Camera:
         self.camera_height = camera_height
         self.camera = pygame.Rect(0, 0, self.camera_width, self.camera_height)
 
-    def apply(self, target_pos: Union[pygame.Rect, tuple, list]):
+    def apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list]):
         if isinstance(target_pos, tuple) or isinstance(target_pos, list):
             target_pos = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
+        elif isinstance(target_pos, pygame.Vector2):
+            target_pos = pygame.Rect(target_pos.x, target_pos.y, 0, 0)
 
         return target_pos.move(self.camera.topleft)
 
     def adjust_to(self, target_pos):
-        x = self.camera_width // 2 - target_pos[0]
-        y = self.camera_height // 2 - target_pos[1]
+        x = self.camera_width // 2 - target_pos.x
+        y = self.camera_height // 2 - target_pos.y
         self.camera.topleft = (x, y)

@@ -4,11 +4,12 @@ from src import pygame, common
 from src.tilemap import TileMap
 from src.display.camera import Camera
 
-from src.entities.component import Collidable, Position, Velocity, Graphics
+from src.entities.component import Flags, Position, Movement, Graphics
 
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.graphics_system import GraphicsSystem
 from src.entities.systems.tile_interaction_system import TileInteractionSystem
+from src.entities.systems.velocity_system import VelocitySystem
 
 from .state import State
 
@@ -30,15 +31,37 @@ class LevelState(State):
         self.temp_sprite = pygame.Surface((16, 16))
         self.temp_sprite.fill((255, 0, 0))
 
-        self.player = self.ecs_world.create_entity(
-            Collidable(),
-            Position([200, 400]), Velocity(), Graphics(self.temp_sprite)
-        )
+        self.player = None
+        self.load_spawns()
 
         # self.ecs_world.add_processor(MovementSystem(self), priority=2)
+        self.ecs_world.add_processor(VelocitySystem(self), priority=4)
         self.ecs_world.add_processor(CollisionSystem(self), priority=3)
         self.ecs_world.add_processor(TileInteractionSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
+
+    def load_spawns(self):
+        mob_sprite = pygame.transform.scale(
+            pygame.image.load(common.ASSETS_DIR / "imgs" / "placeholder_mob.png").convert(),
+            (16, 16)
+        )
+
+        for obj in self.tilemap.tilemap.objects:
+            if obj.name == "player_spawn":
+                self.player = self.ecs_world.create_entity(
+                    Flags(collidable=True),
+                    Position(pygame.Vector2(obj.x, obj.y)), Movement(self.PLAYER_SPEED),
+                    Graphics(self.temp_sprite)
+                )
+            if obj.name == "melee_spawn":
+                self.temp_sprite = pygame.Surface((16, 16))
+                self.temp_sprite.fill((0, 0, 255))
+
+                self.ecs_world.create_entity(
+                    Flags(collidable=True, rotatable=True),
+                    Position(pygame.Vector2(obj.x, obj.y)), Movement(100),
+                    Graphics(mob_sprite)
+                )
 
     def draw(self):
         self.screen.fill((255, 255, 255))
@@ -49,25 +72,6 @@ class LevelState(State):
             self.change_state("level_state.TestState")
 
     def update(self):
-        keys = pygame.key.get_pressed()
-        player_vel = self.ecs_world.component_for_entity(self.player, Velocity)
-
-        player_vel.vx, player_vel.vy = 0, 0
-
-        if keys[pygame.K_UP]:
-            player_vel.vy = -self.PLAYER_SPEED
-        if keys[pygame.K_DOWN]:
-            player_vel.vy = self.PLAYER_SPEED
-        if keys[pygame.K_LEFT]:
-            player_vel.vx = -self.PLAYER_SPEED
-        if keys[pygame.K_RIGHT]:
-            player_vel.vx = self.PLAYER_SPEED
-
-        if player_vel.vx and player_vel.vy:
-            # Adjust diagonal speed to match normal
-            player_vel.vx *= 0.707
-            player_vel.vy *= 0.707
-
         self.ecs_world.process(self.game_class.events)
 
 
