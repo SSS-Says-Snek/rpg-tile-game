@@ -2,14 +2,17 @@ import esper
 
 from src import pygame, common
 from src.tilemap import TileMap
-from src.display.camera import Camera
 
-from src.entities.component import Flags, Position, Movement, Graphics
+from src.display.camera import Camera
+from src.display.widgets.health_bar import HealthBar
+
+from src.entities.component import Flags, Position, Movement, Graphics, Health, MeleeAttack
 
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.graphics_system import GraphicsSystem
 from src.entities.systems.tile_interaction_system import TileInteractionSystem
 from src.entities.systems.velocity_system import VelocitySystem
+from src.entities.systems.damage_system import DamageSystem
 
 from .state import State
 
@@ -35,31 +38,38 @@ class LevelState(State):
         self.load_spawns()
 
         # self.ecs_world.add_processor(MovementSystem(self), priority=2)
-        self.ecs_world.add_processor(VelocitySystem(self), priority=4)
-        self.ecs_world.add_processor(CollisionSystem(self), priority=3)
-        self.ecs_world.add_processor(TileInteractionSystem(self), priority=2)
+        self.ecs_world.add_processor(VelocitySystem(self), priority=5)
+        self.ecs_world.add_processor(CollisionSystem(self), priority=4)
+        self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
+        self.ecs_world.add_processor(DamageSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self):
         mob_sprite = pygame.transform.scale(
-            pygame.image.load(common.ASSETS_DIR / "imgs" / "placeholder_mob.png").convert(),
+            pygame.image.load(common.ASSETS_DIR / "imgs" / "placeholder_mob.png").convert_alpha(),
             (16, 16)
         )
 
         for obj in self.tilemap.tilemap.objects:
             if obj.name == "player_spawn":
+                health_component = Health(100, 100)
                 self.player = self.ecs_world.create_entity(
-                    Flags(collidable=True),
+                    Flags(collidable=True, mob_type="player", damageable=True),
                     Position(pygame.Vector2(obj.x, obj.y)), Movement(self.PLAYER_SPEED),
+                    health_component,
                     Graphics(self.temp_sprite)
                 )
+
+                self.ui.add_widget(HealthBar((10, 20), 150, 10, health_component))
+
             if obj.name == "melee_spawn":
-                self.temp_sprite = pygame.Surface((16, 16))
-                self.temp_sprite.fill((0, 0, 255))
+                self.temp_sprite = pygame.Surface((16, 16), pygame.SRCALPHA).convert_alpha()
+                pygame.draw.rect(self.temp_sprite, (0, 0, 255), pygame.Rect(0, 0, 16, 16))
 
                 self.ecs_world.create_entity(
-                    Flags(collidable=True, rotatable=True),
-                    Position(pygame.Vector2(obj.x, obj.y)), Movement(100),
+                    Flags(collidable=True, rotatable=True, mob_type="melee_enemy", damageable=True),
+                    Position(pygame.Vector2(obj.x, obj.y)), Movement(150),
+                    Health(50, 50), MeleeAttack(1, 1.3, 15),
                     Graphics(mob_sprite)
                 )
 

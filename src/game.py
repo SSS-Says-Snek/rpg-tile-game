@@ -31,10 +31,12 @@ class Game:
 
             # State handles drawing
             self.state.draw()
-            self.ui.draw()
 
             # State runs other functions that get called once a frame
             self.state.update()
+
+            # UI drawing
+            self.ui.draw()
 
             # State detector/switcher
             if self.state.next_state != self.state.__class__:

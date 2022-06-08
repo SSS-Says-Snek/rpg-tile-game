@@ -1,6 +1,6 @@
 from src import pygame
 
-from src.entities.component import Movement
+from src.entities.component import Flags, Position, Movement
 from src.entities.systems.system import System
 
 class VelocitySystem(System):
@@ -32,4 +32,21 @@ class VelocitySystem(System):
     def process(self, event_list):
         self.handle_player_keys()
 
+        for entity, (flags, pos, movement) in self.world.get_components(
+            Flags, Position, Movement
+        ):
+            if flags.rotatable:
+                movement.rot = (
+                        self.world.component_for_entity(self.player, Position).pos - pos.pos
+                ).angle_to(pygame.Vector2(1, 0))
 
+                if flags.mob_type == "melee_enemy":
+                    movement.acc = pygame.Vector2(1, 0).rotate(-movement.rot)
+                    movement.acc.scale_to_length(movement.speed)
+                    movement.acc.x -= movement.vx
+                    movement.acc.y -= movement.vy
+
+                    movement.vx += movement.acc.x * self.level_state.game_class.dt
+                    movement.vy += movement.acc.y * self.level_state.game_class.dt
+
+                    print(movement.vx, movement.vy)

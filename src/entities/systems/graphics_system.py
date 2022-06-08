@@ -1,4 +1,4 @@
-from src import pygame, screen
+from src import pygame, screen, utils
 from src.entities.systems.system import System
 from src.entities.component import Flags, Graphics, Position, Movement
 
@@ -19,5 +19,8 @@ class GraphicsSystem(System):
                 screen.blit(graphics.sprite, self.level_state.camera.apply(pos.pos))
             else:
                 movement = self.world.component_for_entity(entity, Movement)
-                rotated_sprite = pygame.transform.rotate(graphics.sprite, movement.rot)
-                screen.blit(rotated_sprite, self.level_state.camera.apply(pos.pos))
+                rotated_sprite, new_pos = utils.rot_center(
+                    graphics.sprite, movement.rot,
+                    *pygame.Rect(*pos.pos, *graphics.size).center
+                )
+                screen.blit(rotated_sprite, self.level_state.camera.apply(new_pos))

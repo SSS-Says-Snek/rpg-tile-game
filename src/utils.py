@@ -24,3 +24,9 @@ def get_neighboring_tile_entities(tilemap, radius, pos):
                 neighboring_tile_entities.append((tile_entity, {"x": x, "y": y}))
 
     return neighboring_tile_entities
+
+def rot_center(image, angle, x, y):
+    """Rotates an image based on its center to avoid different"""
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center=image.get_rect(center=(x, y)).center)
+    return rotated_image, new_rect

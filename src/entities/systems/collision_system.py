@@ -10,27 +10,27 @@ class CollisionSystem(System):
 
     @staticmethod
     def collide_with_unwalkable_tiles(
-        axis: str, unwalkable_rects, pos, vel, graphics
+        axis: str, unwalkable_rects, pos, movement, graphics
     ):
         rect = pygame.Rect(*pos.pos, *graphics.size)
 
         if axis == "x":
             for unwalkable_rect in unwalkable_rects:
                 if rect.colliderect(unwalkable_rect):
-                    if vel.vx > 0:
+                    if movement.vx > 0:
                         pos.pos.x = unwalkable_rect.left - rect.width
-                    elif vel.vx < 0:
+                    elif movement.vx < 0:
                         pos.pos.x = unwalkable_rect.right
-                    vel.vx = 0
+                    movement.vx = 0
 
         elif axis == "y":
             for unwalkable_rect in unwalkable_rects:
                 if rect.colliderect(unwalkable_rect):
-                    if vel.vy > 0:
+                    if movement.vy > 0:
                         pos.pos.y = unwalkable_rect.top - rect.height
-                    elif vel.vy < 0:
+                    elif movement.vy < 0:
                         pos.pos.y = unwalkable_rect.bottom
-                    vel.vy = 0
+                    movement.vy = 0
 
     def get_unwalkable_rects(self, neighboring_tiles):
         unwalkable_tile_rects = []
@@ -57,6 +57,16 @@ class CollisionSystem(System):
             neighboring_tile_entities = utils.get_neighboring_tile_entities(self.level_state.tilemap, 1, pos)
             unwalkable_tile_rects = self.get_unwalkable_rects(neighboring_tile_entities)
 
+            # FOR NOW!!! SUPER INEFFICIENT
+            for nested_entity, (nested_pos, nested_movement, nested_graphics) in self.world.get_components(
+                Position, Movement, Graphics
+            ):
+                if nested_entity != entity:
+                    nested_entity_rect = pygame.Rect(
+                        *nested_pos.pos, *nested_graphics.size
+                    )
+                    unwalkable_tile_rects.append(nested_entity_rect)
+
             # Update where entity is facing
             """if movement.vx > 0:
                 print("Facing right")
@@ -68,19 +78,15 @@ class CollisionSystem(System):
             elif movement.vy < 0:
                 print("facing up")"""
 
-            if self.world.component_for_entity(entity, Flags).collidable:
-                # Actual entity collision
-                pos.pos.x += movement.vx * self.level_state.game_class.dt
-                self.collide_with_unwalkable_tiles("x", unwalkable_tile_rects, pos, movement, graphics)
-                pos.pos.y += movement.vy * self.level_state.game_class.dt
-                self.collide_with_unwalkable_tiles("y", unwalkable_tile_rects, pos, movement, graphics)
-                pos.tile_pos = utils.pixel_to_tile(pos.pos)
-            else:
-                # Entity movement without collision yet with movement
-                pos.pos.x += movement.vx * self.level_state.game_class.dt
-                pos.pos.y += movement.vy * self.level_state.game_class.dt
+            # If no acceleration (like player), then acc will be 0
+            dt = self.level_state.game_class.dt
+            collidable = self.world.component_for_entity(entity, Flags).collidable
 
-            if self.world.component_for_entity(entity, Flags).rotatable:
-                movement.rot = (
-                        self.world.component_for_entity(self.player, Position).pos - pos.pos
-                ).angle_to(pygame.Vector2(1, 0))
+            pos.pos.x += movement.vx * dt + 0 * 0.5 * movement.acc.x * dt ** 2
+            if collidable:
+                self.collide_with_unwalkable_tiles("x", unwalkable_tile_rects, pos, movement, graphics)
+            pos.pos.y += movement.vy * dt + 0 * 0.5 * movement.acc.y * dt ** 2
+            if collidable:
+                self.collide_with_unwalkable_tiles("y", unwalkable_tile_rects, pos, movement, graphics)
+            pos.tile_pos = utils.pixel_to_tile(pos.pos)
+            pos.rect = pygame.Rect(*pos.pos, *graphics.size)
