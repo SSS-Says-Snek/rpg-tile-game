@@ -31,12 +31,14 @@ class Position:
         self.tile_pos = utils.pixel_to_tile(pos)
         self.facing = None
 
+        self.on_ground = False
         self.rect = None
 
 
 class Movement:
-    def __init__(self, speed, vx=0, vy=0, acc=None, rot=0):
+    def __init__(self, speed, vx=0, vy=0, acc=None, gravity_acc=0.7, rot=0):
         self.speed = speed
+        self.vel = pygame.Vector2(vx, vy)
         self.vx = vx
         self.vy = vy
 
@@ -44,6 +46,7 @@ class Movement:
             self.acc = pygame.Vector2(0, 0)
         else:
             self.acc = acc
+        self.gravity_acc = pygame.Vector2(0, gravity_acc)
         self.rot = rot
 
 

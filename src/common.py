@@ -1,8 +1,8 @@
 import pathlib
 import pygame
 
-TILE_WIDTH = 16
-TILE_HEIGHT = 16
+TILE_WIDTH = 32
+TILE_HEIGHT = 32
 TILE_ROW = 25
 TILE_COLUMN = 25
 

@@ -48,45 +48,55 @@ class CollisionSystem(System):
 
         return unwalkable_tile_rects
 
+    def collide_with_tiles(self, rect, movement, neighboring_tile_rects):
+        collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
+        rect.x += movement.vel.x * self.level_state.game_class.dt
+
+        for neighboring_tile_rect in neighboring_tile_rects:
+            if neighboring_tile_rect.colliderect(rect):
+                if movement.vel.x > 0:
+                    rect.right = neighboring_tile_rect.left
+                    collision_types['right'] = True
+                elif movement.vel.x < 0:
+                    rect.left = neighboring_tile_rect.right
+                    collision_types['left'] = True
+
+        rect.y += movement.vel.y
+
+        for neighboring_tile_rect in neighboring_tile_rects:
+            if neighboring_tile_rect.colliderect(rect):
+                if movement.vel.y > 0:
+                    movement.vel.y = 0
+                    rect.bottom = neighboring_tile_rect.top
+                    collision_types['bottom'] = True
+                elif movement.vel.y < 0:
+                    movement.vel.y = 0
+                    rect.top = neighboring_tile_rect.bottom
+                    collision_types['top'] = True
+        return collision_types
+
     def process(self, event_list):
         # super().process(event_list)
 
         for entity, (pos, movement, graphics) in self.world.get_components(
             Position, Movement, Graphics
         ):
-            neighboring_tile_entities = utils.get_neighboring_tile_entities(self.level_state.tilemap, 1, pos)
-            unwalkable_tile_rects = self.get_unwalkable_rects(neighboring_tile_entities)
-
-            # FOR NOW!!! SUPER INEFFICIENT
-            for nested_entity, (nested_pos, nested_movement, nested_graphics) in self.world.get_components(
-                Position, Movement, Graphics
-            ):
-                if nested_entity != entity:
-                    nested_entity_rect = pygame.Rect(
-                        *nested_pos.pos, *nested_graphics.size
-                    )
-                    unwalkable_tile_rects.append(nested_entity_rect)
-
-            # Update where entity is facing
-            """if movement.vx > 0:
-                print("Facing right")
-            elif movement.vx < 0:
-                print("facing left")
-
-            if movement.vy > 0:
-                print("facing down")
-            elif movement.vy < 0:
-                print("facing up")"""
-
-            # If no acceleration (like player), then acc will be 0
-            dt = self.level_state.game_class.dt
-            collidable = self.world.component_for_entity(entity, Flags).collidable
-
-            pos.pos.x += movement.vx * dt + 0 * 0.5 * movement.acc.x * dt ** 2
-            if collidable:
-                self.collide_with_unwalkable_tiles("x", unwalkable_tile_rects, pos, movement, graphics)
-            pos.pos.y += movement.vy * dt + 0 * 0.5 * movement.acc.y * dt ** 2
-            if collidable:
-                self.collide_with_unwalkable_tiles("y", unwalkable_tile_rects, pos, movement, graphics)
-            pos.tile_pos = utils.pixel_to_tile(pos.pos)
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
+            neighboring_tile_rects = self.get_unwalkable_rects(
+                utils.get_neighboring_tile_entities(self.level_state.tilemap, 1, pos)
+            )
+
+            # Apply gravity
+            movement.vel.y += movement.gravity_acc.y
+            if movement.vel.y > 60:
+                movement.vel.y = 60
+            pos.pos.y += movement.vel.y
+
+            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects)
+            if collisions["bottom"]:
+                pos.on_ground = True
+                movement.vel.y = 0
+
+            pos.pos.x = pos.rect.x
+            pos.pos.y = pos.rect.y
+            pos.tile_pos = utils.pixel_to_tile(pos.pos)

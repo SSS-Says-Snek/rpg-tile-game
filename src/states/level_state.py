@@ -17,7 +17,7 @@ from src.entities.systems.damage_system import DamageSystem
 from .state import State
 
 class LevelState(State):
-    PLAYER_SPEED = 175
+    PLAYER_SPEED = 350
 
     def __init__(self, game_class):
         super().__init__(game_class)
@@ -27,11 +27,11 @@ class LevelState(State):
         self.ui.camera = self.camera
 
         self.ecs_world = esper.World()
-        self.tilemap = TileMap(common.MAP_DIR / "placeholder_map.tmx", self.ecs_world)
+        self.tilemap = TileMap(common.MAP_DIR / "placeholder_platformer.tmx", self.ecs_world)
         self.map_surface = self.tilemap.make_map()
 
         # self.entities includes player
-        self.temp_sprite = pygame.Surface((16, 16))
+        self.temp_sprite = pygame.Surface((32, 32))
         self.temp_sprite.fill((255, 0, 0))
 
         self.player = None
@@ -40,8 +40,8 @@ class LevelState(State):
         # self.ecs_world.add_processor(MovementSystem(self), priority=2)
         self.ecs_world.add_processor(VelocitySystem(self), priority=5)
         self.ecs_world.add_processor(CollisionSystem(self), priority=4)
-        self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
-        self.ecs_world.add_processor(DamageSystem(self), priority=2)
+        # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
+        # self.ecs_world.add_processor(DamageSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self):
@@ -60,7 +60,7 @@ class LevelState(State):
                     Graphics(self.temp_sprite)
                 )
 
-                self.ui.add_widget(HealthBar((10, 20), 150, 10, health_component))
+                self.ui.add_widget(HealthBar((10, 15), 150, 10, health_component))
 
             if obj.name == "melee_spawn":
                 self.temp_sprite = pygame.Surface((16, 16), pygame.SRCALPHA).convert_alpha()

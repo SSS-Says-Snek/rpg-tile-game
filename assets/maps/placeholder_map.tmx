@@ -66,9 +66,9 @@
  </layer>
  <objectgroup id="3" name="spawns">
   <object id="2" name="player_spawn" x="384" y="512" width="16" height="16"/>
-  <object id="12" name="melee_spawnssss" x="80" y="512" width="16" height="16"/>
+  <object id="12" name="melee_spawn" x="80" y="512" width="16" height="16"/>
   <object id="13" name="melee_spawn" x="224" y="720" width="16" height="16"/>
-  <object id="14" name="s" x="496" y="784" width="16" height="16"/>
+  <object id="14" name="melee_spawn" x="496" y="784" width="16" height="16"/>
  </objectgroup>
  <layer id="2" name="structures" width="50" height="59">
   <data encoding="csv">
