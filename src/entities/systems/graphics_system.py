@@ -1,3 +1,4 @@
+import pytmx
 from src import pygame, screen, utils
 from src.entities.systems.system import System
 from src.entities.component import Flags, Graphics, Position, Movement
@@ -14,8 +15,31 @@ class GraphicsSystem(System):
             self.world.component_for_entity(self.player, Position).pos
         )
 
+        screen.blit(self.level_state.map_surface, self.level_state.camera.apply((0, 0)))
+
         for entity, (graphics, pos) in self.world.get_components(Graphics, Position):
+            if self.level_state.debug:
+                tilemap = self.level_state.tilemap.tilemap
+
+                for layer_id, layer in enumerate(tilemap.visible_layers):
+                    if isinstance(layer, pytmx.TiledTileLayer):
+                        for x, y, gid in layer:
+                            # Adds tile props to dict
+                            tile_props = tilemap.get_tile_properties_by_gid(gid)
+                            if tile_props is None:
+                                continue
+
+                            pygame.draw.rect(
+                                screen, (0, 255, 0),
+                                self.level_state.camera.apply(
+                                    pygame.Rect(x * tilemap.tilewidth, y * tilemap.tileheight,
+                                                tilemap.tilewidth, tilemap.tileheight)
+                                ), width=1
+                            )
+
             if not self.world.component_for_entity(entity, Flags).rotatable:
+                if self.level_state.debug:
+                    pygame.draw.rect(screen, (255, 0, 0), self.level_state.camera.apply(pos.rect), width=1)
                 screen.blit(graphics.sprite, self.level_state.camera.apply(pos.pos))
             else:
                 movement = self.world.component_for_entity(entity, Movement)

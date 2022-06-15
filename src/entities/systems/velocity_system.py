@@ -1,4 +1,6 @@
-from src import pygame
+import math
+
+from src import pygame, utils
 
 from src.entities.component import Flags, Position, Movement
 from src.entities.systems.system import System
@@ -19,22 +21,16 @@ class VelocitySystem(System):
         player_movement.vx, player_movement.vy = 0, 0
         player_movement.vel.x = 0
 
-        # if keys[pygame.K_UP]:
-        #     player_movement.vy = -player_movement.speed
-        # if keys[pygame.K_DOWN]:
-        #     player_movement.vy = player_movement.speed
         if keys[pygame.K_LEFT]:
-            # player_movement.vx = -player_movement.speed
             player_movement.vel.x = -player_movement.speed
         if keys[pygame.K_RIGHT]:
-            # player_movement.vx = player_movement.speed
             player_movement.vel.x = player_movement.speed
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and player_pos.on_ground:
                     player_pos.on_ground = False
-                    player_movement.vel.y = -20
+                    player_movement.vel.y = -18
 
     def process(self, event_list):
         self.handle_player_keys(event_list)
@@ -46,6 +42,18 @@ class VelocitySystem(System):
                 movement.rot = (
                         self.world.component_for_entity(self.player, Position).pos - pos.pos
                 ).angle_to(pygame.Vector2(1, 0))
+
+            if flags.mob_type == "walker_enemy":
+                print(movement.vel.y)
+                movement.vel.x = movement.speed * movement.mob_specifics["movement_direction"]
+
+                mob_tile = utils.pixel_to_tile(pos.pos)
+                tile_next_beneath = (mob_tile.x + math.copysign(1, movement.vel.x), mob_tile.y + 1)
+                tile_next = (tile_next_beneath[0], mob_tile.y)
+
+                if self.level_state.tilemap.tiles.get((0, tile_next)) or not self.level_state.tilemap.tiles.get((0, tile_next_beneath)):
+                    movement.mob_specifics["movement_direction"] *= -1
+
 
                 """if flags.mob_type == "melee_enemy":
                     movement.acc = pygame.Vector2(1, 0).rotate(-movement.rot)

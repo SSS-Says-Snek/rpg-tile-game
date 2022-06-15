@@ -1,5 +1,7 @@
 __all__ = ["Flags", "Tile", "Graphics", "Position", "Movement", "Health", "MeleeAttack"]
 
+import collections
+
 from src import pygame, utils
 
 
@@ -36,7 +38,7 @@ class Position:
 
 
 class Movement:
-    def __init__(self, speed, vx=0, vy=0, acc=None, gravity_acc=0.7, rot=0):
+    def __init__(self, speed, vx=0, vy=0, acc=None, gravity_acc=0.8, rot=0):
         self.speed = speed
         self.vel = pygame.Vector2(vx, vy)
         self.vx = vx
@@ -49,11 +51,21 @@ class Movement:
         self.gravity_acc = pygame.Vector2(0, gravity_acc)
         self.rot = rot
 
+        self.mob_specifics = collections.defaultdict(lambda: None)
+
+
+class WalkerMovement(Movement):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.walk_direction = 1
+
 
 class Health:
     def __init__(self, hp, max_hp):
         self.hp = hp
         self.max_hp = max_hp
+
 
 class MeleeAttack:
     def __init__(self, attack_range, attack_cooldown, damage):

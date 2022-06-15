@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 from src import utils
@@ -7,6 +9,17 @@ from src.entities.component import Position, Movement, Graphics, Flags, Tile
 class CollisionSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
+
+    @staticmethod
+    def determine_collision_side(rect1, rect2):
+        if rect1.top > rect2.top:
+            return "top"
+        elif rect1.left > rect2.left:
+            return "left"
+        elif rect1.right < rect2.right:
+            return "right"
+        else:
+            return "bottom"
 
     @staticmethod
     def collide_with_unwalkable_tiles(
@@ -48,18 +61,38 @@ class CollisionSystem(System):
 
         return unwalkable_tile_rects
 
-    def collide_with_tiles(self, rect, movement, neighboring_tile_rects):
+    def collide_with_tiles(self, rect, movement, neighboring_tile_rects, entity):
         collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
         rect.x += movement.vel.x * self.level_state.game_class.dt
 
         for neighboring_tile_rect in neighboring_tile_rects:
             if neighboring_tile_rect.colliderect(rect):
-                if movement.vel.x > 0:
+                if movement.vel.x > 0: # and self.determine_collision_side(neighboring_tile_rect, rect) == "left":
                     rect.right = neighboring_tile_rect.left
                     collision_types['right'] = True
-                elif movement.vel.x < 0:
+                elif movement.vel.x < 0: # and self.determine_collision_side(neighboring_tile_rect, rect) == "right":
+                    print('e')
                     rect.left = neighboring_tile_rect.right
                     collision_types['left'] = True
+                else:
+                    print(self.determine_collision_side(neighboring_tile_rect, rect))
+
+        if entity == self.player:
+            collidable_entities = self.world.get_components(
+                Movement, Position, Graphics
+            )
+        else:
+            collidable_entities = [(self.player, [self.world.component_for_entity(self.player, i) for i in (Movement, Position, Graphics)])]
+
+        for nested_entity, (nested_movement, nested_pos, nested_graphics) in collidable_entities:
+            if nested_entity == entity or nested_pos.rect is None:
+                continue
+            if rect.colliderect(nested_pos.rect):
+                print('e')
+                if nested_movement.vel.x < 0 and self.determine_collision_side(nested_pos.rect, rect) == "left":
+                    rect.right = nested_pos.rect.left
+                elif nested_movement.vel.x > 0 and self.determine_collision_side(nested_pos.rect, rect) == "right":
+                    rect.left = nested_pos.rect.right
 
         rect.y += movement.vel.y
 
@@ -92,7 +125,7 @@ class CollisionSystem(System):
                 movement.vel.y = 60
             pos.pos.y += movement.vel.y
 
-            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects)
+            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, entity)
             if collisions["bottom"]:
                 pos.on_ground = True
                 movement.vel.y = 0

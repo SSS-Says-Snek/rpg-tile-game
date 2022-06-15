@@ -18,6 +18,8 @@ class TileMap:
         self.entity_tiles = {}
 
     def render_map(self, surface: pygame.Surface) -> None:
+        surface.set_colorkey((0, 0, 0))
+
         for layer_id, layer in enumerate(self.tilemap.visible_layers):
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
