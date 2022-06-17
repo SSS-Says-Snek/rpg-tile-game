@@ -1,0 +1,36 @@
+from src import pygame
+from src.entities.systems.system import System
+
+from src.entities import item_component
+from src.entities.component import Inventory
+
+
+class InputSystem(System):
+    def __init__(self, level_state):
+        super().__init__(level_state)
+
+    def process(self, event_list):
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left button
+                inventory = self.world.component_for_entity(self.player, Inventory)
+                equipped_item = inventory.inventory[inventory.equipped_item_idx]
+
+                hotbar_ui = self.level_state.ui.hud_widgets["hotbar"]
+
+                if hotbar_ui.frame_rect.collidepoint(event.pos):
+                    for i, hotbar_rect in enumerate(hotbar_ui.hotbar_rects):
+                        adjusted_hotbar_rect = pygame.Rect(hotbar_rect.x + hotbar_ui.frame_rect.x, hotbar_rect.y, *hotbar_rect.size)
+
+                        if adjusted_hotbar_rect.collidepoint(pygame.mouse.get_pos()):
+                            hotbar_idx = i
+                            break
+                    else:
+                        continue
+
+                    inventory.equipped_item_idx = hotbar_idx
+                else:
+                    if equipped_item is not None:
+                        item = self.world.component_for_entity(equipped_item, item_component.Item)
+                        if pygame.time.get_ticks() - item.last_used:
+                            item.used = True
+                            item.last_used = pygame.time.get_ticks()

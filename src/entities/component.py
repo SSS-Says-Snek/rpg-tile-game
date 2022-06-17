@@ -1,4 +1,7 @@
-__all__ = ["Flags", "Tile", "Graphics", "Position", "Movement", "Health", "MeleeAttack"]
+__all__ = [
+    "Flags", "Tile", "Graphics", "Position", "Movement", "Health", "MeleeAttack",
+    "Inventory"
+]
 
 import collections
 
@@ -68,9 +71,19 @@ class Health:
 
 
 class MeleeAttack:
-    def __init__(self, attack_range, attack_cooldown, damage):
+    def __init__(self, attack_range, attack_cooldown, damage, collision=False):
         self.attack_range = attack_range
         self.attack_cooldown = attack_cooldown
         self.damage = damage
+        self.collision = collision
 
         self.last_attacked = 0
+
+
+class Inventory:
+    def __init__(self, size, hotbar_size=None):
+        self.size = size
+        self.hotbar_size = hotbar_size
+
+        self.inventory = [None for _ in range(size)]
+        self.equipped_item_idx = 0

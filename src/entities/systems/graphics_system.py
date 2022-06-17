@@ -1,7 +1,8 @@
 import pytmx
 from src import pygame, screen, utils
 from src.entities.systems.system import System
-from src.entities.component import Flags, Graphics, Position, Movement
+from src.entities import item_component
+from src.entities.component import Flags, Graphics, Position, Movement, Inventory
 
 
 class GraphicsSystem(System):
@@ -48,3 +49,11 @@ class GraphicsSystem(System):
                     *pygame.Rect(*pos.pos, *graphics.size).center
                 )
                 screen.blit(rotated_sprite, self.level_state.camera.apply(new_pos))
+
+            if self.world.has_component(entity, Inventory):
+                inventory = self.world.component_for_entity(entity, Inventory)
+                equipped_item = inventory.inventory[inventory.equipped_item_idx]
+                if equipped_item is not None:
+                    item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
+                    item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
+                    screen.blit(item_graphics.current_img, self.level_state.camera.apply(item_pos.pos))

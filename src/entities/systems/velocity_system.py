@@ -21,16 +21,16 @@ class VelocitySystem(System):
         player_movement.vx, player_movement.vy = 0, 0
         player_movement.vel.x = 0
 
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player_movement.vel.x = -player_movement.speed
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player_movement.vel.x = player_movement.speed
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and player_pos.on_ground:
+                if (event.key == pygame.K_SPACE or event.key == pygame.K_w) and player_pos.on_ground:
                     player_pos.on_ground = False
-                    player_movement.vel.y = -18
+                    player_movement.vel.y = -17
 
     def process(self, event_list):
         self.handle_player_keys(event_list)
@@ -44,7 +44,6 @@ class VelocitySystem(System):
                 ).angle_to(pygame.Vector2(1, 0))
 
             if flags.mob_type == "walker_enemy":
-                print(movement.vel.y)
                 movement.vel.x = movement.speed * movement.mob_specifics["movement_direction"]
 
                 mob_tile = utils.pixel_to_tile(pos.pos)

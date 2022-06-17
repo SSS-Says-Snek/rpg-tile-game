@@ -67,17 +67,15 @@ class CollisionSystem(System):
 
         for neighboring_tile_rect in neighboring_tile_rects:
             if neighboring_tile_rect.colliderect(rect):
-                if movement.vel.x > 0: # and self.determine_collision_side(neighboring_tile_rect, rect) == "left":
+                if movement.vel.x > 0:
                     rect.right = neighboring_tile_rect.left
                     collision_types['right'] = True
-                elif movement.vel.x < 0: # and self.determine_collision_side(neighboring_tile_rect, rect) == "right":
-                    print('e')
+                elif movement.vel.x < 0:
+                    print('OMAGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
                     rect.left = neighboring_tile_rect.right
                     collision_types['left'] = True
-                else:
-                    print(self.determine_collision_side(neighboring_tile_rect, rect))
 
-        if entity == self.player:
+        """if entity == self.player:
             collidable_entities = self.world.get_components(
                 Movement, Position, Graphics
             )
@@ -88,11 +86,10 @@ class CollisionSystem(System):
             if nested_entity == entity or nested_pos.rect is None:
                 continue
             if rect.colliderect(nested_pos.rect):
-                print('e')
                 if nested_movement.vel.x < 0 and self.determine_collision_side(nested_pos.rect, rect) == "left":
                     rect.right = nested_pos.rect.left
                 elif nested_movement.vel.x > 0 and self.determine_collision_side(nested_pos.rect, rect) == "right":
-                    rect.left = nested_pos.rect.right
+                    rect.left = nested_pos.rect.right"""
 
         rect.y += movement.vel.y
 
@@ -102,6 +99,7 @@ class CollisionSystem(System):
                     movement.vel.y = 0
                     rect.bottom = neighboring_tile_rect.top
                     collision_types['bottom'] = True
+                    # print('e')
                 elif movement.vel.y < 0:
                     movement.vel.y = 0
                     rect.top = neighboring_tile_rect.bottom
@@ -118,11 +116,13 @@ class CollisionSystem(System):
             neighboring_tile_rects = self.get_unwalkable_rects(
                 utils.get_neighboring_tile_entities(self.level_state.tilemap, 1, pos)
             )
+            # print((pos.tile_pos, movement.vel) if entity == self.player else 0)
 
             # Apply gravity
+            # Weird bug, can patch it up by capping movement y vel
             movement.vel.y += movement.gravity_acc.y
-            if movement.vel.y > 60:
-                movement.vel.y = 60
+            if movement.vel.y > 17:
+                movement.vel.y = 17
             pos.pos.y += movement.vel.y
 
             collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, entity)
