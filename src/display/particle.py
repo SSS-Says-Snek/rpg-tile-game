@@ -9,6 +9,7 @@ I decided for particles to NOT be ECS entities.
 
 from math import radians, sin, cos
 
+import pygame.gfxdraw
 from src import pygame, screen
 
 class ParticleSystem(set):
@@ -52,10 +53,13 @@ class Particle:
         self.alive = True
         self.life = 0
         self.gravity_vel = 0
+        self.effects = set()
 
     class Builder:
         def __init__(self, particle):
             self.particle = particle
+
+        # ATTRIBUTE SETTERS
 
         def at(self, pos, angle=0):
             self.particle.pos = pos.copy()
@@ -63,7 +67,7 @@ class Particle:
             return self
 
         def color(self, color):
-            self.particle.color = color
+            self.particle.color = pygame.Color(color)
             return self
 
         def constant_vel(self, constant_vel):
@@ -75,8 +79,8 @@ class Particle:
             self.particle.gravity_vel = gravity_y_vel
             return self
 
-        def lifespan(self, lifespan):
-            self.particle.lifespan = lifespan
+        def lifespan(self, frames):
+            self.particle.lifespan = frames
             return self
 
         def size(self, size):
@@ -86,6 +90,23 @@ class Particle:
         def speed(self, speed):
             self.particle.speed = speed
             return self
+
+        # CUSTOM EFFECTS
+
+        def _effect(self, effect):
+            self.particle.effects.add(effect)
+            return self
+
+        def effect_fade(self, start_fade_frac=0):
+            def fade(particle):
+                start_fade = start_fade_frac * particle.lifespan
+                if particle.life < start_fade:
+                    return
+
+                adj_alpha = (particle.life - start_fade) / (particle.lifespan - start_fade)
+                particle.color.a = int((1 - adj_alpha) * 255)
+
+            return self._effect(fade)
 
         def build(self):
             return self.particle
@@ -104,11 +125,14 @@ class Particle:
         self.pos += self.constant_vel
         self.pos.y += self.gravity_vel
 
-        if self.speed <= 0 or self.size <= 0 or self.life >= self.lifespan:
+        if self.speed <= 0 or self.size <= 0 or self.life >= self.lifespan or self.color.a == 0:
             self.alive = False
+
+        for effect in self.effects:
+            effect(self)
 
     def draw(self, camera):
         # For now ONLY SQUARE (ofc I'll add derived particles)
-        pygame.draw.rect(
-            screen, self.color, camera.apply(pygame.Rect(*self.pos, self.size, self.size))
+        pygame.gfxdraw.box(
+            screen, camera.apply(pygame.Rect(*self.pos, self.size, self.size)), self.color
         )

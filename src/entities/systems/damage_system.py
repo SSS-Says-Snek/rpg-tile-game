@@ -22,6 +22,21 @@ class DamageSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
+    def create_hit_particles(self, num_particles, pos, color_list):
+        for _ in range(num_particles):
+            self.level_state.particle_system.add(
+                particle.Particle()
+                    .builder()
+                    .at(pos=pos.pos, angle=random.randint(0, 360))
+                    .color(color=random.choice(color_list))
+                    .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
+                    .lifespan(frames=40)
+                    .speed(speed=random.uniform(0.4, 2.5))
+
+                    .effect_fade(start_fade_frac=0.5)
+                    .build()
+            )
+
     def process(self, event_list):
         for entity, (pos, movement) in self.world.get_components(
             Position, Movement
@@ -48,6 +63,8 @@ class DamageSystem(System):
                             nested_health.hp = max(nested_health.hp, 0)
 
                             melee_attack.last_attacked = pygame.time.get_ticks()
+
+            # Player to entity combat
             if entity == self.player:
                 inventory = self.world.component_for_entity(self.player, Inventory)
                 equipped_item = inventory.inventory[inventory.equipped_item_idx]
@@ -56,71 +73,70 @@ class DamageSystem(System):
                     entity_stuff for entity_stuff in self.world.get_components(Position, Health) if entity_stuff[0] != self.player
                 )
 
-                if equipped_item is not None:
-                    item = self.world.component_for_entity(equipped_item, item_component.Item)
-                    item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
-                    item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
-                    owner_pos = self.world.component_for_entity(item.owner, Position)
+                # No equipped item = no combat
+                if equipped_item is None:
+                    continue
 
-                    if owner_pos.direction == 1:  # Facing right
-                        item_pos.pos.x = owner_pos.rect.right
-                        angle_comp_func = operator.le
-                        pivot_pos = (0, 32)
-                    else:
-                        item_pos.pos.x = owner_pos.rect.left - item_graphics.original_img.get_bounding_rect().width
-                        angle_comp_func = operator.ge
-                        pivot_pos = (item_graphics.original_img.get_bounding_rect().width, 32)  # IDK
-                    item_pos.pos.y = owner_pos.pos.y - 16
+                item = self.world.component_for_entity(equipped_item, item_component.Item)
+                item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
+                item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
+                owner_pos = self.world.component_for_entity(item.owner, Position)
 
-                    used = item.used
+                if owner_pos.direction == 1:  # Facing right
+                    item_pos.pos.x = owner_pos.rect.right
+                    angle_comp_func = operator.le
+                    pivot_pos = (0, 32)
+                else:  # Facing left
+                    item_pos.pos.x = owner_pos.rect.left - item_graphics.original_img.get_bounding_rect().width
+                    angle_comp_func = operator.ge
+                    pivot_pos = (item_graphics.original_img.get_bounding_rect().width, 32)  # IDK
+                item_pos.pos.y = owner_pos.pos.y - 16
 
-                    if self.world.has_component(equipped_item, item_component.MeleeWeapon) and used:
-                        melee_weapon, slashing_sword = (self.world.component_for_entity(
-                            equipped_item, i
-                        ) for i in [item_component.MeleeWeapon, item_component.SlashingSword])
+                used = item.used
 
-                        slashing_sword.angle -= 14 * owner_pos.direction
-                        item_graphics.current_img, slashing_sword.rect = utils.rot_pivot(
-                            item_graphics.original_img,
-                            item_pos.pos, pivot_pos, slashing_sword.angle
-                        )
-                        item_pos.pos.x = slashing_sword.rect.x
-                        item_pos.pos.y = slashing_sword.rect.y + 32
+                if self.world.has_component(equipped_item, item_component.MeleeWeapon) and used:
+                    melee_weapon, slashing_sword = (self.world.component_for_entity(
+                        equipped_item, i
+                    ) for i in [item_component.MeleeWeapon, item_component.SlashingSword])
 
-                        for nested_entity, (nested_pos, nested_health) in interactable_entities:
-                            if slashing_sword.rect.colliderect(nested_pos.rect) and not melee_weapon.hit:
-                                colors = self.level_state.settings["particle_colors"]["death"]
-                                melee_weapon.hit = True
-                                nested_health.hp -= melee_weapon.attack_damage
-                                nested_health.hp = max(nested_health.hp, 0)
+                    slashing_sword.angle -= 14 * owner_pos.direction
+                    item_graphics.current_img, slashing_sword.rect = utils.rot_pivot(
+                        item_graphics.original_img,
+                        item_pos.pos, pivot_pos, slashing_sword.angle
+                    )
+                    item_pos.pos.x = slashing_sword.rect.x
+                    item_pos.pos.y = slashing_sword.rect.y + 32
 
-                                if nested_health.hp == 0:
-                                    for _ in range(30):
-                                        self.level_state.particle_system.add(
-                                            particle.Particle()
-                                            .builder()
-                                            .at(nested_pos.pos, angle=random.randint(0, 360))
-                                            .gravity(0.35, gravity_y_vel=-3.5)
-                                            .color(random.choice(colors))
-                                            .lifespan(40)
-                                            .speed(random.uniform(0.4, 2.5))
-                                            .build()
-                                        )
-                                    self.world.delete_entity(nested_entity)
-                                    continue
+                    for nested_entity, (nested_pos, nested_health) in interactable_entities:
+                        if slashing_sword.rect.colliderect(nested_pos.rect) and not melee_weapon.hit:
+                            colors = self.level_state.settings["particle_colors"]["death"]
+                            melee_weapon.hit = True
+                            nested_health.hp -= melee_weapon.attack_damage
+                            nested_health.hp = max(nested_health.hp, 0)
 
-                        if angle_comp_func(slashing_sword.angle, -150 * owner_pos.direction):
-                            slashing_sword.angle = 0
-                            item_graphics.current_img = item_graphics.original_img
+                            if nested_health.hp == 0:
+                                # Create particles
+                                self.create_hit_particles(30, nested_pos, colors)
 
-                            if owner_pos.direction == 1:  # Facing right
-                                item_pos.pos.x = owner_pos.rect.right
-                            else:
-                                item_pos.pos.x = owner_pos.rect.left - item_graphics.original_img.get_bounding_rect().width
-                            item_pos.pos.y = owner_pos.rect.y - 16
+                                # Delete entity and continue looping
+                                self.world.delete_entity(nested_entity)
+                                continue
 
-                            slashing_sword.rect.x = item_pos.pos.x
-                            slashing_sword.rect.y = item_pos.pos.y
+                            # "Blood" particles
+                            self.create_hit_particles(5, nested_pos, [(255, 0, 0)])
 
-                            item.used = False
-                            melee_weapon.hit = False
+                    if angle_comp_func(slashing_sword.angle, -150 * owner_pos.direction):
+                        slashing_sword.angle = 0
+                        item_graphics.current_img = item_graphics.original_img
+
+                        if owner_pos.direction == 1:  # Facing right
+                            item_pos.pos.x = owner_pos.rect.right
+                        else:
+                            item_pos.pos.x = owner_pos.rect.left - item_graphics.original_img.get_bounding_rect().width
+                        item_pos.pos.y = owner_pos.rect.y - 16
+
+                        slashing_sword.rect.x = item_pos.pos.x
+                        slashing_sword.rect.y = item_pos.pos.y
+
+                        item.used = False
+                        melee_weapon.hit = False
