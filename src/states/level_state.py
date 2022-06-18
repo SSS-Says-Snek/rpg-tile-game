@@ -29,9 +29,9 @@ from src.entities.component import (
 # Systems
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.graphics_system import GraphicsSystem
-from src.entities.systems.tile_interaction_system import TileInteractionSystem
+# from src.entities.systems.tile_interaction_system import TileInteractionSystem
 from src.entities.systems.velocity_system import VelocitySystem
-from src.entities.systems.damage_system import DamageSystem
+from src.entities.systems.item_weapon_system import ItemWeaponSystem
 from src.entities.systems.input_system import InputSystem
 
 # State (for inheritance)
@@ -73,7 +73,7 @@ class LevelState(State):
         self.ecs_world.add_processor(VelocitySystem(self), priority=5)
         self.ecs_world.add_processor(CollisionSystem(self), priority=4)
         # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
-        self.ecs_world.add_processor(DamageSystem(self), priority=2)
+        self.ecs_world.add_processor(ItemWeaponSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self):
@@ -101,7 +101,7 @@ class LevelState(State):
 
                 inventory_component.inventory[0] = self.ecs_world.create_entity(
                     item_component.Item(cooldown=1, owner=self.player),
-                    item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
+                    item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), in_inventory=True),
                     item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
                     item_component.MeleeWeapon(attack_damage=20),
                     item_component.SlashingSword()
@@ -113,7 +113,7 @@ class LevelState(State):
                     hud=True, hud_name="hotbar"
                 )
 
-            if obj.name == "walker_enemy_spawn":
+            elif obj.name == "walker_enemy_spawn":
                 self.temp_sprite = pygame.Surface((16, 16), pygame.SRCALPHA).convert_alpha()
                 pygame.draw.rect(self.temp_sprite, (0, 0, 255), pygame.Rect(0, 0, 16, 16))
 
@@ -130,6 +130,19 @@ class LevelState(State):
                 )
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
                 # references.references["healthbar"] = hp_uuid  Thinking about it
+
+            elif obj.name == "medkit_item":
+                temp_surface = pygame.Surface((32, 32))
+                temp_surface.fill((180, 0, 0))
+                temp_surface_again = pygame.Surface((16, 16))
+                temp_surface_again.fill((180, 0, 0))
+
+                self.ecs_world.create_entity(
+                    item_component.Item(cooldown=0),
+                    item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
+                    item_component.ItemGraphics(sprite=temp_surface_again, icon=temp_surface),
+                    item_component.Consumable(), item_component.Medkit(heal_power=35)
+                )
 
 
     def draw(self):

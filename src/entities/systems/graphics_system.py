@@ -20,8 +20,8 @@ class GraphicsSystem(System):
 
         screen.blit(self.level_state.map_surface, self.level_state.camera.apply((0, 0)))
 
+        # Mob blitting
         for entity, (graphics, pos) in self.world.get_components(Graphics, Position):
-            flags = self.world.component_for_entity(entity, Flags)
             if self.level_state.debug:
                 tilemap = self.level_state.tilemap.tilemap
 
@@ -53,10 +53,17 @@ class GraphicsSystem(System):
                 )
                 screen.blit(rotated_sprite, self.level_state.camera.apply(new_pos))
 
-            if self.world.has_component(entity, Inventory):
+            if entity == self.player:
                 inventory = self.world.component_for_entity(entity, Inventory)
                 equipped_item = inventory.inventory[inventory.equipped_item_idx]
+
                 if equipped_item is not None:
                     item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
                     item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
                     screen.blit(item_graphics.current_img, self.level_state.camera.apply(item_pos.pos))
+
+        for entity, (item_graphics, item_pos) in self.world.get_components(
+            item_component.ItemGraphics, item_component.ItemPosition
+        ):
+            if not item_pos.in_inventory:
+                screen.blit(item_graphics.current_img, self.level_state.camera.apply(item_pos.pos))

@@ -6,12 +6,14 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the collision system, which handles entity-to-tile collision as well as
 entity-to-player collision (soon)
 """
-
 import pygame
 
 from src import utils
 from src.entities.systems.system import System
-from src.entities.component import Position, Movement, Graphics, Flags, Tile
+
+from src.entities import item_component
+from src.entities.component import Position, Movement, Graphics, Flags, Tile, Inventory
+
 
 class CollisionSystem(System):
     def __init__(self, level_state):
@@ -78,7 +80,7 @@ class CollisionSystem(System):
                     rect.right = neighboring_tile_rect.left
                     collision_types['right'] = True
                 elif movement.vel.x < 0:
-                    print('OMAGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+                    # print('OMAGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
                     rect.left = neighboring_tile_rect.right
                     collision_types['left'] = True
 
@@ -116,6 +118,7 @@ class CollisionSystem(System):
     def process(self, event_list):
         # super().process(event_list)
 
+        # Mob collision
         for entity, (pos, movement, graphics) in self.world.get_components(
             Position, Movement, Graphics
         ):
@@ -140,3 +143,18 @@ class CollisionSystem(System):
             pos.pos.x = pos.rect.x
             pos.pos.y = pos.rect.y
             pos.tile_pos = utils.pixel_to_tile(pos.pos)
+
+        # Item pickup
+        for entity, (item_pos, item_graphics) in self.world.get_components(
+            item_component.ItemPosition, item_component.ItemGraphics
+        ):
+            player_rect = self.world.component_for_entity(self.player, Position).rect
+            player_inventory = self.world.component_for_entity(self.player, Inventory)
+            item_pos.rect = pygame.Rect(*item_pos.pos, *item_graphics.bound_size)
+
+            # Player collided with item
+            if not item_pos.in_inventory and player_rect.colliderect(item_pos.rect):
+                available_inventory_idx = player_inventory.get_available_idx()
+                if available_inventory_idx is not None:
+                    self.world.remove_component(entity, item_component.ItemPosition)
+                    player_inventory.inventory[available_inventory_idx] = entity

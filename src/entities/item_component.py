@@ -18,19 +18,28 @@ class Item:
 
 
 class ItemPosition:
-    def __init__(self, pos):
+    def __init__(self, pos, in_inventory=False):
         self.pos = pos
+        self.rect = None
+        self.in_inventory = in_inventory
 
 
 class ItemGraphics:
     def __init__(self, sprite, icon=None):
         self.original_img = sprite
         self.current_img = sprite
+        self.size = sprite.get_rect().size
+        self.bound_size = sprite.get_bounding_rect().size
 
         if icon is None:
             self.icon = pygame.transform.smoothscale(self.original_img, (50, 50))
         else:
             self.icon = pygame.transform.smoothscale(icon, (50, 50))
+
+
+class Consumable:
+    def __init__(self, num_uses=1):
+        self.uses_left = num_uses
 
 
 class MeleeWeapon:
@@ -43,8 +52,18 @@ class MeleeWeapon:
         self.effects = effects
 
 
+class RangedWeapon:
+    def __init__(self):
+        pass
+
+
 class SlashingSword:
     def __init__(self, angle=0):
         self.angle = angle
 
         self.rect = None  # Reassign position after interaction with ItemPosition
+
+
+class Medkit:
+    def __init__(self, heal_power):
+        self.heal_power = heal_power

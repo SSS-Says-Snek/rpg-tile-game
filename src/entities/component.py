@@ -104,3 +104,9 @@ class Inventory:
 
         self.inventory = [None for _ in range(size)]
         self.equipped_item_idx = 0
+
+    def get_available_idx(self):
+        for i, item in enumerate(self.inventory):
+            if item is None:
+                return i
+        return None
