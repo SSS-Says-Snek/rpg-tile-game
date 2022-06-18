@@ -1,11 +1,27 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines components (data-only) for the game entities (integer IDs)
+"""
+
 __all__ = [
-    "Flags", "Tile", "Graphics", "Position", "Movement", "Health", "MeleeAttack",
+    "References", "Flags", "Tile", "Graphics", "Position", "Movement", "Health", "MeleeAttack",
     "Inventory"
 ]
 
 import collections
 
 from src import pygame, utils
+
+
+class References:  # Thinking about it
+    def __init__(self, reference_dict=None):
+        if reference_dict is None:
+            self.references = {}
+        else:
+            self.references = reference_dict
 
 
 class Flags:
@@ -15,6 +31,7 @@ class Flags:
         self.rotatable = rotatable
         self.damageable = damageable
 
+        self.alive = True
         self.mob_type = mob_type
 
 
@@ -34,7 +51,7 @@ class Position:
     def __init__(self, pos):
         self.pos = pos
         self.tile_pos = utils.pixel_to_tile(pos)
-        self.facing = None
+        self.direction = 1  # 1 for right, -1 for left
 
         self.on_ground = False
         self.rect = None

@@ -1,5 +1,14 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the State base class for all game states
+"""
+
 import importlib
 import abc
+
 from src import screen
 
 class State(abc.ABC):

@@ -1,3 +1,13 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the Game class, which contains vital data for states and is used to run the game
+"""
+
+import json
+
 from src import pygame, screen, common
 from src.states.level_state import LevelState
 from src.display.ui import UI
@@ -11,6 +21,9 @@ class Game:
 
         self.ui = UI(None)
 
+        with open(common.DATA_DIR / "settings.json") as f:
+            self.settings = json.load(f)
+
         self.state = LevelState(self)
         self.loaded_states = {LevelState: self.state}
         self.running = True
@@ -19,9 +32,11 @@ class Game:
 
     def run(self):
         while self.running:
+            # Set dt and events for other stuff to access via states
             self.dt = self.clock.tick(common.FPS) / 1000
             self.events = pygame.event.get()
 
+            # Event loop
             for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -29,11 +44,11 @@ class Game:
                 # State handles event
                 self.state.handle_event(event)
 
-            # State handles drawing
-            self.state.draw()
-
             # State runs other functions that get called once a frame
             self.state.update()
+
+            # State handles drawing
+            self.state.draw()
 
             # UI drawing
             self.ui.draw()

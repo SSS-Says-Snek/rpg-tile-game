@@ -1,3 +1,11 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file contains widgets for the inventory
+"""
+
 from src import pygame, screen
 
 from src.entities import item_component

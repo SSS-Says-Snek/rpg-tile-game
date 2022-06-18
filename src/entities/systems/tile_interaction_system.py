@@ -1,3 +1,11 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the tile interaction system, used for entity-to-tile interaction
+"""
+
 from src import pygame, screen, utils
 from src.entities.systems.system import System
 from src.entities.component import *

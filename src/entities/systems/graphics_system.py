@@ -1,5 +1,6 @@
 import pytmx
 from src import pygame, screen, utils
+
 from src.entities.systems.system import System
 from src.entities import item_component
 from src.entities.component import Flags, Graphics, Position, Movement, Inventory
@@ -10,6 +11,7 @@ class GraphicsSystem(System):
         super().__init__(level_state)
 
     def process(self, event_list):
+        screen.fill((70, 70, 70))
         # super().process(event_list)
 
         self.level_state.camera.adjust_to(
@@ -19,6 +21,7 @@ class GraphicsSystem(System):
         screen.blit(self.level_state.map_surface, self.level_state.camera.apply((0, 0)))
 
         for entity, (graphics, pos) in self.world.get_components(Graphics, Position):
+            flags = self.world.component_for_entity(entity, Flags)
             if self.level_state.debug:
                 tilemap = self.level_state.tilemap.tilemap
 

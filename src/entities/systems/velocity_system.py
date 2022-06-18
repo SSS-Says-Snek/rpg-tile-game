@@ -1,3 +1,11 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the velocity system, used to "move" entities around
+"""
+
 import math
 
 from src import pygame, utils
@@ -23,8 +31,10 @@ class VelocitySystem(System):
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player_movement.vel.x = -player_movement.speed
+            player_pos.direction = -1
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player_movement.vel.x = player_movement.speed
+            player_pos.direction = 1
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:

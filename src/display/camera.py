@@ -1,3 +1,12 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the Camera class, used to shift objects around
+with respect to the player
+"""
+
 from typing import Union
 
 from src import pygame

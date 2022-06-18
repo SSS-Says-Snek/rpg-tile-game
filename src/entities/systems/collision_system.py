@@ -1,4 +1,11 @@
-import math
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the collision system, which handles entity-to-tile collision as well as
+entity-to-player collision (soon)
+"""
 
 import pygame
 

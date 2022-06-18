@@ -1,5 +1,12 @@
-from src import pygame
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
 
+This file defines item components, similar to the components in component.py
+"""
+
+from src import pygame
 
 class Item:
     def __init__(self, cooldown, owner=None):

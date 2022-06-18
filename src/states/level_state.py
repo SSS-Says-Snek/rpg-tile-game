@@ -1,15 +1,32 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the level state, which is the state where the main game happens
+"""
+
+# ECS system
 import esper
 
+# Important modules
 from src import pygame, common
 from src.tilemap import TileMap
 
+# Display modules
+from src.display import particle
 from src.display.camera import Camera
 from src.display.widgets.health_bar import PlayerHealthBar, MobHealthBar
 from src.display.widgets.inventory import Hotbar
 
+# Components
 from src.entities import item_component
-from src.entities.component import Flags, Position, Movement, Graphics, Health, MeleeAttack, Inventory
+from src.entities.component import (
+    Flags, Position, Movement, Graphics,
+    Health, MeleeAttack, Inventory
+)
 
+# Systems
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.graphics_system import GraphicsSystem
 from src.entities.systems.tile_interaction_system import TileInteractionSystem
@@ -17,6 +34,7 @@ from src.entities.systems.velocity_system import VelocitySystem
 from src.entities.systems.damage_system import DamageSystem
 from src.entities.systems.input_system import InputSystem
 
+# State (for inheritance)
 from .state import State
 
 class LevelState(State):
@@ -36,14 +54,21 @@ class LevelState(State):
         self.ui.camera = self.camera
         self.ui.world = self.ecs_world
 
+        # Particle stuff
+        self.particle_system = particle.ParticleSystem(self.camera)
+
         self.temp_sprite = pygame.Surface((32, 32))
         self.temp_sprite.fill((255, 0, 0))
+
+        # Other stuff
+        self.settings = self.game_class.settings
 
         self.player = None
         self.load_spawns()
 
         self.debug = False
 
+        # Add ECS systems
         self.ecs_world.add_processor(InputSystem(self), priority=6)
         self.ecs_world.add_processor(VelocitySystem(self), priority=5)
         self.ecs_world.add_processor(CollisionSystem(self), priority=4)
@@ -61,6 +86,7 @@ class LevelState(State):
             if obj.name == "player_spawn":
                 weapon_surf = pygame.Surface((32, 32), pygame.SRCALPHA)
                 pygame.draw.rect(weapon_surf, (0, 255, 0), pygame.Rect(0, 0, 10, 32))
+
                 weapon_icon = pygame.Surface((50, 50), pygame.SRCALPHA)
                 weapon_icon.fill((0, 255, 0))
 
@@ -78,7 +104,7 @@ class LevelState(State):
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
                     item_component.MeleeWeapon(attack_damage=20),
-                    item_component.SlashingSword(),
+                    item_component.SlashingSword()
                 )
 
                 self.ui.add_widget(PlayerHealthBar(self.ui, self.player, (700, 10), 230, 20))
@@ -90,20 +116,24 @@ class LevelState(State):
             if obj.name == "walker_enemy_spawn":
                 self.temp_sprite = pygame.Surface((16, 16), pygame.SRCALPHA).convert_alpha()
                 pygame.draw.rect(self.temp_sprite, (0, 0, 255), pygame.Rect(0, 0, 16, 16))
+
+                # references = References()
                 movement = Movement(200)
                 movement.mob_specifics["movement_direction"] = 1
 
                 walker_enemy = self.ecs_world.create_entity(
                     Flags(collidable=True, mob_type="walker_enemy", damageable=True),
-                    Position(pygame.Vector2(obj.x, obj.y)), movement,
-                    Health(60, 80), MeleeAttack(1, 1.3, 15, collision=True),
-                    Graphics(walker_enemy_sprite)
+                    Position(pos=pygame.Vector2(obj.x, obj.y)),
+                    Health(hp=60, max_hp=80), Graphics(walker_enemy_sprite),
+                    MeleeAttack(attack_range=1, attack_cooldown=1.3, damage=15, collision=True),
+                    movement
                 )
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
+                # references.references["healthbar"] = hp_uuid  Thinking about it
 
 
     def draw(self):
-        self.screen.fill((70, 70, 70))
+        self.particle_system.draw()
 
     def handle_event(self, event):
         # self.change_state("level_state.TestState")
@@ -113,6 +143,7 @@ class LevelState(State):
 
     def update(self):
         self.ecs_world.process(self.game_class.events)
+        self.particle_system.update()
 
 
 class TestState(State):
