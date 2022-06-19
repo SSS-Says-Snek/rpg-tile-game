@@ -141,7 +141,7 @@ class LevelState(State):
                     item_component.Item(cooldown=0),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(sprite=temp_surface_again, icon=temp_surface),
-                    item_component.Consumable(), item_component.Medkit(heal_power=35)
+                    item_component.Consumable(), item_component.Medkit(heal_power=45)
                 )
 
 

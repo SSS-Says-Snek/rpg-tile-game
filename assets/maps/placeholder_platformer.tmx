@@ -56,17 +56,13 @@
 </data>
  </layer>
  <objectgroup id="2" name="spawns">
-  <object id="1" name="player_spawn" x="672" y="608" width="32" height="32"/>
-  <object id="2" name="walker_enemy_spawn" x="640" y="736" width="32" height="32"/>
+  <object id="1" name="player_spawn" x="1952" y="640" width="32" height="32"/>
+  <object id="2" name="walker_enemy_spawn" x="640" y="728" width="32" height="32"/>
   <object id="4" name="walker_enemy_spawn" x="928" y="160" width="32" height="32"/>
-  <object id="8" name="walker_enemy_spawn" x="1248" y="736" width="32" height="32"/>
   <object id="9" name="walker_enemy_spawn" x="1280" y="256" width="32" height="32"/>
-  <object id="10" name="walker_enemy_spawn" x="1408" y="736" width="32" height="32"/>
   <object id="11" name="walker_enemy_spawn" x="1632" y="736" width="32" height="32"/>
   <object id="12" name="walker_enemy_spawn" x="608" y="448" width="32" height="32"/>
   <object id="13" name="walker_enemy_spawn" x="608" y="256" width="32" height="32"/>
-  <object id="16" name="walker_enemy_spawn" x="1888" y="352" width="32" height="32"/>
-  <object id="17" name="walker_enemy_spawn" x="1344" y="352" width="32" height="32"/>
   <object id="18" name="walker_enemy_spawn" x="1408" y="0" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="3" name="items">
