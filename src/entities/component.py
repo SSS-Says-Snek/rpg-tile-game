@@ -105,6 +105,10 @@ class Inventory:
         self.inventory = [None for _ in range(size)]
         self.equipped_item_idx = 0
 
+        self.cooldown = 0  # Changes based on equipped item
+        self.last_used = 0
+        self.on_cooldown = False
+
     def get_available_idx(self):
         for i, item in enumerate(self.inventory):
             if item is None:

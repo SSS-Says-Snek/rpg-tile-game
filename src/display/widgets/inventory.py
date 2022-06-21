@@ -6,6 +6,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file contains widgets for the inventory
 """
 
+import pygame.gfxdraw
 from src import pygame, screen
 
 from src.entities import item_component
@@ -31,12 +32,17 @@ class Hotbar:
 
         self.hotbar_rects = []
         for i in range(self.hotbar_size):
-            hotbar_rect = pygame.draw.rect(self.original_frame, (0, 0, 0), pygame.Rect(i * frame_size[0] + i * 15, 0, *frame_size), width=2)
+            hotbar_rect = pygame.draw.rect(
+                self.original_frame, (0, 0, 0),  # (66, 118, 70),
+                pygame.Rect(i * frame_size[0] + i * 15, 0, *frame_size), width=4
+            )
+
             self.hotbar_rects.append(hotbar_rect)
 
     def draw(self, _):  # Camera not used
         frame = self.original_frame.copy()
 
+        # Draw icons
         for hotbar_idx in range(self.hotbar_size):
             hotbar_rect = self.hotbar_rects[hotbar_idx]
 
@@ -47,6 +53,7 @@ class Hotbar:
                 blit_pos = item_graphics.icon.get_rect(center=hotbar_rect.center)
                 frame.blit(item_graphics.icon, blit_pos)
 
+        # Blit white rect for equipped item
         equipped_item_idx = self.inventory_component.equipped_item_idx
         pygame.draw.rect(
             frame, (255, 255, 255),
@@ -57,6 +64,7 @@ class Hotbar:
         mouse_pos = pygame.mouse.get_pos()
         adjusted_mouse_pos = (mouse_pos[0] - self.frame_rect.x, mouse_pos[1] - self.frame_rect.y)
 
+        # Blit gray rect for hovering
         for i, hotbar_rect in enumerate(self.hotbar_rects):
             if hotbar_rect.collidepoint(adjusted_mouse_pos) and i != equipped_item_idx:
                 pygame.draw.rect(
@@ -66,4 +74,25 @@ class Hotbar:
                 )
                 break
 
+        # Cooldown indicator
+        if self.inventory_component.on_cooldown:
+            for i, hotbar_rect in enumerate(self.hotbar_rects):
+                if self.inventory_component.cooldown != 0:
+                    # Witchcraftery
+                    rect_height = (
+                        1 - (pygame.time.get_ticks() - self.inventory_component.last_used) / (self.inventory_component.cooldown * 1000)
+                    ) * self.frame_size[1]
+                else:
+                    rect_height = 0
+
+                rect = pygame.Rect(
+                    self.frame_size[0] * i + 15 * i, 0,
+                    self.frame_size[0], rect_height
+                )
+                rect.bottom = self.frame_size[1]
+
+                # gfxdraw accepts alpha
+                pygame.gfxdraw.box(frame, rect, (70, 70, 70, 160))
+
+        # Blit frame to appropriate position
         screen.blit(frame, self.frame_rect)

@@ -14,7 +14,6 @@ class Item:
         self.used = False
 
         self.cooldown = cooldown
-        self.last_used = 0
 
 
 class ItemPosition:
@@ -25,7 +24,7 @@ class ItemPosition:
 
 
 class ItemGraphics:
-    def __init__(self, sprite, icon=None):
+    def __init__(self, sprite, icon=None, world_sprite=None):
         self.original_img = sprite
         self.current_img = sprite
         self.size = sprite.get_rect().size
@@ -35,6 +34,11 @@ class ItemGraphics:
             self.icon = pygame.transform.smoothscale(self.original_img, (50, 50))
         else:
             self.icon = pygame.transform.smoothscale(icon, (50, 50))
+
+        if world_sprite is None:
+            self.world_sprite = sprite
+        else:
+            self.world_sprite = world_sprite
 
 
 class Consumable:

@@ -11,7 +11,7 @@ class GraphicsSystem(System):
         super().__init__(level_state)
 
     def process(self, event_list):
-        screen.fill((70, 70, 70))
+        screen.fill((180, 180, 180))
         # super().process(event_list)
 
         self.level_state.camera.adjust_to(
@@ -53,6 +53,7 @@ class GraphicsSystem(System):
                 )
                 screen.blit(rotated_sprite, self.level_state.camera.apply(new_pos))
 
+            # Blit weapon sprite
             if entity == self.player:
                 inventory = self.world.component_for_entity(entity, Inventory)
                 equipped_item = inventory.inventory[inventory.equipped_item_idx]
@@ -66,4 +67,4 @@ class GraphicsSystem(System):
             item_component.ItemGraphics, item_component.ItemPosition
         ):
             if not item_pos.in_inventory:
-                screen.blit(item_graphics.current_img, self.level_state.camera.apply(item_pos.pos))
+                screen.blit(item_graphics.world_sprite, self.level_state.camera.apply(item_pos.pos))

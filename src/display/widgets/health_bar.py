@@ -51,12 +51,21 @@ class PlayerHealthBar:
         self.flash_size += abs(hp_lost)
 
         if hp_lost != 0:
-            self.flash_duration = 10
+            if self.health_component.hp > 0:
+                self.flash_duration = 10
+            else:
+                self.flash_duration = 40
             self.flash_hp_diff = math.copysign(1, hp_lost)
+
         if self.flash_duration <= 0:
-            self.flash_size -= 1
-            self.flash_size *= 0.98
-            self.flash_size = max(0, self.flash_size - 3)
+            if self.health_component.hp > 0:
+                self.flash_size -= 1
+                self.flash_size *= 0.98
+                self.flash_size = max(0, self.flash_size - 3)
+            else:
+                self.flash_size -= 1 / 4
+                self.flash_size *= 0.985
+                self.flash_size = max(0, self.flash_size)
 
 
         pygame.draw.rect(screen, (0, 0, 0), self.border_rect, width=self.border_width)
@@ -136,9 +145,6 @@ class MobHealthBar:
         flash_width = self.flash_size * self.width / self.health_component.max_hp
 
         if flash_width > 0:
-            if hp_lost > 0:
-                pygame.draw.rect(screen, (255, 255, 255), camera.apply(pygame.Rect(self.rect.x + self.rect.width, self.rect.y, flash_width, self.height)))
-            elif hp_lost < 0:
-                pygame.draw.rect(screen, (255, 255, 255), camera.apply(pygame.Rect(self.rect.x + self.rect.width, self.rect.y, flash_width, self.height)))
+            pygame.draw.rect(screen, (255, 255, 255), camera.apply(pygame.Rect(self.rect.x + self.rect.width, self.rect.y, flash_width, self.height)))
 
         self.previous_health = self.health_component.hp

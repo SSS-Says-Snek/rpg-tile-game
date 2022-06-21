@@ -175,8 +175,12 @@ class ItemWeaponSystem(System):
                         medkit = self.world.component_for_entity(equipped_item, item_component.Medkit)
                         consumable = self.world.component_for_entity(equipped_item, item_component.Consumable)
 
+                        # Actual HP addition
                         owner_health.hp += medkit.heal_power
                         owner_health.hp = min(owner_health.hp, owner_health.max_hp)
+
+                        # Particles
+                        self.create_hit_particles(8, owner_pos, [(255, 255, 255)])
 
                         consumable.uses_left -= 1
                         if consumable.uses_left == 0:

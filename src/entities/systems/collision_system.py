@@ -40,7 +40,7 @@ class CollisionSystem(System):
             for unwalkable_rect in unwalkable_rects:
                 if rect.colliderect(unwalkable_rect):
                     if movement.vx > 0:
-                        pos.pos.x = unwalkable_rect.left - rect.width
+                        pos.pos.x = unwalkable_rect.left
                     elif movement.vx < 0:
                         pos.pos.x = unwalkable_rect.right
                     movement.vx = 0
@@ -49,7 +49,7 @@ class CollisionSystem(System):
             for unwalkable_rect in unwalkable_rects:
                 if rect.colliderect(unwalkable_rect):
                     if movement.vy > 0:
-                        pos.pos.y = unwalkable_rect.top - rect.height
+                        pos.pos.y = unwalkable_rect.top
                     elif movement.vy < 0:
                         pos.pos.y = unwalkable_rect.bottom
                     movement.vy = 0
@@ -72,7 +72,7 @@ class CollisionSystem(System):
 
     def collide_with_tiles(self, rect, movement, neighboring_tile_rects, entity):
         collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
-        rect.x += movement.vel.x * self.level_state.game_class.dt
+        rect.x += round(movement.vel.x * self.level_state.game_class.dt)
 
         for neighboring_tile_rect in neighboring_tile_rects:
             if neighboring_tile_rect.colliderect(rect):
@@ -100,7 +100,7 @@ class CollisionSystem(System):
                 elif nested_movement.vel.x > 0 and self.determine_collision_side(nested_pos.rect, rect) == "right":
                     rect.left = nested_pos.rect.right"""
 
-        rect.y += movement.vel.y
+        rect.y += round(movement.vel.y)
 
         for neighboring_tile_rect in neighboring_tile_rects:
             if neighboring_tile_rect.colliderect(rect):
@@ -108,7 +108,6 @@ class CollisionSystem(System):
                     movement.vel.y = 0
                     rect.bottom = neighboring_tile_rect.top
                     collision_types['bottom'] = True
-                    # print('e')
                 elif movement.vel.y < 0:
                     movement.vel.y = 0
                     rect.top = neighboring_tile_rect.bottom
