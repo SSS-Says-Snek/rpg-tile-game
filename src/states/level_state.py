@@ -84,6 +84,11 @@ class LevelState(State):
 
         for obj in self.tilemap.tilemap.objects:
             if obj.name == "player_spawn":
+                player_surfs = {
+                    "right": pygame.image.load(common.ASSETS_DIR / "imgs" / "player_right.png").convert_alpha(),
+                    "left": pygame.image.load(common.ASSETS_DIR / "imgs" / "player_left.png").convert_alpha()
+                }
+
                 weapon_surf = pygame.Surface((32, 32), pygame.SRCALPHA)
                 pygame.draw.rect(weapon_surf, (0, 255, 0), pygame.Rect(0, 0, 10, 32))
 
@@ -95,7 +100,7 @@ class LevelState(State):
                 self.player = self.ecs_world.create_entity(
                     Flags(collidable=True, mob_type="player", damageable=True),
                     Position(pos=pygame.Vector2(obj.x, obj.y)), Movement(speed=self.PLAYER_SPEED),
-                    Graphics(sprite=self.temp_sprite),
+                    Graphics(sprites=player_surfs, sprites_state="right"),
                     Health(hp=100, max_hp=100), inventory_component
                 )
 
@@ -132,16 +137,28 @@ class LevelState(State):
                 # references.references["healthbar"] = hp_uuid  Thinking about it
 
             elif obj.name == "medkit_item":
-                temp_surface = pygame.Surface((32, 32))
-                temp_surface.fill((180, 0, 0))
-                temp_surface_again = pygame.Surface((16, 16))
-                temp_surface_again.fill((180, 0, 0))
+                health_potion = pygame.image.load(common.ASSETS_DIR / "imgs" / "health_potion.png").convert_alpha()
+                health_potion_holding = pygame.transform.scale(health_potion, (16, 16))  # pygame.Surface((16, 16))
 
                 self.ecs_world.create_entity(
                     item_component.Item(cooldown=0),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
-                    item_component.ItemGraphics(sprite=temp_surface_again, icon=temp_surface, world_sprite=temp_surface),
+                    item_component.ItemGraphics(sprite=health_potion_holding, icon=health_potion, world_sprite=health_potion),
                     item_component.Consumable(), item_component.Medkit(heal_power=45)
+                )
+            elif obj.name == "bow_item":
+                temp_surface = pygame.Surface((32, 32))
+                temp_surface.fill((0, 0, 180))
+
+                temp_surface_holding = pygame.Surface((16, 32))
+                temp_surface_holding.fill((0, 0, 180))
+
+                self.ecs_world.create_entity(
+                    item_component.Item(cooldown=2),
+                    item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
+                    item_component.ItemGraphics(sprite=temp_surface_holding, world_sprite=temp_surface),
+                    item_component.RangedWeapon(projectile_damage=30),
+                    item_component.Bow(launch_vel=pygame.Vector2(100, 0))
                 )
 
 

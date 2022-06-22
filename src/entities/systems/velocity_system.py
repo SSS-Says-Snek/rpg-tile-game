@@ -10,7 +10,7 @@ import math
 
 from src import pygame, utils
 
-from src.entities.component import Flags, Position, Movement
+from src.entities.component import Flags, Position, Movement, Graphics
 from src.entities.systems.system import System
 
 class VelocitySystem(System):
@@ -25,6 +25,9 @@ class VelocitySystem(System):
         player_pos = self.world.component_for_entity(
             self.player, Position
         )
+        player_graphics = self.world.component_for_entity(
+            self.player, Graphics
+        )
 
         player_movement.vx, player_movement.vy = 0, 0
         player_movement.vel.x = 0
@@ -32,9 +35,11 @@ class VelocitySystem(System):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player_movement.vel.x = -player_movement.speed
             player_pos.direction = -1
+            player_graphics.sprites_state = "left"
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player_movement.vel.x = player_movement.speed
             player_pos.direction = 1
+            player_graphics.sprites_state = "right"
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:

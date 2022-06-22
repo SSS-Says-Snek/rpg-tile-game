@@ -85,6 +85,7 @@ class Hotbar:
                 else:
                     rect_height = 0
 
+                # Rect of the hotbar cooldown
                 rect = pygame.Rect(
                     self.frame_size[0] * i + 15 * i, 0,
                     self.frame_size[0], rect_height
@@ -92,7 +93,7 @@ class Hotbar:
                 rect.bottom = self.frame_size[1]
 
                 # gfxdraw accepts alpha
-                pygame.gfxdraw.box(frame, rect, (70, 70, 70, 160))
+                pygame.gfxdraw.box(frame, rect, (0, 0, 0, 160))
 
         # Blit frame to appropriate position
         screen.blit(frame, self.frame_rect)

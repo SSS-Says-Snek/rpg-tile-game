@@ -50,15 +50,15 @@ class MeleeWeapon:
     def __init__(self, attack_damage, effects=None):
         self.attack_damage = attack_damage
 
-        self.last_attacked = 0
         self.hit = False
-
         self.effects = effects
 
 
 class RangedWeapon:
-    def __init__(self):
-        pass
+    def __init__(self, projectile_damage, effects=None):
+        self.projectile_damage = projectile_damage
+
+        self.effects = effects
 
 
 class SlashingSword:
@@ -68,6 +68,18 @@ class SlashingSword:
         self.rect = None  # Reassign position after interaction with ItemPosition
 
 
+class Bow:
+    def __init__(self, launch_vel, angle=0):
+        self.angle = angle
+        self.launch_vel = launch_vel
+
+
 class Medkit:
     def __init__(self, heal_power):
         self.heal_power = heal_power
+
+
+class Projectile:
+    def __init__(self, vel, gravity=False):
+        self.vel = vel
+        self.gravity = gravity

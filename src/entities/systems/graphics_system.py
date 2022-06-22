@@ -44,7 +44,11 @@ class GraphicsSystem(System):
             if not self.world.component_for_entity(entity, Flags).rotatable:
                 if self.level_state.debug:
                     pygame.draw.rect(screen, (255, 0, 0), self.level_state.camera.apply(pos.rect), width=1)
-                screen.blit(graphics.sprite, self.level_state.camera.apply(pos.pos))
+
+                if graphics.sprite is not None:
+                    screen.blit(graphics.sprite, self.level_state.camera.apply(pos.pos))
+                else:
+                    screen.blit(graphics.sprites[graphics.sprites_state], self.level_state.camera.apply(pos.pos))
             else:
                 movement = self.world.component_for_entity(entity, Movement)
                 rotated_sprite, new_pos = utils.rot_center(

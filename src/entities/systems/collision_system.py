@@ -70,7 +70,7 @@ class CollisionSystem(System):
 
         return unwalkable_tile_rects
 
-    def collide_with_tiles(self, rect, movement, neighboring_tile_rects, entity):
+    def collide_with_tiles(self, rect, movement, neighboring_tile_rects):
         collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
         rect.x += round(movement.vel.x * self.level_state.game_class.dt)
 
@@ -134,7 +134,7 @@ class CollisionSystem(System):
                 movement.vel.y = 17
             pos.pos.y += movement.vel.y
 
-            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, entity)
+            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects)
             if collisions["bottom"]:
                 pos.on_ground = True
                 movement.vel.y = 0

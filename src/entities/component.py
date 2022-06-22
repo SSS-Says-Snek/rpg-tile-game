@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 import collections
+from typing import Union
 
 from src import pygame, utils
 
@@ -42,9 +43,16 @@ class Tile:
 
 
 class Graphics:
-    def __init__(self, sprite):
+    def __init__(self, sprite=None, sprites: Union[dict] = None, sprites_state=None):
         self.sprite = sprite
-        self.size = self.sprite.get_size()
+        self.sprites = sprites if sprites is not None else {}
+
+        self.sprites_state = sprites_state
+
+        if self.sprite is not None:
+            self.size = self.sprite.get_size()
+        else:
+            self.size = list(self.sprites.values())[0].get_size()
 
 
 class Position:
