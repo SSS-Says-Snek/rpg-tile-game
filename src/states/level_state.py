@@ -32,6 +32,7 @@ from src.entities.systems.graphics_system import GraphicsSystem
 # from src.entities.systems.tile_interaction_system import TileInteractionSystem
 from src.entities.systems.velocity_system import VelocitySystem
 from src.entities.systems.item_weapon_system import ItemWeaponSystem
+from src.entities.systems.projectile_system import ProjectileSystem
 from src.entities.systems.input_system import InputSystem
 
 # State (for inheritance)
@@ -73,7 +74,8 @@ class LevelState(State):
         self.ecs_world.add_processor(VelocitySystem(self), priority=5)
         self.ecs_world.add_processor(CollisionSystem(self), priority=4)
         # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
-        self.ecs_world.add_processor(ItemWeaponSystem(self), priority=2)
+        self.ecs_world.add_processor(ItemWeaponSystem(self), priority=3)
+        self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self):
@@ -89,8 +91,8 @@ class LevelState(State):
                     "left": pygame.image.load(common.ASSETS_DIR / "imgs" / "player_left.png").convert_alpha()
                 }
 
-                weapon_surf = pygame.Surface((32, 32), pygame.SRCALPHA)
-                pygame.draw.rect(weapon_surf, (0, 255, 0), pygame.Rect(0, 0, 10, 32))
+                weapon_surf = pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / "sword_hold.png") # pygame.Surface((32, 32), pygame.SRCALPHA)
+                # pygame.draw.rect(weapon_surf, (0, 255, 0), pygame.Rect(0, 0, 10, 32))
 
                 weapon_icon = pygame.Surface((50, 50), pygame.SRCALPHA)
                 weapon_icon.fill((0, 255, 0))
@@ -158,12 +160,15 @@ class LevelState(State):
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(sprite=temp_surface_holding, world_sprite=temp_surface),
                     item_component.RangedWeapon(projectile_damage=30),
-                    item_component.Bow(launch_vel=pygame.Vector2(100, 0))
+                    item_component.GravityBow(launch_vel=pygame.Vector2(100, 0))
                 )
 
 
     def draw(self):
         self.particle_system.draw()
+
+        if self.camera.shake_frames > 0:
+            self.camera.do_shake()
 
     def handle_event(self, event):
         # self.change_state("level_state.TestState")

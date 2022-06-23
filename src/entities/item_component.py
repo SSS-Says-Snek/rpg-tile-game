@@ -68,7 +68,7 @@ class SlashingSword:
         self.rect = None  # Reassign position after interaction with ItemPosition
 
 
-class Bow:
+class GravityBow:
     def __init__(self, launch_vel, angle=0):
         self.angle = angle
         self.launch_vel = launch_vel

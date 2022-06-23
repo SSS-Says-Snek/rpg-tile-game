@@ -56,7 +56,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="spawns">
-  <object id="1" name="player_spawn" x="1952" y="640" width="32" height="32"/>
+  <object id="1" name="player_spawn" x="1216" y="1056" width="32" height="32"/>
   <object id="2" name="walker_enemy_spawn" x="640" y="728" width="32" height="32"/>
   <object id="4" name="walker_enemy_spawn" x="928" y="160" width="32" height="32"/>
   <object id="9" name="walker_enemy_spawn" x="1280" y="256" width="32" height="32"/>

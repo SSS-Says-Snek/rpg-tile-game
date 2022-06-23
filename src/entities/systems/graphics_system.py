@@ -2,7 +2,7 @@ import pytmx
 from src import pygame, screen, utils
 
 from src.entities.systems.system import System
-from src.entities import item_component
+from src.entities import item_component, projectile_component
 from src.entities.component import Flags, Graphics, Position, Movement, Inventory
 
 
@@ -72,3 +72,8 @@ class GraphicsSystem(System):
         ):
             if not item_pos.in_inventory:
                 screen.blit(item_graphics.world_sprite, self.level_state.camera.apply(item_pos.pos))
+
+        for entity, (projectile_graphics, projectile_pos) in self.world.get_components(
+            projectile_component.ProjectileGraphics, projectile_component.ProjectilePosition
+        ):
+            screen.blit(projectile_graphics.current_img, self.level_state.camera.apply(projectile_pos.pos))

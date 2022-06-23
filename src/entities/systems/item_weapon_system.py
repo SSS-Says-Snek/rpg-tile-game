@@ -5,7 +5,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the ItemWeaponSystem, which is used to interact and use items
 """
-
+import math
 import operator
 import random
 
@@ -14,7 +14,7 @@ from src import pygame, utils
 from src.display import particle
 
 from src.entities.systems.system import System
-from src.entities import item_component
+from src.entities import item_component, projectile_component
 from src.entities.component import Position, Movement, MeleeAttack, Health, Inventory
 
 
@@ -49,6 +49,7 @@ class ItemWeaponSystem(System):
                 if nested_entity == entity:
                     continue
 
+                # RN TESTING ENTITY TO PLAYER ONLY
                 if entity != self.player and nested_entity == self.player:
                     if self.world.has_component(entity, MeleeAttack):
                         melee_attack = self.world.component_for_entity(entity, MeleeAttack)
@@ -59,6 +60,8 @@ class ItemWeaponSystem(System):
                             conditional = pos.tile_pos.distance_to(nested_pos.tile_pos) <= melee_attack.attack_range
 
                         if conditional and pygame.time.get_ticks() - melee_attack.last_attacked > melee_attack.attack_cooldown * 1000:
+                            self.level_state.camera.start_shake(10)
+
                             nested_health.hp -= melee_attack.damage
                             nested_health.hp = max(nested_health.hp, 0)
 
@@ -113,14 +116,17 @@ class ItemWeaponSystem(System):
                 if self.world.has_component(equipped_item, item_component.MeleeWeapon):
                     item_pos.pos.y -= item_graphics.size[1] / 2
 
-                    # Not used = no combat
-                    if not item.used:
-                        continue
-
                     melee_weapon = self.world.component_for_entity(equipped_item, item_component.MeleeWeapon)
 
                     # Slashing sword (different from stabbing sword)
                     if self.world.has_component(equipped_item, item_component.SlashingSword):
+
+                        item_pos.pos.x -= owner_pos.direction * 6
+
+                        # Not used = no combat
+                        if not item.used:
+                            continue
+
                         slashing_sword = self.world.component_for_entity(equipped_item, item_component.SlashingSword)
 
                         # Handle angle and positions
@@ -168,6 +174,31 @@ class ItemWeaponSystem(System):
 
                             item.used = False
                             melee_weapon.hit = False
+
+                elif self.world.has_component(equipped_item, item_component.RangedWeapon):
+
+                    # Not used = no combat
+                    if not item.used:
+                        continue
+
+                    # HEAVILY BUGGY IMPLEMENTATION: WILL WORK ON IT MORE
+                    mouse_pos = pygame.mouse.get_pos()
+                    adj_item_pos = self.level_state.camera.apply(item_pos.pos)
+
+                    temp_sprite = pygame.Surface((32, 32), pygame.SRCALPHA)
+                    pygame.draw.rect(temp_sprite, (0, 0, 0), (0, 8, 16, 8))
+
+                    self.world.create_entity(
+                        projectile_component.Projectile(
+                            vel=pygame.Vector2(10, 0),
+                            angle=math.atan2(mouse_pos[1] - adj_item_pos.y, mouse_pos[0] - adj_item_pos.x),
+                            gravity=0.3
+                        ),
+                        projectile_component.ProjectilePosition(item_pos.pos.copy()),
+                        projectile_component.ProjectileGraphics(temp_sprite)
+                    )
+
+                    item.used = False
 
                 elif self.world.has_component(equipped_item, item_component.Consumable):
                     if self.world.has_component(equipped_item, item_component.Medkit) and item.used:
