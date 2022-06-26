@@ -12,6 +12,7 @@ from typing import Union
 
 from src import pygame
 
+
 class Camera:
     def __init__(self, camera_width, camera_height):
         self.camera_width = camera_width

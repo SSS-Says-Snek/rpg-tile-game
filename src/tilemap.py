@@ -47,13 +47,14 @@ class TileMap:
                     if tile_props.get("type") == "dialogue":
                         flag_kwargs["has_dialogue"] = True
 
-                    entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
+                    entity_id = self.ecs_world.create_entity(
+                        *components, Flags(**flag_kwargs)
+                    )
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
                     surface.blit(
                         tile_img,
-                        (x * self.tilemap.tilewidth,
-                         y * self.tilemap.tileheight)
+                        (x * self.tilemap.tilewidth, y * self.tilemap.tileheight),
                     )
 
     def make_map(self) -> pygame.Surface:
@@ -63,6 +64,25 @@ class TileMap:
 
     def get_visible_tile_layers(self):
         return [
-            layer for layer in self.tilemap.visible_layers
+            layer
+            for layer in self.tilemap.visible_layers
             if isinstance(layer, pytmx.TiledTileLayer)
         ]
+
+    def get_unwalkable_rects(self, neighboring_tiles):
+        unwalkable_tile_rects = []
+
+        for tile_entity_dict in neighboring_tiles:
+            tile_entity, tile_pos = tile_entity_dict
+            tile = self.ecs_world.component_for_entity(tile_entity, Tile)
+
+            if self.ecs_world.component_for_entity(tile_entity, Flags).collidable:
+                unwalkable_tile_rect = pygame.Rect(
+                    tile_pos["x"] * tile.tile_width,
+                    tile_pos["y"] * tile.tile_height,
+                    tile.tile_width,
+                    tile.tile_height,
+                )
+                unwalkable_tile_rects.append(unwalkable_tile_rect)
+
+        return unwalkable_tile_rects

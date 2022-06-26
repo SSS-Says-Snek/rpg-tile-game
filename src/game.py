@@ -14,6 +14,7 @@ from src.display.ui import UI
 
 pygame.init()
 
+
 class Game:
     def __init__(self):
         self.screen = screen
@@ -30,7 +31,7 @@ class Game:
         self.dt = 0
         self.events = []
 
-    def run(self):
+    def run(self) -> None:
         while self.running:
             # Set dt and events for other stuff to access via states
             self.dt = self.clock.tick(common.FPS) / 1000
@@ -57,7 +58,9 @@ class Game:
             if self.state.next_state != self.state.__class__:
                 old_state = self.state
                 if self.state.next_state not in self.loaded_states:
-                    self.loaded_states[self.state.next_state] = self.state.next_state(self)
+                    self.loaded_states[self.state.next_state] = self.state.next_state(
+                        self
+                    )
                 self.state = self.loaded_states[self.state.next_state]
 
                 old_state.next_state = old_state.__class__  # Resets next state to self

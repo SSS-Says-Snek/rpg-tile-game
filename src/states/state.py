@@ -9,7 +9,8 @@ This file defines the State base class for all game states
 import importlib
 import abc
 
-from src import screen
+from src import pygame, screen
+
 
 class State(abc.ABC):
     def __init__(self, game_class):
@@ -18,17 +19,17 @@ class State(abc.ABC):
         self.screen = screen
 
     @abc.abstractmethod
-    def draw(self):
+    def draw(self) -> None:
         pass
 
     @abc.abstractmethod
-    def handle_event(self, event):
+    def handle_event(self, event: pygame.event.Event):
         pass
 
-    def update(self):
+    def update(self) -> None:
         pass
 
-    def change_state(self, desired_state_str):
+    def change_state(self, desired_state_str: str):
         state_module_name, state_name = desired_state_str.split(".")
         state_module = importlib.import_module(f"src.states.{state_module_name}")
         self.next_state = getattr(state_module, state_name)

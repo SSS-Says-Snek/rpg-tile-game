@@ -7,28 +7,47 @@ This file defines projectile components, similar to the components in component.
 """
 import math
 
+from src import pygame, utils
+
 
 class Projectile:
-    def __init__(self, vel, angle, gravity=0):
+    def __init__(
+        self,
+        vel: pygame.Vector2,
+        shot_by: int,
+        damage: float,
+        angle: float,
+        gravity: float = 0,
+    ):
         self.vel = vel
+        self.shot_by = shot_by
+        self.damage = damage
+
         self.initial_angle = angle
         self.gravity = gravity
 
-        if math.degrees(self.initial_angle) < -90:
+        # Calculate velocity direction
+        if (
+            -180 <= math.degrees(self.initial_angle) < -90
+            or 90 <= math.degrees(self.initial_angle) <= 180
+        ):
             self.vel_dir = 1
-        else:
+        elif (
+            -90 <= math.degrees(self.initial_angle) < 0
+            or 0 <= math.degrees(self.initial_angle) < 90
+        ):
             self.vel_dir = -1
-        print(math.degrees(self.initial_angle))
 
 
 class ProjectilePosition:
-    def __init__(self, pos):
+    def __init__(self, pos: pygame.Vector2):
         self.pos = pos
+        self.tile_pos = utils.pixel_to_tile(self.pos)
         self.rect = None
 
 
 class ProjectileGraphics:
-    def __init__(self, sprite):
+    def __init__(self, sprite: pygame.Surface):
         self.original_img = sprite
         self.current_img = sprite
         self.size = sprite.get_bounding_rect().size

@@ -8,6 +8,7 @@ This file defines item components, similar to the components in component.py
 
 from src import pygame
 
+
 class Item:
     def __init__(self, cooldown, owner=None):
         self.owner = owner

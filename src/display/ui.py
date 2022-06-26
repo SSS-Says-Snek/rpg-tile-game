@@ -6,6 +6,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the UI class, used to handle... the game UI
 """
 
+
 class UI:
     def __init__(self, camera):
         self.current_widget_uuid = 0

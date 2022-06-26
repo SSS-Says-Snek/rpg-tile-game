@@ -27,10 +27,16 @@ class PlayerHealthBar:
         self.health_component = self.ui.world.component_for_entity(self.entity, Health)
 
         self.border_rect = pygame.Rect(
-            pos[0] - border_width, pos[1] - border_width,
-            width + 2 * border_width, height + 2 * border_width
+            pos[0] - border_width,
+            pos[1] - border_width,
+            width + 2 * border_width,
+            height + 2 * border_width,
         )
-        self.rect = pygame.Rect(*pos, self.health_component.hp / self.health_component.max_hp * width, height)
+        self.rect = pygame.Rect(
+            *pos,
+            self.health_component.hp / self.health_component.max_hp * width,
+            height
+        )
 
         self.previous_health = self.health_component.hp
         self.flash_size = 0
@@ -38,9 +44,11 @@ class PlayerHealthBar:
         self.flash_width = 0
         self.flash_hp_diff = 0  # 1 for lost, -1 for gained
 
-    def draw(self, *_): # Both camera and UI not used
+    def draw(self, *_):  # Both camera and UI not used
         self.flash_duration -= 1
-        self.rect.width = self.health_component.hp / self.health_component.max_hp * self.width
+        self.rect.width = (
+            self.health_component.hp / self.health_component.max_hp * self.width
+        )
 
         hp_percentage = self.rect.width / self.width
         hsv = (hp_percentage / 3, 1, 1)
@@ -67,7 +75,6 @@ class PlayerHealthBar:
                 self.flash_size *= 0.985
                 self.flash_size = max(0, self.flash_size)
 
-
         pygame.draw.rect(screen, (0, 0, 0), self.border_rect, width=self.border_width)
         pygame.draw.rect(screen, hp_color, self.rect)
 
@@ -75,8 +82,10 @@ class PlayerHealthBar:
 
         if self.flash_width > 0:
             flash_rect = pygame.Rect(
-                self.rect.x + self.rect.width, self.rect.y,
-                self.flash_width, self.height
+                self.rect.x + self.rect.width,
+                self.rect.y,
+                self.flash_width,
+                self.height,
             )
 
             if self.flash_hp_diff == -1:
@@ -88,7 +97,6 @@ class PlayerHealthBar:
 
         self.previous_health = self.health_component.hp
 
-        
 
 class MobHealthBar:
     def __init__(self, ui, entity, width, height, border_width=2):
@@ -103,10 +111,16 @@ class MobHealthBar:
         self.health_component = self.ui.world.component_for_entity(self.entity, Health)
 
         self.border_rect = pygame.Rect(
-            self.pos.pos.x - border_width, self.pos.pos.y - 20 - border_width,
-            width + 2 * border_width, height + 2 * border_width
+            self.pos.pos.x - border_width,
+            self.pos.pos.y - 20 - border_width,
+            width + 2 * border_width,
+            height + 2 * border_width,
         )
-        self.rect = pygame.Rect(*self.pos.pos, self.health_component.hp / self.health_component.max_hp * width, height)
+        self.rect = pygame.Rect(
+            *self.pos.pos,
+            self.health_component.hp / self.health_component.max_hp * width,
+            height
+        )
 
         self.previous_health = self.health_component.hp
         self.flash_size = 0
@@ -117,12 +131,23 @@ class MobHealthBar:
 
         if self.health_component.hp <= 0:
             self.ui.remove_widget(self.uuid)
+
+            # Delete entity FOR NOW. In the future, DeathSystem would and should handle item drops
+            self.ui.world.delete_entity(self.entity)
             return
 
         entity_rect = self.pos.rect
-        self.border_rect.center = (entity_rect.centerx - self.border_width, entity_rect.centery - 20 - self.border_width)
-        self.rect.topleft = (self.border_rect.x + self.border_width, self.border_rect.y + self.border_width)
-        self.rect.width = self.health_component.hp / self.health_component.max_hp * self.width
+        self.border_rect.center = (
+            entity_rect.centerx - self.border_width,
+            entity_rect.centery - 20 - self.border_width,
+        )
+        self.rect.topleft = (
+            self.border_rect.x + self.border_width,
+            self.border_rect.y + self.border_width,
+        )
+        self.rect.width = (
+            self.health_component.hp / self.health_component.max_hp * self.width
+        )
 
         hp_percentage = self.rect.width / self.width
         hsv = (hp_percentage / 3, 1, 1)
@@ -139,12 +164,25 @@ class MobHealthBar:
             self.flash_size *= 0.98
             self.flash_size = max(0, self.flash_size - 3)
 
-        pygame.draw.rect(screen, (0, 0, 0), camera.apply(self.border_rect), width=self.border_width)
+        pygame.draw.rect(
+            screen, (0, 0, 0), camera.apply(self.border_rect), width=self.border_width
+        )
         pygame.draw.rect(screen, hp_color, camera.apply(self.rect))
 
         flash_width = self.flash_size * self.width / self.health_component.max_hp
 
         if flash_width > 0:
-            pygame.draw.rect(screen, (255, 255, 255), camera.apply(pygame.Rect(self.rect.x + self.rect.width, self.rect.y, flash_width, self.height)))
+            pygame.draw.rect(
+                screen,
+                (255, 255, 255),
+                camera.apply(
+                    pygame.Rect(
+                        self.rect.x + self.rect.width,
+                        self.rect.y,
+                        flash_width,
+                        self.height,
+                    )
+                ),
+            )
 
         self.previous_health = self.health_component.hp

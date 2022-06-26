@@ -8,6 +8,7 @@ This file contains the base class of all systems
 
 import esper
 
+
 class System(esper.Processor):
     def __init__(self, level_state):
         super().__init__()
@@ -15,6 +16,9 @@ class System(esper.Processor):
         self.level_state = level_state
         self.player = self.level_state.player
 
-    def process(self, event_list):
-        # self.event_list = event_list
+        self.camera = self.level_state.camera
+        self.tilemap = self.level_state.tilemap
+        self.particle_system = self.level_state.particle_system
+
+    def process(self, event_list, dt) -> None:
         pass
