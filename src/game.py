@@ -5,10 +5,11 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the Game class, which contains vital data for states and is used to run the game
 """
-
 import json
 
-from src import pygame, screen, common
+from src import pygame, screen, common, types
+
+from src.states.state import State
 from src.states.level_state import LevelState
 from src.display.ui import UI
 
@@ -23,19 +24,24 @@ class Game:
         self.ui = UI(None)
 
         with open(common.DATA_DIR / "settings.json") as f:
-            self.settings = json.load(f)
+            self.settings: dict = json.load(f)
 
-        self.state = LevelState(self)
-        self.loaded_states = {LevelState: self.state}
-        self.running = True
-        self.dt = 0
-        self.events = []
+        self.state: State = LevelState(self)
+        self.loaded_states: dict[type(State), State] = {LevelState: self.state}
+        self.running: bool = True
+        self.dts: types.DTs = {"raw_dt": 0.0, "dt": 0.0}
+        self.events: list[pygame.event.Event] = []
+
+        pygame.display.set_caption(self.settings["game"]["name"])
 
     def run(self) -> None:
         while self.running:
             # Set dt and events for other stuff to access via states
-            self.dt = self.clock.tick(common.FPS) / 1000
             self.events = pygame.event.get()
+            self.dts["raw_dt"] = self.clock.tick(common.FPS) / 1000
+            self.dts["raw_dt"] = min(self.dts["raw_dt"], 0.2)
+
+            self.dts["dt"] = self.dts["raw_dt"] * common.FPS
 
             # Event loop
             for event in self.events:
@@ -58,9 +64,7 @@ class Game:
             if self.state.next_state != self.state.__class__:
                 old_state = self.state
                 if self.state.next_state not in self.loaded_states:
-                    self.loaded_states[self.state.next_state] = self.state.next_state(
-                        self
-                    )
+                    self.loaded_states[self.state.next_state] = self.state.next_state(self)
                 self.state = self.loaded_states[self.state.next_state]
 
                 old_state.next_state = old_state.__class__  # Resets next state to self

@@ -5,6 +5,9 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the UI class, used to handle... the game UI
 """
+from typing import Optional
+
+import esper
 
 
 class UI:
@@ -12,7 +15,7 @@ class UI:
         self.current_widget_uuid = 0
 
         self.camera = camera
-        self.world = None
+        self.world: Optional[esper.World] = None
         self.widgets = {}
         self.hud_widgets = {}
 

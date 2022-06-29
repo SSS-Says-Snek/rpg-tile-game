@@ -18,6 +18,9 @@ class VelocitySystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
+        self.settings = self.level_state.settings
+        self.player_settings = self.settings["mobs"]["player"]
+
     def handle_player_keys(self, event_list):
         keys = pygame.key.get_pressed()
         player_movement = self.world.component_for_entity(self.player, Movement)
@@ -42,23 +45,19 @@ class VelocitySystem(System):
                     event.key == pygame.K_SPACE or event.key == pygame.K_w
                 ) and player_pos.on_ground:
                     player_pos.on_ground = False
-                    player_movement.vel.y = -17
+                    player_movement.vel.y = self.player_settings["jump_vel"]
 
-    def process(self, event_list, dt) -> None:
+    def process(self, event_list, dts) -> None:
         self.handle_player_keys(event_list)
 
-        for entity, (flags, pos, movement) in self.world.get_components(
-            Flags, Position, Movement
-        ):
+        for entity, (flags, pos, movement) in self.world.get_components(Flags, Position, Movement):
             if flags.rotatable:
                 movement.rot = (
                     self.world.component_for_entity(self.player, Position).pos - pos.pos
                 ).angle_to(pygame.Vector2(1, 0))
 
             if flags.mob_type == "walker_enemy":
-                movement.vel.x = (
-                    movement.speed * movement.mob_specifics["movement_direction"]
-                )
+                movement.vel.x = movement.speed * movement.mob_specifics["movement_direction"]
 
                 mob_tile = utils.pixel_to_tile(pos.pos)
                 tile_next_beneath = (
@@ -67,7 +66,7 @@ class VelocitySystem(System):
                 )
                 tile_next = (tile_next_beneath[0], mob_tile.y)
 
-                if self.tilemap.tiles.get(
-                    (0, tile_next)
-                ) or not self.tilemap.tiles.get((0, tile_next_beneath)):
+                if self.tilemap.tiles.get((0, tile_next)) or not self.tilemap.tiles.get(
+                    (0, tile_next_beneath)
+                ):
                     movement.mob_specifics["movement_direction"] *= -1

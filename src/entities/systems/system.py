@@ -5,20 +5,26 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file contains the base class of all systems
 """
+from typing import TYPE_CHECKING
 
 import esper
 
+if TYPE_CHECKING:
+    from src.states.level_state import LevelState
+
 
 class System(esper.Processor):
-    def __init__(self, level_state):
+    def __init__(self, level_state: "LevelState"):
         super().__init__()
 
-        self.level_state = level_state
+        self.level_state: "LevelState" = level_state
         self.player = self.level_state.player
 
         self.camera = self.level_state.camera
         self.tilemap = self.level_state.tilemap
         self.particle_system = self.level_state.particle_system
 
-    def process(self, event_list, dt) -> None:
+        self.world: esper.World = self.world
+
+    def process(self, event_list, dts) -> None:
         pass

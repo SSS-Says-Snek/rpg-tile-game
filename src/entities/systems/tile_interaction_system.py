@@ -37,17 +37,13 @@ class TileInteractionSystem(System):
             return True
         return False
 
-    def process(self, event_list, dt) -> None:
+    def process(self, event_list, dts) -> None:
         # super().process(event_list)
 
         for entity, (pos, *_) in self.world.get_components(Position, Movement):
-            neighboring_tile_entities = utils.get_neighboring_tile_entities(
-                self.tilemap, 2, pos
-            )
+            neighboring_tile_entities = utils.get_neighboring_tile_entities(self.tilemap, 2, pos)
 
             for neighboring_tile_entity in neighboring_tile_entities:
-                if self.world.component_for_entity(
-                    neighboring_tile_entity[0], Flags
-                ).has_dialogue:
+                if self.world.component_for_entity(neighboring_tile_entity[0], Flags).has_dialogue:
                     if self.check_for_key(event_list, pygame.K_RETURN):
                         self.level_state.ui.add_widget(TestBlit())

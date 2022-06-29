@@ -8,10 +8,11 @@ entity-to-player collision (soon)
 """
 import pygame
 
-from src import utils
+from src import utils, common
+from src.display.widgets.health_bar import ItemDurabilityBar
 from src.entities.systems.system import System
 
-from src.entities import item_component, projectile_component
+from src.entities import item_component
 from src.entities.component import Position, Movement, Graphics, Flags, Tile, Inventory
 
 
@@ -20,7 +21,9 @@ class CollisionSystem(System):
         super().__init__(level_state)
 
     @staticmethod
-    def collide_with_tiles(rect, movement, neighboring_tile_rects, dt):
+    def collide_with_tiles(
+        rect: pygame.Rect, movement: Movement, neighboring_tile_rects: list[pygame.Rect], dt: float
+    ):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}
         rect.x += round(movement.vel.x * dt)
 
@@ -48,7 +51,7 @@ class CollisionSystem(System):
                     collision_types["top"] = True
         return collision_types
 
-    def process(self, event_list, dt) -> None:
+    def process(self, event_list, dts) -> None:
         # super().process(event_list)
 
         # Mob collision
@@ -68,7 +71,7 @@ class CollisionSystem(System):
             pos.pos.y += movement.vel.y
 
             collisions = self.collide_with_tiles(
-                pos.rect, movement, neighboring_tile_rects, dt
+                pos.rect, movement, neighboring_tile_rects, dts["dt"]
             )
             if collisions["bottom"]:
                 pos.on_ground = True

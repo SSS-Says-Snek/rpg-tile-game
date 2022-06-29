@@ -47,9 +47,7 @@ class TileMap:
                     if tile_props.get("type") == "dialogue":
                         flag_kwargs["has_dialogue"] = True
 
-                    entity_id = self.ecs_world.create_entity(
-                        *components, Flags(**flag_kwargs)
-                    )
+                    entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
                     surface.blit(

@@ -44,7 +44,16 @@ class ItemGraphics:
 
 class Consumable:
     def __init__(self, num_uses=1):
+        self.total_uses = num_uses
         self.uses_left = num_uses
+
+    @property
+    def hp(self):
+        return self.uses_left
+
+    @property
+    def max_hp(self):
+        return self.total_uses
 
 
 class MeleeWeapon:
@@ -75,7 +84,7 @@ class GravityBow:
         self.launch_vel = launch_vel
 
 
-class Medkit:
+class HealthPotion:
     def __init__(self, heal_power):
         self.heal_power = heal_power
 

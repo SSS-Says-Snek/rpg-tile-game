@@ -10,13 +10,11 @@ class GraphicsSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    def process(self, event_list, dt) -> None:
+    def process(self, event_list, dts) -> None:
         screen.fill((180, 180, 180))
         # super().process(event_list)
 
-        self.camera.adjust_to(
-            self.world.component_for_entity(self.player, Position).pos
-        )
+        self.camera.adjust_to(self.world.component_for_entity(self.player, Position).pos)
 
         screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
 
@@ -61,30 +59,36 @@ class GraphicsSystem(System):
                 else:
                     movement = self.world.component_for_entity(entity, Movement)
 
-                    if movement.vel.x > 0:
+                    if movement.vel.x > 0 and graphics.animations.get("move_right"):
                         graphics.animations["move_right"].play_anim(
-                            self.camera.apply(pos.pos), dt, 10
+                            self.camera.apply(pos.pos),
+                            dts["raw_dt"],
+                            graphics.animation_speeds["move"],
                         )
-                    elif movement.vel.x < 0:
+                    elif movement.vel.x < 0 and graphics.animations.get("move_left"):
                         graphics.animations["move_left"].play_anim(
-                            self.camera.apply(pos.pos), dt, 10
+                            self.camera.apply(pos.pos),
+                            dts["raw_dt"],
+                            graphics.animation_speeds["move"],
                         )
 
-                    elif pos.direction == 1:
+                    elif pos.direction == 1 and graphics.animations.get("idle_right"):
                         graphics.animations["idle_right"].play_anim(
-                            self.camera.apply(pos.pos), dt, 7
+                            self.camera.apply(pos.pos),
+                            dts["raw_dt"],
+                            graphics.animation_speeds["idle"],
                         )
-                    elif pos.direction == -1:
+                    elif pos.direction == -1 and graphics.animations.get("idle_left"):
                         graphics.animations["idle_left"].play_anim(
-                            self.camera.apply(pos.pos), dt, 7
+                            self.camera.apply(pos.pos),
+                            dts["raw_dt"],
+                            graphics.animation_speeds["idle"],
                         )
 
             else:
                 movement = self.world.component_for_entity(entity, Movement)
                 rotated_sprite, new_pos = utils.rot_center(
-                    graphics.sprite,
-                    movement.rot,
-                    *pygame.Rect(*pos.pos, *graphics.size).center
+                    graphics.sprite, movement.rot, *pygame.Rect(*pos.pos, *graphics.size).center
                 )
                 screen.blit(rotated_sprite, self.camera.apply(new_pos))
 

@@ -21,7 +21,7 @@ def cleanup_code():
     for filepath in glob.iglob("**/*.py", recursive=True):
         path = pathlib.Path(os.getcwd(), filepath)
         if black.format_file_in_place(
-            path, False, black.FileMode(), black.WriteBack.YES
+            path, False, black.FileMode(line_length=99), black.WriteBack.YES
         ):
             print("Formatted file: ", filepath)
         else:

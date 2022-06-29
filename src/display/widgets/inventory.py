@@ -8,6 +8,10 @@ This file contains widgets for the inventory
 
 import pygame.gfxdraw
 from src import pygame, screen
+from src.types import Pos, Size
+
+from src.display.ui import UI
+from src.display.widgets.health_bar import ItemDurabilityBar
 
 from src.entities import item_component
 
@@ -15,7 +19,7 @@ from src.entities.component import Inventory
 
 
 class Hotbar:
-    def __init__(self, ui, entity, center_pos, frame_size):
+    def __init__(self, ui: UI, entity: int, center_pos: Pos, frame_size: Size):
         self.uuid = None
         self.ui = ui
         self.entity = entity
@@ -23,55 +27,100 @@ class Hotbar:
         self.center_pos = center_pos
         self.frame_size = frame_size
 
-        self.inventory_component = self.ui.world.component_for_entity(
-            self.entity, Inventory
-        )
+        self.inventory_component = self.ui.world.component_for_entity(self.entity, Inventory)
         self.hotbar_size = self.inventory_component.hotbar_size
+        self.inventory_size = self.inventory_component.size
+
+        self.spacing = 15
 
         self.original_frame = pygame.Surface(
-            ((frame_size[0] + 15) * self.hotbar_size, frame_size[1] + 4),
+            ((frame_size[0] + self.spacing) * self.hotbar_size, frame_size[1] + 4),
             pygame.SRCALPHA,
         )
         self.frame = self.original_frame
         self.frame_rect = self.frame.get_rect(center=self.center_pos)
 
+        # Populate hotbar rects and durability bars
         self.hotbar_rects = []
+        self.hotbar_durability_bars = []
         for i in range(self.hotbar_size):
             hotbar_rect = pygame.draw.rect(
                 self.original_frame,
                 (0, 0, 0),  # (66, 118, 70),
-                pygame.Rect(i * frame_size[0] + i * 15, 0, *frame_size),
+                pygame.Rect(self.idx_to_pixelx(i), 0, *frame_size),
                 width=4,
             )
 
             self.hotbar_rects.append(hotbar_rect)
 
+            item_entity = self.inventory_component.inventory[i]
+            if item_entity is None or not self.ui.world.has_component(
+                item_entity, item_component.Consumable
+            ):
+                self.hotbar_durability_bars.append(None)
+                continue
+
+            durability_bar = ItemDurabilityBar(
+                self.frame, self.ui, item_entity, (self.idx_to_pixelx(i) + 4, 50), 55, 5
+            )
+            self.hotbar_durability_bars.append(durability_bar)
+
+    def idx_to_pixelx(self, idx):
+        return idx * self.frame_size[0] + idx * self.spacing
+
     def draw(self, _):  # Camera not used
         frame = self.original_frame.copy()
 
-        # Draw icons
+        # Draw icons and durability
         for hotbar_idx in range(self.hotbar_size):
             hotbar_rect = self.hotbar_rects[hotbar_idx]
+            item_entity = self.inventory_component.inventory[hotbar_idx]
 
-            if self.inventory_component.inventory[hotbar_idx] is not None:
-                item_id = self.inventory_component.inventory[hotbar_idx]
+            if item_entity is not None:
                 item_graphics = self.ui.world.component_for_entity(
-                    item_id, item_component.ItemGraphics
+                    item_entity, item_component.ItemGraphics
                 )
 
                 blit_pos = item_graphics.icon.get_rect(center=hotbar_rect.center)
                 frame.blit(item_graphics.icon, blit_pos)
+
+                # Creates new durability bar if item with consumable detected
+                if (
+                    self.ui.world.has_component(item_entity, item_component.Consumable)
+                    and self.hotbar_durability_bars[hotbar_idx] is None
+                ):
+                    durability_bar = ItemDurabilityBar(
+                        screen=frame,
+                        ui=self.ui,
+                        entity=item_entity,
+                        pos=(self.idx_to_pixelx(hotbar_idx) + 32, 55),
+                        width=45,
+                        height=5,
+                        border_width=1,
+                        center=True,
+                    )
+
+                    self.hotbar_durability_bars[hotbar_idx] = durability_bar
+
+                hotbar_durability_bar = self.hotbar_durability_bars[hotbar_idx]
+                if hotbar_durability_bar is not None:
+                    # Monke patch
+                    hotbar_durability_bar.screen = frame
+                    hotbar_durability_bar.draw()
+
+            # If durability bar entity died, durability bar dies
+            hotbar_durability_bar = self.hotbar_durability_bars[hotbar_idx]
+            if hotbar_durability_bar is not None and not self.ui.world.entity_exists(
+                hotbar_durability_bar.entity
+            ):
+                self.hotbar_durability_bars[hotbar_idx] = None
 
         # Blit white rect for equipped item
         equipped_item_idx = self.inventory_component.equipped_item_idx
         pygame.draw.rect(
             frame,
             (255, 255, 255),
-            pygame.Rect(
-                self.frame_size[0] * equipped_item_idx + 15 * equipped_item_idx,
-                0,
-                *self.frame_size
-            ),
+            pygame.Rect(self.idx_to_pixelx(equipped_item_idx), 0, *self.frame_size),
             width=4,
         )
 
@@ -82,19 +131,19 @@ class Hotbar:
         )
 
         # Blit gray rect for hovering
-        for i, hotbar_rect in enumerate(self.hotbar_rects):
-            if hotbar_rect.collidepoint(adjusted_mouse_pos) and i != equipped_item_idx:
+        for idx, hotbar_rect in enumerate(self.hotbar_rects):
+            if hotbar_rect.collidepoint(adjusted_mouse_pos) and idx != equipped_item_idx:
                 pygame.draw.rect(
                     frame,
                     (128, 128, 128),
-                    pygame.Rect(self.frame_size[0] * i + 15 * i, 0, *self.frame_size),
+                    pygame.Rect(self.idx_to_pixelx(idx), 0, *self.frame_size),
                     width=4,
                 )
                 break
 
         # Cooldown indicator
         if self.inventory_component.on_cooldown:
-            for i, hotbar_rect in enumerate(self.hotbar_rects):
+            for idx, hotbar_rect in enumerate(self.hotbar_rects):
                 if self.inventory_component.cooldown != 0:
                     # Witchcraftery
                     rect_height = (
@@ -106,13 +155,11 @@ class Hotbar:
                     rect_height = 0
 
                 # Rect of the hotbar cooldown
-                rect = pygame.Rect(
-                    self.frame_size[0] * i + 15 * i, 0, self.frame_size[0], rect_height
-                )
+                rect = pygame.Rect(self.idx_to_pixelx(idx), 0, self.frame_size[0], rect_height)
                 rect.bottom = self.frame_size[1]
 
                 # gfxdraw accepts alpha
-                pygame.gfxdraw.box(frame, rect, (0, 0, 0, 160))
+                pygame.gfxdraw.box(frame, rect, (0, 0, 0, 90 + 1.5 * rect_height))
 
         # Blit frame to appropriate position
         screen.blit(frame, self.frame_rect)

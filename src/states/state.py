@@ -8,14 +8,18 @@ This file defines the State base class for all game states
 
 import importlib
 import abc
+from typing import TYPE_CHECKING
 
 from src import pygame, screen
 
+if TYPE_CHECKING:
+    from src.game import Game
+
 
 class State(abc.ABC):
-    def __init__(self, game_class):
-        self.game_class = game_class
-        self.next_state = self.__class__
+    def __init__(self, game_class: "Game"):
+        self.game_class: "Game" = game_class
+        self.next_state: type(State) = self.__class__
         self.screen = screen
 
     @abc.abstractmethod

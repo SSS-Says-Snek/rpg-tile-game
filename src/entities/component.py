@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 import collections
+from dataclasses import dataclass
 from typing import Optional
 
 from src import pygame, utils
@@ -52,8 +53,8 @@ class Flags:
 
 class Tile:
     def __init__(self, tile_width: int, tile_height: int):
-        self.tile_width = tile_width
-        self.tile_height = tile_height
+        self.tile_width: int = tile_width
+        self.tile_height: int = tile_height
 
 
 class Graphics:
@@ -61,62 +62,53 @@ class Graphics:
         self,
         sprite: Optional[pygame.Surface] = None,
         animations: Optional[dict] = None,
+        animation_speeds: Optional[dict] = None,
     ):
-        self.sprite = sprite
-        self.animations = animations if animations is not None else {}
+        self.sprite: Optional[pygame.Surface] = sprite
+        self.animations: dict = animations if animations is not None else {}
+        self.animation_speeds: dict = animation_speeds if animation_speeds is not None else {}
 
         if self.sprite is not None:
-            self.size = self.sprite.get_size()
+            self.size: tuple = self.sprite.get_size()
         elif self.animations is not None:
-            self.size = list(self.animations.values())[0].frames[0].get_size()
+            self.size: tuple = list(self.animations.values())[0].frames[0].get_size()
 
 
 class Position:
     def __init__(self, pos: pygame.Vector2):
-        self.pos = pos
-        self.tile_pos = utils.pixel_to_tile(pos)
-        self.direction = 1  # 1 for right, -1 for left
+        self.pos: pygame.Vector2 = pos
+        self.tile_pos: pygame.Vector2 = utils.pixel_to_tile(pos)
+        self.direction: int = 1  # 1 for right, -1 for left
 
-        self.on_ground = False
-        self.rect = None
+        self.on_ground: bool = False
+        self.rect: Optional[pygame.Rect] = None
 
 
 class Movement:
     def __init__(
         self,
         speed: float,
-        vx: float = 0,
-        vy: float = 0,
         acc: pygame.Vector2 = None,
         gravity_acc: float = 0.8,
         rot=0,
     ):
-        self.speed = speed
-        self.vel = pygame.Vector2(vx, vy)
-        self.vx = vx
-        self.vy = vy
+        self.speed: float = speed
+        self.vel: pygame.Vector2 = pygame.Vector2(0, 0)
 
         if acc is None:
-            self.acc = pygame.Vector2(0, 0)
+            self.acc: pygame.Vector2 = pygame.Vector2(0, 0)
         else:
-            self.acc = acc
-        self.gravity_acc = pygame.Vector2(0, gravity_acc)
+            self.acc: pygame.Vector2 = acc
+        self.gravity_acc: pygame.Vector2 = pygame.Vector2(0, gravity_acc)
         self.rot = rot
 
-        self.mob_specifics = collections.defaultdict(lambda: None)
-
-
-class WalkerMovement(Movement):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.walk_direction = 1
+        self.mob_specifics: collections.defaultdict = collections.defaultdict(lambda: None)
 
 
 class Health:
     def __init__(self, hp: float, max_hp: int):
-        self.hp = hp
-        self.max_hp = max_hp
+        self.hp: float = hp
+        self.max_hp: float = max_hp
 
 
 class MeleeAttack:

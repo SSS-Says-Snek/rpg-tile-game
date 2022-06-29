@@ -18,7 +18,7 @@ class ProjectileSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    def process(self, event_list, dt) -> None:
+    def process(self, event_list, dts) -> None:
         # HEAVILY BUGGY IMPLEMENTATION: WILL WORK ON IT MORE
 
         for entity, (
@@ -31,22 +31,17 @@ class ProjectileSystem(System):
             projectile_component.ProjectileGraphics,
         ):
             # Update position
-            projectile_pos.pos.x += (
-                math.cos(projectile.initial_angle) * projectile.vel.x
-            )
+            projectile_pos.pos.x += math.cos(projectile.initial_angle) * projectile.vel.x
 
             projectile.vel.y += projectile.gravity
             projectile_pos.pos.y += projectile.vel.y
-            projectile_pos.rect = pygame.Rect(
-                *projectile_pos.pos, *projectile_graphics.size
-            )
+            projectile_pos.rect = pygame.Rect(*projectile_pos.pos, *projectile_graphics.size)
             projectile_pos.tile_pos = utils.pixel_to_tile(projectile_pos.pos)
 
             # Update image with angle
             projectile_graphics.current_img, _ = utils.rot_center(
                 projectile_graphics.original_img,
-                math.degrees(math.atan2(projectile.vel.y, projectile.vel.x))
-                * projectile.vel_dir,
+                math.degrees(math.atan2(projectile.vel.y, projectile.vel.x)) * projectile.vel_dir,
                 *projectile_pos.pos
             )
 
@@ -62,13 +57,9 @@ class ProjectileSystem(System):
 
                     if nested_health.hp == 0:
                         colors = self.level_state.settings["particle_colors"]["death"]
-                        self.particle_system.create_hit_particles(
-                            30, nested_pos, colors
-                        )
+                        self.particle_system.create_hit_particles(30, nested_pos, colors)
                     else:
-                        self.particle_system.create_hit_particles(
-                            15, nested_pos, [(255, 0, 0)]
-                        )
+                        self.particle_system.create_hit_particles(15, nested_pos, [(255, 0, 0)])
 
                     self.world.delete_entity(entity)
                     break
@@ -78,9 +69,7 @@ class ProjectileSystem(System):
                 self.world.delete_entity(entity)
 
             neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
-                utils.get_neighboring_tile_entities(
-                    self.tilemap, 1, projectile_pos
-                )
+                utils.get_neighboring_tile_entities(self.tilemap, 1, projectile_pos)
             )
 
             for neighboring_tile_rect in neighboring_tile_rects:

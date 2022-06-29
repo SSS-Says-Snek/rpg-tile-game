@@ -10,11 +10,11 @@ This file defines the level state, which is the state where the main game happen
 import esper
 
 # Important modules
-from src import pygame, common
+from src import pygame, common, utils
 from src.tilemap import TileMap
 
 # Display modules
-from src.display import particle, animation
+from src.display import particle
 from src.display.camera import Camera
 from src.display.widgets.health_bar import PlayerHealthBar, MobHealthBar
 from src.display.widgets.inventory import Hotbar
@@ -53,9 +53,7 @@ class LevelState(State):
 
         # esper and tilemap stuff
         self.ecs_world = esper.World()
-        self.tilemap = TileMap(
-            common.MAP_DIR / "placeholder_platformer.tmx", self.ecs_world
-        )
+        self.tilemap = TileMap(common.MAP_DIR / "placeholder_platformer.tmx", self.ecs_world)
         self.map_surface = self.tilemap.make_map()
 
         # UI stuff
@@ -88,55 +86,50 @@ class LevelState(State):
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self) -> None:
-        walker_enemy_sprite = pygame.transform.scale(
-            pygame.image.load(
-                common.ASSETS_DIR / "imgs" / "mobs" / "placeholder_enemy_walker.png"
-            ).convert_alpha(),
-            (32, 32),
-        )
-
         for obj in self.tilemap.tilemap.objects:
             if obj.name == "player_spawn":
-                player_animations = {
-                    animation_type: animation.Animation(
-                        common.ANIM_DIR / "player" / f"{animation_type}.png", (32, 32)
-                    )
-                    for animation_type in [
-                        "move_right", "move_left",
-                        "idle_right", "idle_left"
-                    ]
-                }
+                player_settings = self.settings["mobs"]["player"]
+                sword_settings = self.settings["items"]["weapons"]["slashing_sword"]
 
-                weapon_surf = pygame.image.load(
-                    common.ASSETS_DIR / "imgs" / "items" / "sword_hold.png"
-                )
-                weapon_icon = pygame.image.load(
-                    common.ASSETS_DIR / "imgs" / "items" / "sword_icon.png"
+                player_animations, player_animation_speeds = utils.load_mob_animations(
+                    player_settings
                 )
 
-                inventory_component = Inventory(size=14, hotbar_size=5)
+                weapon_surf, weapon_icon = [
+                    pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
+                    for img_file in ["sword_hold.png", "sword_icon.png"]
+                ]
+
+                # Inventory outside self.player to add sword
+                inventory_component = Inventory(
+                    size=player_settings["inventory_size"],
+                    hotbar_size=player_settings["hotbar_size"],
+                )
 
                 self.player = self.ecs_world.create_entity(
+                    Movement(speed=player_settings["speed"]),
+                    Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
+                    Graphics(
+                        animations=player_animations, animation_speeds=player_animation_speeds
+                    ),
                     Flags(collidable=True, mob_type="player", damageable=True),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
-                    Movement(speed=self.PLAYER_SPEED),
-                    Graphics(animations=player_animations),
-                    Health(hp=100, max_hp=100),
                     inventory_component,
                 )
 
+                # Add initial sword
                 inventory_component.inventory[0] = self.ecs_world.create_entity(
-                    item_component.Item(cooldown=1, owner=self.player),
+                    item_component.Item(cooldown=sword_settings["cooldown"], owner=self.player),
+                    item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
                     item_component.ItemPosition(
                         pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
                     ),
-                    item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
-                    item_component.MeleeWeapon(attack_damage=20),
+                    item_component.MeleeWeapon(attack_damage=sword_settings["damage"]),
                     item_component.SlashingSword(),
                 )
 
                 self.ui.add_widget(
-                    PlayerHealthBar(self.ui, self.player, (700, 10), 230, 20)
+                    PlayerHealthBar(common.screen, self.ui, self.player, (700, 10), 230, 20)
                 )
                 self.ui.add_widget(
                     Hotbar(self.ui, self.player, (common.WIDTH // 2, 40), (64, 64)),
@@ -145,39 +138,59 @@ class LevelState(State):
                 )
 
             elif obj.name == "walker_enemy_spawn":
-                movement = Movement(200)
+                walker_settings = self.settings["mobs"]["walker_enemy"]
+
+                walker_animations, walker_animation_speeds = utils.load_mob_animations(
+                    walker_settings
+                )
+
+                movement = Movement(walker_settings["speed"])
                 movement.mob_specifics["movement_direction"] = 1
 
                 walker_enemy = self.ecs_world.create_entity(
                     Flags(collidable=True, mob_type="walker_enemy", damageable=True),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
-                    Health(hp=60, max_hp=80),
-                    Graphics(walker_enemy_sprite),
+                    Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
+                    Graphics(
+                        animations=walker_animations, animation_speeds=walker_animation_speeds
+                    ),
                     MeleeAttack(
-                        attack_range=1, attack_cooldown=1.3, damage=15, collision=True
+                        attack_range=0,
+                        attack_cooldown=walker_settings["attack_cooldown"],
+                        damage=walker_settings["attack_damage"],
+                        collision=walker_settings["attack_collision"],
                     ),
                     movement,
                 )
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
-            elif obj.name == "medkit_item":
-                health_potion = pygame.image.load(
-                    common.ASSETS_DIR / "imgs" / "items" / "health_potion.png"
+            elif obj.name == "simple_melee_enemy_spawn":
+                simple_melee_settings = self.settings["mobs"]["simple_melee_enemy"]
+
+
+            elif obj.name == "health_potion_item":
+                health_potion_settings = self.settings["items"]["health_potion"]
+
+                health_potion = utils.load_img(
+                    common.ASSETS_DIR / "imgs" / "items" / health_potion_settings["sprite"]
                 ).convert_alpha()
                 health_potion_holding = pygame.transform.scale(health_potion, (16, 16))
 
                 self.ecs_world.create_entity(
-                    item_component.Item(cooldown=0),
+                    item_component.Item(cooldown=health_potion_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=health_potion_holding,
                         icon=health_potion,
                         world_sprite=health_potion,
                     ),
-                    item_component.Consumable(),
-                    item_component.Medkit(heal_power=45),
+                    item_component.Consumable(num_uses=health_potion_settings["uses"]),
+                    item_component.HealthPotion(heal_power=health_potion_settings["heal_power"]),
                 )
-            elif obj.name == "bow_item":
+
+            elif obj.name == "gravity_bow_item":
+                gravity_bow_settings = self.settings["items"]["weapons"]["gravity_bow"]
+
                 temp_surface = pygame.Surface((32, 32))
                 temp_surface.fill((0, 0, 180))
 
@@ -185,13 +198,15 @@ class LevelState(State):
                 temp_surface_holding.fill((0, 0, 180))
 
                 self.ecs_world.create_entity(
-                    item_component.Item(cooldown=2.4),
+                    item_component.Item(cooldown=gravity_bow_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=temp_surface_holding, world_sprite=temp_surface
                     ),
-                    item_component.RangedWeapon(projectile_damage=30),
-                    item_component.GravityBow(launch_vel=pygame.Vector2(100, 0)),
+                    item_component.RangedWeapon(projectile_damage=gravity_bow_settings["damage"]),
+                    item_component.GravityBow(
+                        launch_vel=pygame.Vector2(gravity_bow_settings["launch_vel"])
+                    ),
                 )
 
     def draw(self) -> None:
@@ -207,8 +222,9 @@ class LevelState(State):
                 self.debug = not self.debug
 
     def update(self) -> None:
-        self.ecs_world.process(self.game_class.events, self.game_class.dt)
+        self.ecs_world.process(self.game_class.events, self.game_class.dts)
         self.particle_system.update()
+        print(self.game_class.clock.get_fps())
 
 
 class TestState(State):

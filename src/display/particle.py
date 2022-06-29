@@ -14,9 +14,11 @@ from typing import Callable
 import pygame.gfxdraw
 from src import pygame, screen
 
+from src.display.camera import Camera
+
 
 class ParticleSystem(set):
-    def __init__(self, camera, *args, **kwargs):
+    def __init__(self, camera: Camera, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.camera = camera
@@ -121,9 +123,7 @@ class Particle:
                 if particle.life < start_fade:
                     return
 
-                adj_alpha = (particle.life - start_fade) / (
-                    particle.lifespan - start_fade
-                )
+                adj_alpha = (particle.life - start_fade) / (particle.lifespan - start_fade)
                 particle.color.a = int((1 - adj_alpha) * 255)
 
             return self._effect(fade)
@@ -145,12 +145,7 @@ class Particle:
         self.pos += self.constant_vel
         self.pos.y += self.gravity_vel
 
-        if (
-            self.speed <= 0
-            or self.size <= 0
-            or self.life >= self.lifespan
-            or self.color.a == 0
-        ):
+        if self.speed <= 0 or self.size <= 0 or self.life >= self.lifespan or self.color.a == 0:
             self.alive = False
 
         for effect in self.effects:
