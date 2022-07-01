@@ -66,8 +66,9 @@ class LevelState(State):
         # Particle stuff
         self.particle_system = particle.ParticleSystem(self.camera)
 
-        self.temp_sprite = pygame.Surface((32, 32))
-        self.temp_sprite.fill((255, 0, 0))
+        self.placeholder_background = pygame.transform.scale(utils.load_img(
+            common.ASSETS_DIR / "imgs" / "placeholder_background.jpg"
+        ), (common.WIDTH, common.HEIGHT))
 
         # Other stuff
         self.settings = self.game_class.settings
@@ -128,6 +129,7 @@ class LevelState(State):
                         pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
                     ),
                     item_component.MeleeWeapon(attack_damage=sword_settings["damage"]),
+                    # item_component.Consumable(num_uses=40),
                     item_component.SlashingSword(),
                 )
 
@@ -214,18 +216,18 @@ class LevelState(State):
             elif obj.name == "health_potion_item":
                 health_potion_settings = self.settings["items"]["health_potion"]
 
-                health_potion = utils.load_img(
+                health_potion_surf = utils.load_img(
                     common.ASSETS_DIR / "imgs" / "items" / health_potion_settings["sprite"]
                 ).convert_alpha()
-                health_potion_holding = pygame.transform.scale(health_potion, (16, 16))
+                health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 
                 self.ecs_world.create_entity(
                     item_component.Item(cooldown=health_potion_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=health_potion_holding,
-                        icon=health_potion,
-                        world_sprite=health_potion,
+                        icon=health_potion_surf,
+                        world_sprite=health_potion_surf,
                     ),
                     item_component.Consumable(num_uses=health_potion_settings["uses"]),
                     item_component.HealthPotion(heal_power=health_potion_settings["heal_power"]),
@@ -233,6 +235,11 @@ class LevelState(State):
 
             elif obj.name == "gravity_bow_item":
                 gravity_bow_settings = self.settings["items"]["weapons"]["gravity_bow"]
+
+                gravity_bow_surf, gravity_bow_icon = [
+                    pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
+                    for img_file in ["gravity_bow_hold.png", "gravity_bow_icon.png"]
+                ]
 
                 temp_surface = pygame.Surface((32, 32))
                 temp_surface.fill((0, 0, 180))
@@ -244,7 +251,9 @@ class LevelState(State):
                     item_component.Item(cooldown=gravity_bow_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
-                        sprite=temp_surface_holding, world_sprite=temp_surface
+                        sprite=gravity_bow_surf, world_sprite=gravity_bow_icon,
+                        icon=gravity_bow_icon,
+                        flip_on_dir=True
                     ),
                     item_component.RangedWeapon(projectile_damage=gravity_bow_settings["damage"]),
                     item_component.GravityBow(
@@ -257,6 +266,10 @@ class LevelState(State):
 
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
+
+        common.screen.blit(utils.load_img(
+            common.ASSETS_DIR / "imgs" / "items" / "arrows_sprite.png"
+        ).convert_alpha(), (0, 0))
 
     def handle_event(self, event) -> None:
         # self.change_state("level_state.TestState")

@@ -61,7 +61,14 @@ class Hotbar:
                 continue
 
             durability_bar = ItemDurabilityBar(
-                self.frame, self.ui, item_entity, (self.idx_to_pixelx(i) + 4, 50), 55, 5
+                screen=self.frame,
+                ui=self.ui,
+                entity=item_entity,
+                pos=(self.idx_to_pixelx(i) + 32, 55),
+                width=45,
+                height=5,
+                border_width=1,
+                center=True,
             )
             self.hotbar_durability_bars.append(durability_bar)
 

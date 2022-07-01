@@ -8,7 +8,7 @@ This file defines the CombatSystem, which is used to interact and use items
 import math
 import operator
 
-from src import pygame, utils
+from src import pygame, utils, common
 
 from src.entities.systems.system import System
 from src.entities import item_component, projectile_component
@@ -170,6 +170,10 @@ class CombatSystem(System):
                         temp_sprite = pygame.Surface((32, 32), pygame.SRCALPHA)
                         pygame.draw.rect(temp_sprite, (0, 0, 0), (0, 8, 16, 8))
 
+                        arrow_sprite = utils.load_img(
+                            common.ASSETS_DIR / "imgs" / "items" / "arrows_sprite.png"
+                        ).convert_alpha()
+
                         adj_y_vel = (
                             math.sin(
                                 math.atan2(
@@ -192,12 +196,25 @@ class CombatSystem(System):
                                 gravity=0.3,
                             ),
                             projectile_component.ProjectilePosition(item_pos.pos.copy()),
-                            projectile_component.ProjectileGraphics(temp_sprite),
+                            projectile_component.ProjectileGraphics(arrow_sprite),
                         )
 
                         item.used = False
 
-                elif self.world.has_component(equipped_item, item_component.Consumable):
+                if self.world.has_component(equipped_item, item_component.Consumable):
+                    consumable = self.world.component_for_entity(
+                        equipped_item, item_component.Consumable
+                    )
+                    if not item.used:
+                        consumable.consumed = False
+
+                    if item.used and not consumable.consumed:
+                        consumable.consumed = True
+                        consumable.uses_left -= 1
+                        if consumable.uses_left == 0:
+                            self.world.delete_entity(equipped_item)
+                            inventory.inventory[inventory.equipped_item_idx] = None
+
                     if (
                         self.world.has_component(equipped_item, item_component.HealthPotion)
                         and item.used
@@ -205,9 +222,6 @@ class CombatSystem(System):
                         owner_health = self.world.component_for_entity(item.owner, Health)
                         medkit = self.world.component_for_entity(
                             equipped_item, item_component.HealthPotion
-                        )
-                        consumable = self.world.component_for_entity(
-                            equipped_item, item_component.Consumable
                         )
 
                         # Actual HP addition
@@ -217,9 +231,9 @@ class CombatSystem(System):
                         # Particles
                         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
 
-                        consumable.uses_left -= 1
-                        if consumable.uses_left == 0:
-                            self.world.delete_entity(equipped_item)
-                            inventory.inventory[inventory.equipped_item_idx] = None
+                        # consumable.uses_left -= 1
+                        # if consumable.uses_left == 0:
+                        #     self.world.delete_entity(equipped_item)
+                        #     inventory.inventory[inventory.equipped_item_idx] = None
 
                         item.used = False

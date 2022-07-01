@@ -80,8 +80,7 @@ class HealthBar(abc.ABC):
                 self.rect.topleft[1] - border_width,
             )
 
-    @abc.abstractmethod
-    def draw(self, rects, *_):
+    def _draw(self, rects, *_):
         self.flash_duration -= 1
         self.rect.width = self.health_component.hp / self.health_component.max_hp * self.width
 
@@ -154,7 +153,7 @@ class PlayerHealthBar(HealthBar):
         )
 
     def draw(self, *_):  # Both camera and UI not used
-        super().draw(
+        super()._draw(
             rects=(
                 self.border_rect,
                 self.rect,
@@ -213,7 +212,7 @@ class MobHealthBar(HealthBar):
             self.border_rect.y + self.border_width,
         )
 
-        super().draw(
+        super()._draw(
             rects=(
                 camera.apply(self.border_rect),
                 camera.apply(self.rect),
@@ -253,7 +252,7 @@ class ItemDurabilityBar(PlayerHealthBar):
             center=center,
         )
 
-    def draw(self):
+    def draw(self, *_):
         if self.health_component.hp == self.health_component.max_hp:
             # No durability bar if max hp
             return

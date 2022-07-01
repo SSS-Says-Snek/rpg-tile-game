@@ -31,7 +31,7 @@ class ItemPosition:
 
 
 class ItemGraphics:
-    def __init__(self, sprite, icon=None, world_sprite=None):
+    def __init__(self, sprite, icon=None, world_sprite=None, flip_on_dir=False):
         self.original_img = sprite
         self.current_img = sprite
         self.size = sprite.get_rect().size
@@ -47,11 +47,14 @@ class ItemGraphics:
         else:
             self.world_sprite = world_sprite
 
+        self.flip_on_dir = flip_on_dir
+
 
 class Consumable:
     def __init__(self, num_uses=1):
         self.total_uses = num_uses
         self.uses_left = num_uses
+        self.consumed = False
 
     @property
     def hp(self):
@@ -99,3 +102,6 @@ class Projectile:
     def __init__(self, vel, gravity=False):
         self.vel = vel
         self.gravity = gravity
+
+
+Durability = Consumable

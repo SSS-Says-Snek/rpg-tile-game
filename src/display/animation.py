@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines some animation-related things
 """
+from __future__ import annotations
+
 import pathlib
 from typing import Optional
 

@@ -1,3 +1,5 @@
+import math
+
 import pytmx
 from src import pygame, screen, utils
 
@@ -11,7 +13,9 @@ class GraphicsSystem(System):
         super().__init__(level_state)
 
     def process(self, event_list, dts) -> None:
-        screen.fill((180, 180, 180))
+        screen.blit(self.level_state.placeholder_background, (0, 0))
+        # screen.fill((180, 180, 180))
+        # screen.fill((0, 255, 0))
         # super().process(event_list)
 
         self.camera.adjust_to(self.world.component_for_entity(self.player, Position).pos)
@@ -104,10 +108,21 @@ class GraphicsSystem(System):
                     item_pos = self.world.component_for_entity(
                         equipped_item, item_component.ItemPosition
                     )
+
+                    x_offset = 0
+                    if item_graphics.flip_on_dir:
+                        if pos.direction == -1:
+                            item_graphics.current_img = pygame.transform.flip(
+                                item_graphics.current_img, flip_x=True, flip_y=False
+                            )
+                            x_offset = item_graphics.bound_size[0] + 6
+
                     screen.blit(
                         item_graphics.current_img,
-                        self.camera.apply(item_pos.pos),
+                        self.camera.apply((item_pos.pos[0] - x_offset, item_pos.pos[1])),
                     )
+
+                    item_graphics.current_img = item_graphics.original_img
 
         for entity, (item_graphics, item_pos) in self.world.get_components(
             item_component.ItemGraphics, item_component.ItemPosition
@@ -115,7 +130,7 @@ class GraphicsSystem(System):
             if not item_pos.in_inventory:
                 screen.blit(
                     item_graphics.world_sprite,
-                    self.camera.apply(item_pos.pos),
+                    self.camera.apply((item_pos.pos[0], item_pos.pos[1] - 5 - math.sin(pygame.time.get_ticks() / 200) * 5)),
                 )
 
         for entity, (projectile_graphics, projectile_pos) in self.world.get_components(

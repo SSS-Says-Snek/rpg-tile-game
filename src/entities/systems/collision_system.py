@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the collision system, which handles entity-to-tile collision as well as
 entity-to-player collision (soon)
 """
+from __future__ import annotations
+
 import pygame
 
 from src import utils
