@@ -6,8 +6,9 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the Game class, which contains vital data for states and is used to run the game
 """
 import json
+from typing import Any
 
-from src import pygame, screen, common, types
+from src import pygame, screen, common
 
 from src.states.state import State
 from src.states.level_state import LevelState
@@ -29,7 +30,7 @@ class Game:
         self.state: State = LevelState(self)
         self.loaded_states: dict[type(State), State] = {LevelState: self.state}
         self.running: bool = True
-        self.dts: types.DTs = {"raw_dt": 0.0, "dt": 0.0}
+        self.dts: dict[str, Any] = {"raw_dt": 0.0, "dt": 0.0}
         self.events: list[pygame.event.Event] = []
 
         pygame.display.set_caption(self.settings["game"]["name"])
