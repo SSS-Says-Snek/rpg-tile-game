@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.8" tiledversion="1.8.5" name="placeholder_platformer_tileset" tilewidth="32" tileheight="32" tilecount="96" columns="16">
- <image source="../../../unnamed/assets/images/placeholder_platformer_tileset.png" width="512" height="192"/>
+ <image source="../imgs/placeholder_platformer_tileset.png" width="512" height="192"/>
  <tile id="0">
   <properties>
    <property name="tile" type="bool" value="true"/>
