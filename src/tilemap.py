@@ -1,3 +1,11 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+
+This file defines the TileMap class, which is used to further interact with pytmx
+"""
+
 import pathlib
 import pygame
 import pytmx
@@ -18,6 +26,8 @@ class TileMap:
         self.entity_tiles = {}
 
     def render_map(self, surface: pygame.Surface) -> None:
+        surface.set_colorkey((0, 0, 0))
+
         for layer_id, layer in enumerate(self.tilemap.visible_layers):
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
@@ -42,8 +52,7 @@ class TileMap:
 
                     surface.blit(
                         tile_img,
-                        (x * self.tilemap.tilewidth,
-                         y * self.tilemap.tileheight)
+                        (x * self.tilemap.tilewidth, y * self.tilemap.tileheight),
                     )
 
     def make_map(self) -> pygame.Surface:
@@ -53,6 +62,25 @@ class TileMap:
 
     def get_visible_tile_layers(self):
         return [
-            layer for layer in self.tilemap.visible_layers
+            layer
+            for layer in self.tilemap.visible_layers
             if isinstance(layer, pytmx.TiledTileLayer)
         ]
+
+    def get_unwalkable_rects(self, neighboring_tiles):
+        unwalkable_tile_rects = []
+
+        for tile_entity_dict in neighboring_tiles:
+            tile_entity, tile_pos = tile_entity_dict
+            tile = self.ecs_world.component_for_entity(tile_entity, Tile)
+
+            if self.ecs_world.component_for_entity(tile_entity, Flags).collidable:
+                unwalkable_tile_rect = pygame.Rect(
+                    tile_pos["x"] * tile.tile_width,
+                    tile_pos["y"] * tile.tile_height,
+                    tile.tile_width,
+                    tile.tile_height,
+                )
+                unwalkable_tile_rects.append(unwalkable_tile_rect)
+
+        return unwalkable_tile_rects
