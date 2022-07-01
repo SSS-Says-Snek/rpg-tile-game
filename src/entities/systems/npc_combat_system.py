@@ -10,9 +10,7 @@ from src import pygame
 from src.entities import ai_component, item_component
 from src.entities.systems.system import System
 
-from src.entities.component import (
-    Position, Movement, Health, MeleeAttack, Inventory
-)
+from src.entities.component import Position, Movement, Health, MeleeAttack, Inventory
 
 
 class NPCCombatSystem(System):

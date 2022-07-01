@@ -72,7 +72,8 @@ class VelocitySystem(System):
                 # 2. The distance from entity to enemy is less than 10, in tile space
                 if (
                     entity_followed_pos.tile_pos.y == pos.tile_pos.y
-                    and pos.tile_pos.distance_to(entity_followed_pos.tile_pos) < follows_entity_close.follow_range
+                    and pos.tile_pos.distance_to(entity_followed_pos.tile_pos)
+                    < follows_entity_close.follow_range
                 ):
                     if entity_followed_pos.pos.x > pos.pos.x:
                         movement.vel.x = movement.speed

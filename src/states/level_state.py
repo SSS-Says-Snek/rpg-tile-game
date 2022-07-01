@@ -81,11 +81,11 @@ class LevelState(State):
         self.ecs_world.add_processor(InputSystem(self), priority=7)
         self.ecs_world.add_processor(VelocitySystem(self), priority=6)
         self.ecs_world.add_processor(CollisionSystem(self), priority=5)
-        # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
         self.ecs_world.add_processor(NPCCombatSystem(self), priority=4)
         self.ecs_world.add_processor(CombatSystem(self), priority=3)
         self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
+        # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
 
     def load_spawns(self) -> None:
         # Sorts in a way that makes player be defined first
@@ -187,8 +187,7 @@ class LevelState(State):
                     Movement(speed=simple_melee_settings["speed"]),
                     Graphics(sprite=temp_sprite),
                     ai_component.FollowsEntityClose(
-                        entity=self.player,
-                        follow_range=simple_melee_settings["follow_range"]
+                        entity=self.player, follow_range=simple_melee_settings["follow_range"]
                     ),
                     ai_component.MeleeWeaponAttack(
                         attack_range=simple_melee_settings["attack_range"]
