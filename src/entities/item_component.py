@@ -16,6 +16,12 @@ class Item:
 
         self.cooldown = cooldown
 
+    def use(self, inventory_component):
+        self.used = True
+
+        inventory_component.cooldown = self.cooldown
+        inventory_component.last_used = pygame.time.get_ticks()
+
 
 class ItemPosition:
     def __init__(self, pos, in_inventory=False):

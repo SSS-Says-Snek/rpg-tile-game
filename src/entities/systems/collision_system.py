@@ -8,12 +8,11 @@ entity-to-player collision (soon)
 """
 import pygame
 
-from src import utils, common
-from src.display.widgets.health_bar import ItemDurabilityBar
+from src import utils
 from src.entities.systems.system import System
 
 from src.entities import item_component
-from src.entities.component import Position, Movement, Graphics, Flags, Tile, Inventory
+from src.entities.component import Position, Movement, Graphics, Flags, Inventory
 
 
 class CollisionSystem(System):
@@ -55,13 +54,28 @@ class CollisionSystem(System):
         # super().process(event_list)
 
         # Mob collision
-        for entity, (pos, movement, graphics) in self.world.get_components(
-            Position, Movement, Graphics
+        for entity, (flags, pos, movement, graphics) in self.world.get_components(
+            Flags, Position, Movement, Graphics
         ):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
             neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
                 utils.get_neighboring_tile_entities(self.tilemap, 1, pos)
             )
+
+            # Obvs, if it's gonna collide with player, player should be in it
+            if flags.collide_with_player:
+                neighboring_tile_rects.append(
+                    self.world.component_for_entity(self.player, Position).rect
+                )
+
+            # Player collides with collide_with_player entities
+            if entity == self.player:
+                # Still super inefficient
+                for nested_entity, (nested_flags, nested_pos, *_) in self.world.get_components(
+                    Flags, Position, Movement, Graphics
+                ):
+                    if nested_flags.collide_with_player and nested_pos.rect is not None:
+                        neighboring_tile_rects.append(nested_pos.rect)
 
             # Apply gravity
             # Weird bug, can patch it up by capping movement y vel

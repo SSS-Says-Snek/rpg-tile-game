@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.8" tiledversion="1.8.5" name="placeholder_platformer_tileset" tilewidth="32" tileheight="32" tilecount="96" columns="16">
- <image source="../imgs/placeholder_platformer_tileset.png" width="512" height="192"/>
+ <image source="../../../unnamed/assets/images/placeholder_platformer_tileset.png" width="512" height="192"/>
  <tile id="0">
   <properties>
    <property name="tile" type="bool" value="true"/>
@@ -28,25 +28,21 @@
  <tile id="4">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="5">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="6">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="7">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="8">
@@ -116,25 +112,21 @@
  <tile id="20">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="21">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="22">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="23">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="24">
@@ -204,25 +196,21 @@
  <tile id="36">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="37">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="38">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="39">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="40">
@@ -292,25 +280,21 @@
  <tile id="52">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="53">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="54">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="55">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="56">
@@ -380,25 +364,21 @@
  <tile id="68">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="69">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="70">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="71">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="72">
@@ -468,25 +448,21 @@
  <tile id="84">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="85">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="86">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="87">
   <properties>
    <property name="tile" type="bool" value="true"/>
-   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="88">

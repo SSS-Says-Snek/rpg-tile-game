@@ -11,6 +11,7 @@ import esper
 
 # Important modules
 from src import pygame, common, utils
+from src.entities.systems.npc_combat_system import NPCCombatSystem
 from src.tilemap import TileMap
 
 # Display modules
@@ -20,7 +21,7 @@ from src.display.widgets.health_bar import PlayerHealthBar, MobHealthBar
 from src.display.widgets.inventory import Hotbar
 
 # Components
-from src.entities import item_component
+from src.entities import item_component, ai_component
 from src.entities.component import (
     Flags,
     Position,
@@ -77,16 +78,18 @@ class LevelState(State):
         self.debug = False
 
         # Add ECS systems
-        self.ecs_world.add_processor(InputSystem(self), priority=6)
-        self.ecs_world.add_processor(VelocitySystem(self), priority=5)
-        self.ecs_world.add_processor(CollisionSystem(self), priority=4)
+        self.ecs_world.add_processor(InputSystem(self), priority=7)
+        self.ecs_world.add_processor(VelocitySystem(self), priority=6)
+        self.ecs_world.add_processor(CollisionSystem(self), priority=5)
         # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
+        self.ecs_world.add_processor(NPCCombatSystem(self), priority=4)
         self.ecs_world.add_processor(CombatSystem(self), priority=3)
         self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self) -> None:
-        for obj in self.tilemap.tilemap.objects:
+        # Sorts in a way that makes player be defined first
+        for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
             if obj.name == "player_spawn":
                 player_settings = self.settings["mobs"]["player"]
                 sword_settings = self.settings["items"]["weapons"]["slashing_sword"]
@@ -167,6 +170,47 @@ class LevelState(State):
             elif obj.name == "simple_melee_enemy_spawn":
                 simple_melee_settings = self.settings["mobs"]["simple_melee_enemy"]
 
+                temp_sprite = pygame.Surface((32, 32))
+                temp_sprite.fill((255, 40, 30))
+
+                weapon_surf, weapon_icon = [
+                    pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
+                    for img_file in ["sword_hold.png", "sword_icon.png"]
+                ]
+
+                inventory_component = Inventory(size=1, hotbar_size=1)
+
+                simple_melee_enemy = self.ecs_world.create_entity(
+                    Flags(collide_with_player=True),
+                    Position(pos=pygame.Vector2(obj.x, obj.y)),
+                    Health(hp=simple_melee_settings["hp"], max_hp=simple_melee_settings["max_hp"]),
+                    Movement(speed=simple_melee_settings["speed"]),
+                    Graphics(sprite=temp_sprite),
+                    ai_component.FollowsEntityClose(
+                        entity=self.player,
+                        follow_range=simple_melee_settings["follow_range"]
+                    ),
+                    ai_component.MeleeWeaponAttack(
+                        attack_range=simple_melee_settings["attack_range"]
+                    ),
+                    inventory_component,
+                )
+
+                inventory_component.inventory[0] = self.ecs_world.create_entity(
+                    item_component.Item(
+                        cooldown=simple_melee_settings["attack_cooldown"], owner=simple_melee_enemy
+                    ),
+                    item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
+                    item_component.ItemPosition(
+                        pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
+                    ),
+                    item_component.MeleeWeapon(
+                        attack_damage=simple_melee_settings["attack_damage"]
+                    ),
+                    item_component.SlashingSword(),
+                )
+
+                self.ui.add_widget(MobHealthBar(self.ui, simple_melee_enemy, 40, 10))
 
             elif obj.name == "health_potion_item":
                 health_potion_settings = self.settings["items"]["health_potion"]

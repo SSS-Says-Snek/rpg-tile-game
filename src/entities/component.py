@@ -19,7 +19,6 @@ __all__ = [
 ]
 
 import collections
-from dataclasses import dataclass
 from typing import Optional
 
 from src import pygame, utils
@@ -41,11 +40,13 @@ class Flags:
         rotatable=False,
         mob_type=None,
         damageable=False,
+        collide_with_player=False,
     ):
         self.has_dialogue = has_dialogue
         self.collidable = collidable
         self.rotatable = rotatable
         self.damageable = damageable
+        self.collide_with_player = collide_with_player
 
         self.alive = True
         self.mob_type = mob_type

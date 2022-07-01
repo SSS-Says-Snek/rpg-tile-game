@@ -10,6 +10,7 @@ import math
 
 from src import pygame, utils
 
+from src.entities import ai_component, component
 from src.entities.component import Flags, Position, Movement, Graphics
 from src.entities.systems.system import System
 
@@ -55,6 +56,30 @@ class VelocitySystem(System):
                 movement.rot = (
                     self.world.component_for_entity(self.player, Position).pos - pos.pos
                 ).angle_to(pygame.Vector2(1, 0))
+
+            # AI: Follow entity closely
+            if self.world.has_component(entity, ai_component.FollowsEntityClose):
+                follows_entity_close = self.world.component_for_entity(
+                    entity, ai_component.FollowsEntityClose
+                )
+                entity_followed = follows_entity_close.entity_followed
+                entity_followed_pos = self.world.component_for_entity(
+                    entity_followed, component.Position
+                )
+
+                # Follow entity if and ONLY if:
+                # 1. The entity's tile y coordinate is the same as the enemy's
+                # 2. The distance from entity to enemy is less than 10, in tile space
+                if (
+                    entity_followed_pos.tile_pos.y == pos.tile_pos.y
+                    and pos.tile_pos.distance_to(entity_followed_pos.tile_pos) < follows_entity_close.follow_range
+                ):
+                    if entity_followed_pos.pos.x > pos.pos.x:
+                        movement.vel.x = movement.speed
+                        pos.direction = 1
+                    elif entity_followed_pos.pos.x < pos.pos.x:
+                        movement.vel.x = -movement.speed
+                        pos.direction = -1
 
             if flags.mob_type == "walker_enemy":
                 movement.vel.x = movement.speed * movement.mob_specifics["movement_direction"]

@@ -44,10 +44,12 @@
             "sprite": null,
             "hp": 100,
             "max_hp": 100,
-            "speed": 4,
-            "attack_cooldown": 1,
+            "speed": 3,
+            "follow_range": 20,
+            "attack_cooldown": 2.5,
             "attack_damage": 10,
-            "attack_collision": true
+            "attack_range": 2,
+            "collide_with_player": true
         }
     },
 
@@ -63,7 +65,7 @@
             },
             "gravity_bow": {
                 "damage": 50,
-                "cooldown": 2.4,
+                "cooldown": 3,
                 "launch_vel": [100, 0]
             }
         },

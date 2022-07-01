@@ -47,11 +47,8 @@ class InputSystem(System):
                             pygame.time.get_ticks() - inventory.last_used
                             > inventory.cooldown * 1000
                         ):
-                            item.used = True
-
-                            inventory.cooldown = item.cooldown
+                            item.use(inventory)
                             inventory.on_cooldown = True
-                            inventory.last_used = pygame.time.get_ticks()
 
         if pygame.time.get_ticks() - inventory.last_used > inventory.cooldown * 1000:
             inventory.on_cooldown = False

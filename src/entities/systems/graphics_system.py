@@ -23,7 +23,7 @@ class GraphicsSystem(System):
             if self.level_state.debug:
                 tilemap = self.tilemap.tilemap
 
-                for layer_id, layer in enumerate(tilemap.visible_layers):
+                for layer in tilemap.visible_layers:
                     if isinstance(layer, pytmx.TiledTileLayer):
                         for x, y, gid in layer:
                             # Adds tile props to dict
@@ -93,7 +93,7 @@ class GraphicsSystem(System):
                 screen.blit(rotated_sprite, self.camera.apply(new_pos))
 
             # Blit weapon sprite
-            if entity == self.player:
+            if self.world.has_component(entity, Inventory):  # entity == self.player:
                 inventory = self.world.component_for_entity(entity, Inventory)
                 equipped_item = inventory.inventory[inventory.equipped_item_idx]
 
