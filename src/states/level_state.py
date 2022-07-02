@@ -57,18 +57,21 @@ class LevelState(State):
         self.tilemap = TileMap(common.MAP_DIR / "placeholder_platformer.tmx", self.ecs_world)
         self.map_surface = self.tilemap.make_map()
 
-        # UI stuff
-        self.camera = Camera(common.WIDTH, common.HEIGHT)
-        self.ui = self.game_class.ui
-        self.ui.camera = self.camera
-        self.ui.world = self.ecs_world
-
         # Particle stuff
+        self.camera = Camera(common.WIDTH, common.HEIGHT)
         self.particle_system = particle.ParticleSystem(self.camera)
 
-        self.placeholder_background = pygame.transform.scale(utils.load_img(
-            common.ASSETS_DIR / "imgs" / "placeholder_background.jpg"
-        ), (common.WIDTH, common.HEIGHT))
+        # UI stuff
+        self.ui = self.game_class.ui
+        self.ui.level_state = self
+        self.ui.camera = self.camera
+        self.ui.world = self.ecs_world
+        self.ui.particle_system = self.particle_system
+
+        self.placeholder_background = pygame.transform.scale(
+            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.jpg"),
+            (common.WIDTH, common.HEIGHT),
+        )
 
         # Other stuff
         self.settings = self.game_class.settings
@@ -251,9 +254,10 @@ class LevelState(State):
                     item_component.Item(cooldown=gravity_bow_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
-                        sprite=gravity_bow_surf, world_sprite=gravity_bow_icon,
+                        sprite=gravity_bow_surf,
+                        world_sprite=gravity_bow_icon,
                         icon=gravity_bow_icon,
-                        flip_on_dir=True
+                        flip_on_dir=True,
                     ),
                     item_component.RangedWeapon(projectile_damage=gravity_bow_settings["damage"]),
                     item_component.GravityBow(
@@ -267,10 +271,6 @@ class LevelState(State):
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
 
-        common.screen.blit(utils.load_img(
-            common.ASSETS_DIR / "imgs" / "items" / "arrows_sprite.png"
-        ).convert_alpha(), (0, 0))
-
     def handle_event(self, event) -> None:
         # self.change_state("level_state.TestState")
         if event.type == pygame.KEYDOWN:
@@ -280,7 +280,6 @@ class LevelState(State):
     def update(self) -> None:
         self.ecs_world.process(self.game_class.events, self.game_class.dts)
         self.particle_system.update()
-        print(self.game_class.clock.get_fps())
 
 
 class TestState(State):

@@ -16,6 +16,7 @@ class UI:
 
         self.camera = camera
         self.world: Optional[esper.World] = None
+        self.particle_system = None
         self.widgets = {}
         self.hud_widgets = {}
 

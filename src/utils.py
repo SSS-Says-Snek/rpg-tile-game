@@ -86,6 +86,11 @@ def load_img(path: pathlib.Path):
     return pygame.image.load(path)
 
 
+@lru_cache(maxsize=512)
+def load_font(path: pathlib.Path, size: int):
+    return pygame.font.Font(path, size)
+
+
 def load_mob_animations(mob_settings: dict, size: tuple = (32, 32)):
     animations = {
         animation_type: animation.Animation(

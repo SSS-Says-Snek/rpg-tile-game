@@ -130,7 +130,12 @@ class GraphicsSystem(System):
             if not item_pos.in_inventory:
                 screen.blit(
                     item_graphics.world_sprite,
-                    self.camera.apply((item_pos.pos[0], item_pos.pos[1] - 5 - math.sin(pygame.time.get_ticks() / 200) * 5)),
+                    self.camera.apply(
+                        (
+                            item_pos.pos[0],
+                            item_pos.pos[1] - 5 - math.sin(pygame.time.get_ticks() / 200) * 5,
+                        )
+                    ),
                 )
 
         for entity, (projectile_graphics, projectile_pos) in self.world.get_components(

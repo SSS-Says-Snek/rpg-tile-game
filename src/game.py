@@ -44,6 +44,10 @@ class Game:
 
             self.dts["dt"] = self.dts["raw_dt"] * common.FPS
 
+            pygame.display.set_caption(
+                f"{self.settings['game']['name']} - {self.clock.get_fps():.3} FPS"
+            )
+
             # Event loop
             for event in self.events:
                 if event.type == pygame.QUIT:

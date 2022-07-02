@@ -12,7 +12,7 @@ from math import radians, sin, cos
 from typing import Callable
 
 import pygame.gfxdraw
-from src import pygame, screen
+from src import pygame, screen, utils, common
 
 from src.display.camera import Camera
 
@@ -62,18 +62,21 @@ class Particle:
     def __init__(self):
         # Default values
         self.pos = pygame.Vector2(0, 0)
+        self.draw_pos = pygame.Vector2(0, 0)
         self.constant_vel = pygame.Vector2(0, 0)
-        self.color = pygame.Color(0)
+        self.color = pygame.Color(0, 0, 0, 255)
         self.angle = 0
-        self.speed = 3
+        self.speed = 0
         self.lifespan = 60
         self.size = 10
         self.gravity = 0
 
+        self.die_only_lifespan = False
         self.alive = True
         self.life = 0
         self.gravity_vel = 0
         self.effects = set()
+        self.effects_extra_args = {}
 
     class Builder:
         def __init__(self, particle):
@@ -111,10 +114,15 @@ class Particle:
             self.particle.speed = speed
             return self
 
+        def die_only_lifespan(self):
+            self.particle.die_only_lifespan = True
+            return self
+
         # CUSTOM EFFECTS
 
-        def _effect(self, effect: Callable):
+        def _effect(self, effect: Callable, *args):
             self.particle.effects.add(effect)
+            self.particle.effects_extra_args[effect] = args
             return self
 
         def effect_fade(self, start_fade_frac: float = 0):
@@ -124,7 +132,7 @@ class Particle:
                     return
 
                 adj_alpha = (particle.life - start_fade) / (particle.lifespan - start_fade)
-                particle.color.a = int((1 - adj_alpha) * 255)
+                particle.color.a = max(min(int((1 - adj_alpha) * 255), 255), 0)
 
             return self._effect(fade)
 
@@ -144,9 +152,13 @@ class Particle:
         )
         self.pos += self.constant_vel
         self.pos.y += self.gravity_vel
+        self.draw_pos = self.pos.copy()
 
-        if self.speed <= 0 or self.size <= 0 or self.life >= self.lifespan or self.color.a == 0:
-            self.alive = False
+        if self.life >= self.lifespan:
+            if self.die_only_lifespan:
+                self.alive = False
+            elif self.speed <= 0 or self.size <= 0 or self.color.a == 0:
+                self.alive = False
 
         for effect in self.effects:
             effect(self)
@@ -155,6 +167,34 @@ class Particle:
         # For now ONLY SQUARE (ofc I'll add derived particles)
         pygame.gfxdraw.box(
             screen,
-            camera.apply(pygame.Rect(*self.pos, self.size, self.size)),
+            camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size)),
             self.color,
+        )
+
+
+class TextParticle(Particle):
+    def __init__(self):
+        super().__init__()
+
+        self.text_surf = None
+
+    class Builder(Particle.Builder):
+        def text(self, text: str, font_path=common.FONT_DIR / "PixelMillenium.ttf"):
+            font = utils.load_font(font_path, self.particle.size)
+            self.particle.text_surf = font.render(text, True, self.particle.color)
+            return self
+
+        def effect_easeout_drift(self, easeout_speed: float):
+            def easeout_y_drift(particle):
+                particle.constant_vel.y *= easeout_speed
+
+            return self._effect(easeout_y_drift)
+
+    def builder(self):
+        return self.Builder(self)
+
+    def draw(self, camera):
+        self.text_surf.set_alpha(self.color.a)
+        screen.blit(
+            self.text_surf, camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size))
         )

@@ -11,6 +11,7 @@ import math
 from typing import Any
 
 from src import pygame, screen
+from src.display.particle import TextParticle
 from src.types import Pos
 
 from src.display.ui import UI
@@ -54,7 +55,7 @@ class HealthBar(abc.ABC):
             self.rect = pygame.Rect(
                 *self.pos.pos,
                 self.health_component.hp / self.health_component.max_hp * width,
-                height
+                height,
             )
         else:
             self.border_rect = pygame.Rect(
@@ -93,11 +94,29 @@ class HealthBar(abc.ABC):
         self.flash_size += abs(hp_lost)
 
         if hp_lost != 0:
+            hurt_txt = f"{(-hp_lost):+} HP"
             if self.health_component.hp > 0:
                 self.flash_duration = 10
             else:
                 self.flash_duration = 40
             self.flash_hp_diff = math.copysign(1, hp_lost)
+
+            if self.ui.world.has_component(self.entity, Position):
+                entity_pos = self.ui.world.component_for_entity(self.entity, Position)
+                self.ui.particle_system.add(
+                    TextParticle()
+                    .builder()
+                    .at(pos=entity_pos.pos)
+                    .color(color=(0, 0, 0))
+                    .constant_vel(constant_vel=pygame.Vector2(0, -3))
+                    .lifespan(frames=30)
+                    .size(size=20)
+                    .text(text=hurt_txt)
+                    .effect_easeout_drift(easeout_speed=0.93)
+                    .effect_fade(start_fade_frac=0.5)
+                    .die_only_lifespan()
+                    .build()
+                )
 
         if self.flash_duration <= 0:
             if self.health_component.hp > 0:
