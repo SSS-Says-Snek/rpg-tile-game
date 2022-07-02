@@ -81,7 +81,7 @@ def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float
     return rotated_image, rotated_image_rect
 
 
-@lru_cache
+@lru_cache(maxsize=256)
 def load_img(path: pathlib.Path):
     return pygame.image.load(path)
 
