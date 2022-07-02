@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union, TypedDict, Tuple, List
+from typing import TYPE_CHECKING, Union, Tuple, List
 
 from src import pygame
 
