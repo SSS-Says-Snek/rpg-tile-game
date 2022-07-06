@@ -53,7 +53,7 @@ class ProjectileSystem(System):
                     continue
 
                 if nested_pos.rect.colliderect(projectile_pos.rect):
-                    nested_health.hp = max(0, nested_health.hp - projectile.damage)
+                    nested_health.hp -= projectile.damage
 
                     if nested_health.hp == 0:
                         colors = self.level_state.settings["particle_colors"]["death"]

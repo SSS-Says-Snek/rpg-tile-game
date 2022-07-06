@@ -61,7 +61,7 @@ class CollisionSystem(System):
         ):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
             neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
-                utils.get_neighboring_tile_entities(self.tilemap, 1, pos)
+                utils.get_neighboring_tile_entities(self.tilemap, 3, pos)
             )
 
             # Obvs, if it's gonna collide with player, player should be in it
@@ -82,8 +82,8 @@ class CollisionSystem(System):
             # Apply gravity
             # Weird bug, can patch it up by capping movement y vel
             movement.vel.y += movement.gravity_acc.y
-            if movement.vel.y > 17:
-                movement.vel.y = 17
+            if movement.vel.y > 170:
+                movement.vel.y = 170
             pos.pos.y += movement.vel.y
 
             collisions = self.collide_with_tiles(

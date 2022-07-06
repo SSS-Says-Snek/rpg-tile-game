@@ -90,7 +90,7 @@ class Movement:
         self,
         speed: float,
         acc: pygame.Vector2 = None,
-        gravity_acc: float = 0.8,
+        gravity_acc: float = 1.3,
         rot=0,
     ):
         self.speed: float = speed
@@ -108,8 +108,16 @@ class Movement:
 
 class Health:
     def __init__(self, hp: float, max_hp: int):
-        self.hp: float = hp
+        self._hp: float = hp
         self.max_hp: float = max_hp
+
+    @property
+    def hp(self):
+        return self._hp
+
+    @hp.setter
+    def hp(self, value: float):
+        self._hp = max(min(value, self.max_hp), 0)
 
 
 class MeleeAttack:

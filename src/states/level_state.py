@@ -32,11 +32,12 @@ from src.entities.component import (
     Inventory,
 )
 
+# Non-ECS systems
+from src.entities import effect
+
 # Systems
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.graphics_system import GraphicsSystem
-
-# from src.entities.systems.tile_interaction_system import TileInteractionSystem
 from src.entities.systems.velocity_system import VelocitySystem
 from src.entities.systems.combat_system import CombatSystem
 from src.entities.systems.projectile_system import ProjectileSystem
@@ -57,9 +58,10 @@ class LevelState(State):
         self.tilemap = TileMap(common.MAP_DIR / "placeholder_platformer.tmx", self.ecs_world)
         self.map_surface = self.tilemap.make_map()
 
-        # Particle stuff
+        # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT)
         self.particle_system = particle.ParticleSystem(self.camera)
+        self.effect_system = effect.EffectSystem(self)
 
         # UI stuff
         self.ui = self.game_class.ui
@@ -143,6 +145,13 @@ class LevelState(State):
                     Hotbar(self.ui, self.player, (common.WIDTH // 2, 40), (64, 64)),
                     hud=True,
                     hud_name="hotbar",
+                )
+                self.effect_system.effect_dict[self.player] = (
+                    effect.BurnEffect(self)
+                    .builder()
+                    .damage(10)
+                    .duration(5, 1)
+                    .build()
                 )
 
             elif obj.name == "walker_enemy_spawn":
@@ -267,6 +276,7 @@ class LevelState(State):
 
     def draw(self) -> None:
         self.particle_system.draw()
+        self.effect_system.draw()
 
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
@@ -280,6 +290,7 @@ class LevelState(State):
     def update(self) -> None:
         self.ecs_world.process(self.game_class.events, self.game_class.dts)
         self.particle_system.update()
+        self.effect_system.update()
 
 
 class TestState(State):

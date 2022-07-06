@@ -52,6 +52,19 @@ class ParticleSystem(set):
                 .build()
             )
 
+    def create_fire_particle(self, pos, offset: tuple = (0, 0)):
+        self.add(
+            Particle()
+            .builder()
+            .at(pygame.Vector2(pos.x + offset[0], pos.y + offset[1]), random.gauss(180, 140))
+            .gravity(gravity_acc=0.35, gravity_y_vel=-5)
+            .hsv(random.gauss(20, 20), random.gauss(1, 0.1))
+            .lifespan(frames=40)
+            .speed(speed=random.gauss(1.4, 0.8))
+            .effect_fade(start_fade_frac=0.5)
+            .build()
+        )
+
 
 class Particle:
     """
@@ -100,6 +113,13 @@ class Particle:
         def gravity(self, gravity_acc, gravity_y_vel: float = 0):
             self.particle.gravity = gravity_acc
             self.particle.gravity_vel = gravity_y_vel
+            return self
+
+        def hsv(self, hue, saturation: float = 1.0, value: float = 1.0):
+            h = round(hue) % 360
+            s = max(min(round(100 * saturation), 100), 0)
+            v = max(min(round(100 * value), 100), 0)
+            self.particle.color.hsva = (h, s, v, 100)
             return self
 
         def lifespan(self, frames: int):

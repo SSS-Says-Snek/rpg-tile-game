@@ -73,7 +73,7 @@ def rot_center(image: pygame.Surface, angle: float, x: int, y: int):
 
 def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float):
     image_rect = image.get_rect(topleft=(pos[0] - origin_pos[0], pos[1] - origin_pos[1]))
-    offset_center_to_pivot = pygame.math.Vector2(pos) - image_rect.center
+    offset_center_to_pivot = pygame.Vector2(pos) - image_rect.center
     rotated_offset = offset_center_to_pivot.rotate(-angle)
     rotated_image_center = (pos[0] - rotated_offset.x, pos[1] - rotated_offset.y)
     rotated_image = pygame.transform.rotate(image, angle)

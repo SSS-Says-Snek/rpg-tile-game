@@ -114,7 +114,6 @@ class CombatSystem(System):
                                 colors = self.level_state.settings["particle_colors"]["death"]
                                 melee_weapon.hit = True
                                 nested_health.hp -= melee_weapon.attack_damage
-                                nested_health.hp = max(nested_health.hp, 0)
 
                                 if nested_health.hp == 0:
                                     # Create particles
@@ -226,7 +225,6 @@ class CombatSystem(System):
 
                         # Actual HP addition
                         owner_health.hp += medkit.heal_power
-                        owner_health.hp = min(owner_health.hp, owner_health.max_hp)
 
                         # Particles
                         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])

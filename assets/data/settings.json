@@ -25,7 +25,7 @@
             "hp": 100,
             "max_hp": 100,
             "speed": 5,
-            "jump_vel": -17
+            "jump_vel": -25
         },
         "walker_enemy": {
             "animation_dir": "walker_enemy",

@@ -214,12 +214,6 @@ class MobHealthBar(HealthBar):
         if self.health_component.hp == self.health_component.max_hp:
             # No health bar if max hp
             return
-        if self.health_component.hp <= 0:
-            self.ui.remove_widget(self.uuid)
-
-            # Delete entity FOR NOW. In the future, DeathSystem would and should handle item drops
-            self.ui.world.delete_entity(self.entity)
-            return
 
         entity_rect = self.pos.rect
         self.border_rect.center = (
@@ -245,6 +239,13 @@ class MobHealthBar(HealthBar):
                 ),
             ),
         )
+
+        if self.health_component.hp <= 0:  # and self.flash_size <= 0:
+            self.ui.remove_widget(self.uuid)
+
+            # Delete entity FOR NOW. In the future, DeathSystem would and should handle item drops
+            self.ui.world.delete_entity(self.entity)
+            return
 
 
 class ItemDurabilityBar(PlayerHealthBar):
