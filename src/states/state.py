@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class State(abc.ABC):
     def __init__(self, game_class: "Game"):
-        self.game_class: "Game" = game_class
+        self.game_class = game_class
         self.next_state: type(State) = self.__class__
         self.screen = screen
 

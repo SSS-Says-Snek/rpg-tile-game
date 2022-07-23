@@ -29,9 +29,26 @@ class Camera:
         elif isinstance(target_pos, pygame.Vector2):
             target_pos = pygame.Rect(target_pos.x, target_pos.y, 0, 0)
 
+        return target_pos.move((-self.camera.x, -self.camera.y))
+
+    def hard_apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list]):
+        if isinstance(target_pos, tuple) or isinstance(target_pos, list):
+            target_pos = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
+        elif isinstance(target_pos, pygame.Vector2):
+            target_pos = pygame.Rect(target_pos.x, target_pos.y, 0, 0)
+
         return target_pos.move(self.camera.topleft)
 
-    def adjust_to(self, target_pos):
+    def adjust_to(self, dt, target_pos):
+        self.camera.x += (
+            dt * (target_pos.x - self.camera.x - self.camera_width // 2) // 20
+        )
+
+        self.camera.y += (
+            dt * (target_pos.y - self.camera.y - self.camera_height // 2) // 20
+        )
+
+    def hard_adjust_to(self, target_pos):
         x = self.camera_width // 2 - target_pos.x + self.shake_offset.x
         y = self.camera_height // 2 - target_pos.y + self.shake_offset.y
         self.camera.topleft = (x, y)

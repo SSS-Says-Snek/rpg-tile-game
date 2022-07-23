@@ -18,7 +18,7 @@ class GraphicsSystem(System):
         # screen.fill((0, 255, 0))
         # super().process(event_list)
 
-        self.camera.adjust_to(self.world.component_for_entity(self.player, Position).pos)
+        self.camera.adjust_to(self.level_state.game_class.dts["dt"], self.world.component_for_entity(self.player, Position).pos)
 
         screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
 
