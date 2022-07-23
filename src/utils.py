@@ -8,7 +8,7 @@ This file defines some utility functions
 import pathlib
 from functools import lru_cache
 
-from src import pygame
+from src import pygame, common
 from src.common import TILE_WIDTH, TILE_HEIGHT, ANIM_DIR
 from src.display import animation
 
@@ -87,7 +87,7 @@ def load_img(path: pathlib.Path):
 
 
 @lru_cache(maxsize=512)
-def load_font(path: pathlib.Path, size: int):
+def load_font(size: int, path: pathlib.Path = common.FONT_DIR / "PixelMillenium.ttf"):
     return pygame.font.Font(path, size)
 
 

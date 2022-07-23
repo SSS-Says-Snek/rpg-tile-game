@@ -9,6 +9,8 @@ from typing import Optional
 
 import esper
 
+from src.display.particle import ParticleSystem
+
 
 class UI:
     def __init__(self, camera):
@@ -16,7 +18,7 @@ class UI:
 
         self.camera = camera
         self.world: Optional[esper.World] = None
-        self.particle_system = None
+        self.particle_system: Optional[ParticleSystem] = None
         self.widgets = {}
         self.hud_widgets = {}
 

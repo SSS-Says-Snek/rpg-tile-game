@@ -9,10 +9,10 @@ I decided for particles to NOT be ECS entities.
 
 import random
 from math import radians, sin, cos
-from typing import Callable
+from typing import Callable, Union
 
 import pygame.gfxdraw
-from src import pygame, screen, utils, common
+from src import pygame, screen, utils
 
 from src.display.camera import Camera
 
@@ -65,6 +65,22 @@ class ParticleSystem(set):
             .build()
         )
 
+    def create_text_particle(self, pos, txt, color=(0, 0, 0)):
+        self.add(
+            TextParticle()
+            .builder()
+            .at(pos=pos)
+            .color(color=color)
+            .constant_vel(constant_vel=pygame.Vector2(0, -3))
+            .lifespan(frames=30)
+            .size(size=20)
+            .text(text=txt)
+            .effect_easeout_drift(easeout_speed=0.93)
+            .effect_fade(start_fade_frac=0.5)
+            .die_only_lifespan()
+            .build()
+        )
+
 
 class Particle:
     """
@@ -102,7 +118,7 @@ class Particle:
             self.particle.angle = angle
             return self
 
-        def color(self, color: pygame.Color):
+        def color(self, color: Union[pygame.Color, tuple[int, int, int]]):
             self.particle.color = pygame.Color(color)
             return self
 
@@ -199,8 +215,12 @@ class TextParticle(Particle):
         self.text_surf = None
 
     class Builder(Particle.Builder):
-        def text(self, text: str, font_path=common.FONT_DIR / "PixelMillenium.ttf"):
-            font = utils.load_font(font_path, self.particle.size)
+        def text(self, text: str, font_path=None):
+            if font_path is None:
+                font = utils.load_font(self.particle.size)
+            else:
+                font = utils.load_font(self.particle.size, font_path)
+
             self.particle.text_surf = font.render(text, True, self.particle.color)
             return self
 

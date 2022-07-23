@@ -103,20 +103,7 @@ class HealthBar(abc.ABC):
 
             if self.ui.world.has_component(self.entity, Position):
                 entity_pos = self.ui.world.component_for_entity(self.entity, Position)
-                self.ui.particle_system.add(
-                    TextParticle()
-                    .builder()
-                    .at(pos=entity_pos.pos)
-                    .color(color=(0, 0, 0))
-                    .constant_vel(constant_vel=pygame.Vector2(0, -3))
-                    .lifespan(frames=30)
-                    .size(size=20)
-                    .text(text=hurt_txt)
-                    .effect_easeout_drift(easeout_speed=0.93)
-                    .effect_fade(start_fade_frac=0.5)
-                    .die_only_lifespan()
-                    .build()
-                )
+                self.ui.particle_system.create_text_particle(entity_pos.pos, hurt_txt)
 
         if self.flash_duration <= 0:
             if self.health_component.hp > 0:

@@ -117,3 +117,7 @@ class CollisionSystem(System):
                     item_pos.in_inventory = True
 
                     player_inventory.inventory[available_inventory_idx] = entity
+
+                    self.particle_system.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
+                else:
+                    self.particle_system.create_text_particle(owner_pos.pos, "No more room in inventory!")

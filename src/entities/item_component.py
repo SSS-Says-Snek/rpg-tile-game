@@ -10,7 +10,8 @@ from src import pygame
 
 
 class Item:
-    def __init__(self, cooldown, owner=None):
+    def __init__(self, name, cooldown, owner=None):
+        self.name = name
         self.owner = owner
         self.used = False
 

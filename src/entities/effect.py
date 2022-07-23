@@ -85,6 +85,7 @@ class BurnEffect(Effect):
             self.level_state.particle_system.create_fire_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
+
 """            
 
 class BurnEffect:
