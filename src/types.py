@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Union, Tuple, List
 
 from src import pygame
 
+# noinspection PyUnresolvedReferences
 if TYPE_CHECKING:
     from src.entities.component import Position
 

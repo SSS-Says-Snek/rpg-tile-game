@@ -30,6 +30,7 @@ class EffectSystem:
 
 # TODO: Add effect inheritance
 
+
 class Effect:
     def __init__(self, level_state: "LevelState"):
         self.level_state = level_state
@@ -42,11 +43,10 @@ class Effect:
         self.time_created = pygame.time.get_ticks()
         self.last_applied = 0
 
-
     class Builder:
         def __init__(self, effect):
             self.effect = effect
-        
+
         def damage(self, damage: float):
             self.effect.damage = damage
             return self
@@ -65,7 +65,7 @@ class Effect:
 
     def builder(self):
         return self.Builder(self)
-    
+
     def update(self, entity: int):
         if pygame.time.get_ticks() - self.last_applied > self.interval * 1000:
             self.last_applied = pygame.time.get_ticks()
@@ -85,6 +85,7 @@ class BurnEffect(Effect):
             self.level_state.particle_system.create_fire_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
+
 
 """            
 

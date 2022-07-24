@@ -128,7 +128,11 @@ class LevelState(State):
 
                 # Add initial sword
                 inventory_component.inventory[0] = self.ecs_world.create_entity(
-                    item_component.Item(name="Newbie's Sword", cooldown=sword_settings["cooldown"], owner=self.player),
+                    item_component.Item(
+                        name="Newbie's Sword",
+                        cooldown=sword_settings["cooldown"],
+                        owner=self.player,
+                    ),
                     item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
                     item_component.ItemPosition(
                         pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
@@ -147,11 +151,7 @@ class LevelState(State):
                     hud_name="hotbar",
                 )
                 self.effect_system.effect_dict[self.player] = (
-                    effect.BurnEffect(self)
-                    .builder()
-                    .damage(10)
-                    .duration(5, 1)
-                    .build()
+                    effect.BurnEffect(self).builder().damage(10).duration(5, 1).build()
                 )
 
             elif obj.name == "walker_enemy_spawn":
@@ -211,7 +211,9 @@ class LevelState(State):
 
                 inventory_component.inventory[0] = self.ecs_world.create_entity(
                     item_component.Item(
-                        name="Newbie's Sword", cooldown=simple_melee_settings["attack_cooldown"], owner=simple_melee_enemy
+                        name="Newbie's Sword",
+                        cooldown=simple_melee_settings["attack_cooldown"],
+                        owner=simple_melee_enemy,
                     ),
                     item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
                     item_component.ItemPosition(
@@ -234,7 +236,9 @@ class LevelState(State):
                 health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 
                 self.ecs_world.create_entity(
-                    item_component.Item(name="Health Potion", cooldown=health_potion_settings["cooldown"]),
+                    item_component.Item(
+                        name="Health Potion", cooldown=health_potion_settings["cooldown"]
+                    ),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=health_potion_holding,
@@ -260,7 +264,9 @@ class LevelState(State):
                 temp_surface_holding.fill((0, 0, 180))
 
                 self.ecs_world.create_entity(
-                    item_component.Item(name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]),
+                    item_component.Item(
+                        name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]
+                    ),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=gravity_bow_surf,

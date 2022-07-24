@@ -11,7 +11,6 @@ import math
 from typing import Any
 
 from src import pygame, screen
-from src.display.particle import TextParticle
 from src.types import Pos
 
 from src.display.ui import UI

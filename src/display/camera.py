@@ -40,13 +40,9 @@ class Camera:
         return target_pos.move(self.camera.topleft)
 
     def adjust_to(self, dt, target_pos):
-        self.camera.x += (
-            dt * (target_pos.x - self.camera.x - self.camera_width // 2) // 20
-        )
+        self.camera.x += dt * (target_pos.x - self.camera.x - self.camera_width // 2) // 20
 
-        self.camera.y += (
-            dt * (target_pos.y - self.camera.y - self.camera_height // 2) // 20
-        )
+        self.camera.y += dt * (target_pos.y - self.camera.y - self.camera_height // 2) // 20
 
     def hard_adjust_to(self, target_pos):
         x = self.camera_width // 2 - target_pos.x + self.shake_offset.x
