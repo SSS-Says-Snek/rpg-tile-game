@@ -55,8 +55,8 @@ class LevelState(State):
 
         # esper and tilemap stuff
         self.ecs_world = esper.World()
-        self.tilemap = TileMap(common.MAP_DIR / "placeholder_platformer.tmx", self.ecs_world)
-        self.map_surface = self.tilemap.make_map()
+        self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self.ecs_world)
+        self.map_surface = self.tilemap.make_map()  # Static tiles
 
         # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT)
@@ -257,12 +257,6 @@ class LevelState(State):
                     for img_file in ["gravity_bow_hold.png", "gravity_bow_icon.png"]
                 ]
 
-                temp_surface = pygame.Surface((32, 32))
-                temp_surface.fill((0, 0, 180))
-
-                temp_surface_holding = pygame.Surface((16, 32))
-                temp_surface_holding.fill((0, 0, 180))
-
                 self.ecs_world.create_entity(
                     item_component.Item(
                         name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]
@@ -295,6 +289,7 @@ class LevelState(State):
 
     def update(self) -> None:
         self.ecs_world.process(self.game_class.events, self.game_class.dts)
+
         self.particle_system.update()
         self.effect_system.update()
 

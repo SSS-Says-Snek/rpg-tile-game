@@ -156,15 +156,16 @@ class GraphicsSystem(System):
         # Blits background
         screen.blit(self.level_state.placeholder_background, (0, 0))
 
+        # No shake :( thinking
         self.camera.adjust_to(
             dts["dt"],
             self.world.component_for_entity(self.player, Position).pos,
         )
-
-        screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
 
         self.draw_mobs(dts)
 
         self.draw_world_items()
 
         self.draw_projectiles()
+
+        screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
