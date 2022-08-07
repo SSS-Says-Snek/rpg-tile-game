@@ -4,7 +4,7 @@ from src import pygame
 
 # noinspection PyUnresolvedReferences
 if TYPE_CHECKING:
-    from src.entities.component import Position
+    pass
 
 
 Pos = Union[Tuple[int, int], List[int], pygame.Vector2, "Position"]

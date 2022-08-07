@@ -9,7 +9,6 @@ This file defines components (data-only) for the game entities (integer IDs)
 __all__ = [
     "References",
     "Flags",
-    "Tile",
     "Graphics",
     "Position",
     "Movement",
@@ -50,12 +49,6 @@ class Flags:
 
         self.alive = True
         self.mob_type = mob_type
-
-
-class Tile:
-    def __init__(self, tile_width: int, tile_height: int):
-        self.tile_width: int = tile_width
-        self.tile_height: int = tile_height
 
 
 class Graphics:

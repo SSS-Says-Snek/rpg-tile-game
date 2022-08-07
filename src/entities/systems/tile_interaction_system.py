@@ -7,8 +7,10 @@ This file defines the tile interaction system, used for entity-to-tile interacti
 """
 
 from src import pygame, screen, utils
+
+from src.entities.components import tile_component
 from src.entities.systems.system import System
-from src.entities.component import *
+from src.entities.components.component import *
 
 
 class TestBlit:
@@ -41,9 +43,14 @@ class TileInteractionSystem(System):
         # super().process(event_list)
 
         for entity, (pos, *_) in self.world.get_components(Position, Movement):
-            neighboring_tile_entities = utils.get_neighboring_tile_entities(self.tilemap, 2, pos)
+            interactable_tile_entities = utils.get_neighboring_tile_entities(self.tilemap, 2, pos, interacting_tiles=True)
+            player_rect = self.world.component_for_entity(self.player, Position).rect
 
-            for neighboring_tile_entity in neighboring_tile_entities:
-                if self.world.component_for_entity(neighboring_tile_entity[0], Flags).has_dialogue:
-                    if self.check_for_key(event_list, pygame.K_RETURN):
-                        self.level_state.ui.add_widget(TestBlit())
+            for interactable_tile_entity in interactable_tile_entities:
+                interactable_tile = self.world.component_for_entity(interactable_tile_entity, tile_component.Tile)
+                interactable_tile_rect = interactable_tile.rect
+                if not player_rect.colliderect(interactable_tile_rect):
+                    continue
+
+                if self.world.has_component(interactable_tile_entity, tile_component.Sign):
+                    pass

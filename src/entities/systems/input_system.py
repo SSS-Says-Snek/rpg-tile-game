@@ -9,8 +9,8 @@ This file defines the input system, used to get player inputs
 from src import pygame
 from src.entities.systems.system import System
 
-from src.entities import item_component
-from src.entities.component import Inventory
+from src.entities.components import item_component
+from src.entities.components.component import Inventory
 
 
 class InputSystem(System):

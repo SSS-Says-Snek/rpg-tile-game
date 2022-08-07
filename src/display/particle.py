@@ -52,17 +52,29 @@ class ParticleSystem(set):
                 .build()
             )
 
-    def create_fire_particle(self, pos, offset: tuple = (0, 0)):
+    def create_effect_particle(self, color_func, pos, offset: tuple = (0, 0)):
         self.add(
             Particle()
             .builder()
             .at(pygame.Vector2(pos.x + offset[0], pos.y + offset[1]), random.gauss(180, 140))
             .gravity(gravity_acc=0.35, gravity_y_vel=-5)
-            .hsv(random.gauss(20, 20), random.gauss(1, 0.1))
+            .hsv(*color_func())
             .lifespan(frames=40)
             .speed(speed=random.gauss(1.4, 0.8))
             .effect_fade(start_fade_frac=0.5)
             .build()
+        )
+
+    def create_fire_particle(self, pos, offset: tuple = (0, 0)):
+        self.create_effect_particle(
+            lambda: (random.gauss(20, 20), random.gauss(1, 0.1)),
+            pos, offset
+        )
+
+    def create_regen_particle(self, pos, offset: tuple = (0, 0)):
+        self.create_effect_particle(
+            lambda: (random.gauss(120, 20), random.gauss(1, 0.08)),
+            pos, offset
         )
 
     def create_text_particle(self, pos, txt, color=(0, 0, 0)):

@@ -12,6 +12,7 @@ import esper
 # Important modules
 from src import pygame, common, utils
 from src.entities.systems.npc_combat_system import NPCCombatSystem
+from src.entities.systems.tile_interaction_system import TileInteractionSystem
 from src.tilemap import TileMap
 
 # Display modules
@@ -21,8 +22,8 @@ from src.display.widgets.health_bar import PlayerHealthBar, MobHealthBar
 from src.display.widgets.inventory import Hotbar
 
 # Components
-from src.entities import item_component, ai_component
-from src.entities.component import (
+from src.entities.components import ai_component, item_component
+from src.entities.components.component import (
     Flags,
     Position,
     Movement,
@@ -84,9 +85,10 @@ class LevelState(State):
         self.debug = False
 
         # Add ECS systems
-        self.ecs_world.add_processor(InputSystem(self), priority=7)
-        self.ecs_world.add_processor(VelocitySystem(self), priority=6)
-        self.ecs_world.add_processor(CollisionSystem(self), priority=5)
+        self.ecs_world.add_processor(InputSystem(self), priority=8)
+        self.ecs_world.add_processor(VelocitySystem(self), priority=7)
+        self.ecs_world.add_processor(CollisionSystem(self), priority=6)
+        self.ecs_world.add_processor(TileInteractionSystem(self), priority=5)
         self.ecs_world.add_processor(NPCCombatSystem(self), priority=4)
         self.ecs_world.add_processor(CombatSystem(self), priority=3)
         self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
@@ -150,7 +152,8 @@ class LevelState(State):
                     hud=True,
                     hud_name="hotbar",
                 )
-                self.effect_system.effect_dict[self.player] = (
+                self.effect_system.add_effect(
+                    self.player,
                     effect.BurnEffect(self).builder().damage(10).duration(5, 1).build()
                 )
 
@@ -273,6 +276,8 @@ class LevelState(State):
                         launch_vel=pygame.Vector2(gravity_bow_settings["launch_vel"])
                     ),
                 )
+            elif obj.name == "jetpack_item":
+                pass
 
     def draw(self) -> None:
         self.particle_system.draw()

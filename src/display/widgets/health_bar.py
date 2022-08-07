@@ -15,8 +15,8 @@ from src.types import Pos
 
 from src.display.ui import UI
 
-from src.entities import item_component
-from src.entities.component import Position, Health
+from src.entities.components import item_component
+from src.entities.components.component import Position, Health
 
 
 class HealthBar(abc.ABC):

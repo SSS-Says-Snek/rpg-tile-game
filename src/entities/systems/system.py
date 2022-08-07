@@ -23,6 +23,7 @@ class System(esper.Processor):
         self.camera = self.level_state.camera
         self.tilemap = self.level_state.tilemap
         self.particle_system = self.level_state.particle_system
+        self.effect_system = self.level_state.effect_system
 
         self.world: esper.World = self.world
 

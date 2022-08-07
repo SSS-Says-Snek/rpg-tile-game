@@ -10,7 +10,10 @@ import pathlib
 import pygame
 import pytmx
 
-from src.entities.component import *
+from src.common import TILE_WIDTH, TILE_HEIGHT
+
+from src.entities.components import tile_component
+from src.entities.components.component import *
 
 
 class TileMap:
@@ -25,6 +28,11 @@ class TileMap:
         self.tiles = {}
         self.entity_tiles = {}
 
+        # Interactable tiles are different: They are generally uncollidable (so players can walk through),
+        # and are created through Tiled objects, rather than tiles. This is because
+        # a lot of interactable tiles have specific data other tiles won't have.
+        self.interactable_tiles = {}
+
     def render_map(self, surface: pygame.Surface) -> None:
         surface.set_colorkey((0, 0, 0))
 
@@ -38,7 +46,7 @@ class TileMap:
 
                     self.tiles[(layer_id, (x, y))] = tile_props
                     tile_img = self.tilemap.get_tile_image_by_gid(gid)
-                    components = [Tile(tile_props["width"], tile_props["height"])]
+                    components = [tile_component.Tile(x, y, tile_props["width"], tile_props["height"])]
                     flag_kwargs = {}
 
                     if tile_props.get("unwalkable"):
@@ -55,6 +63,14 @@ class TileMap:
                         (x * self.tilemap.tilewidth, y * self.tilemap.tileheight),
                     )
 
+        for obj in self.tilemap.objects:
+            obj_pos = (obj.x // TILE_WIDTH, obj.y // TILE_HEIGHT)
+            if obj.name == "sign":
+                self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
+                    tile_component.Tile(*obj_pos, obj.width, obj.height),
+                    tile_component.Sign(obj.text)
+                )
+
     def make_map(self) -> pygame.Surface:
         temp_surface = pygame.Surface((self.width, self.height))
         self.render_map(temp_surface)
@@ -70,14 +86,13 @@ class TileMap:
     def get_unwalkable_rects(self, neighboring_tiles):
         unwalkable_tile_rects = []
 
-        for tile_entity_dict in neighboring_tiles:
-            tile_entity, tile_pos = tile_entity_dict
-            tile = self.ecs_world.component_for_entity(tile_entity, Tile)
+        for tile_entity in neighboring_tiles:
+            tile = self.ecs_world.component_for_entity(tile_entity, tile_component.Tile)
 
             if self.ecs_world.component_for_entity(tile_entity, Flags).collidable:
                 unwalkable_tile_rect = pygame.Rect(
-                    tile_pos["x"] * tile.tile_width,
-                    tile_pos["y"] * tile.tile_height,
+                    tile.x * tile.tile_width,
+                    tile.y * tile.tile_height,
                     tile.tile_width,
                     tile.tile_height,
                 )

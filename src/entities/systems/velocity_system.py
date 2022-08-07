@@ -10,8 +10,8 @@ import math
 
 from src import pygame, utils
 
-from src.entities import ai_component, component
-from src.entities.component import Flags, Position, Movement, Graphics
+from src.entities.components import ai_component, component
+from src.entities.components.component import Flags, Position, Movement, Graphics
 from src.entities.systems.system import System
 
 

@@ -13,8 +13,8 @@ import pygame
 from src import utils
 from src.entities.systems.system import System
 
-from src.entities import item_component
-from src.entities.component import Position, Movement, Graphics, Flags, Inventory
+from src.entities.components import item_component
+from src.entities.components.component import Position, Movement, Graphics, Flags, Inventory
 
 
 class CollisionSystem(System):
@@ -29,7 +29,7 @@ class CollisionSystem(System):
         rect.x += round(movement.vel.x * dt)
 
         for neighboring_tile_rect in neighboring_tile_rects:
-            if neighboring_tile_rect.colliderect(rect):
+            if neighboring_tile_rect is not None and neighboring_tile_rect.colliderect(rect):
                 if movement.vel.x > 0:
                     rect.right = neighboring_tile_rect.left
                     collision_types["right"] = True
@@ -41,7 +41,7 @@ class CollisionSystem(System):
         rect.y += round(movement.vel.y)
 
         for neighboring_tile_rect in neighboring_tile_rects:
-            if neighboring_tile_rect.colliderect(rect):
+            if neighboring_tile_rect is not None and neighboring_tile_rect.colliderect(rect):
                 if movement.vel.y > 0:
                     movement.vel.y = 0
                     rect.bottom = neighboring_tile_rect.top
@@ -55,7 +55,7 @@ class CollisionSystem(System):
     def process(self, event_list, dts) -> None:
         # super().process(event_list)
 
-        # Mob collision
+        # Mob
         for entity, (flags, pos, movement, graphics) in self.world.get_components(
             Flags, Position, Movement, Graphics
         ):

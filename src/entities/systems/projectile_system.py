@@ -11,7 +11,7 @@ import math
 from src import pygame, utils
 
 from src.entities.systems.system import System
-from src.entities import projectile_component, component
+from src.entities.components import component, projectile_component
 
 
 class ProjectileSystem(System):

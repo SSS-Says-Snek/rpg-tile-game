@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
 from src import pygame
-from src.entities.component import Health, Position, Graphics
+from src.entities.components.component import Health, Position, Graphics
 
 
 class EffectSystem:
@@ -15,6 +15,9 @@ class EffectSystem:
         self.level_state = level_state
         self.particle_system = self.level_state.particle_system
         self.camera = self.level_state.camera
+
+    def add_effect(self, entity: int, effect: "Effect"):
+        self.effect_dict[entity] = effect
 
     def update(self) -> None:
         for entity, effect in self.effect_dict.copy().items():
@@ -36,6 +39,7 @@ class Effect:
         self.level_state = level_state
         self.world = self.level_state.ecs_world
 
+        self.heal_power = 0
         self.damage = 0
         self.duration = 0
         self.interval = 0
@@ -46,6 +50,10 @@ class Effect:
     class Builder:
         def __init__(self, effect):
             self.effect = effect
+
+        def heal(self, heal_power: float):
+            self.effect.heal_power = heal_power
+            return self
 
         def damage(self, damage: float):
             self.effect.damage = damage
@@ -71,6 +79,7 @@ class Effect:
             self.last_applied = pygame.time.get_ticks()
 
             health_component = self.world.component_for_entity(entity, Health)
+            health_component.hp += self.heal_power
             health_component.hp -= self.damage
 
 
@@ -83,6 +92,19 @@ class BurnEffect(Effect):
             pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
             size = self.level_state.ecs_world.component_for_entity(entity, Graphics).size
             self.level_state.particle_system.create_fire_particle(
+                pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
+            )
+
+
+class RegenEffect(Effect):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def draw(self, entity, _):
+        if random.random() < 0.12:
+            pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
+            size = self.level_state.ecs_world.component_for_entity(entity, Graphics).size
+            self.level_state.particle_system.create_regen_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
 

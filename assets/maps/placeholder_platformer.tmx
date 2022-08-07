@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="25">
+<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="27">
  <tileset firstgid="1" source="placeholder_platformer_tileset.tsx"/>
  <layer id="1" name="platforms" width="100" height="50">
   <data encoding="csv">

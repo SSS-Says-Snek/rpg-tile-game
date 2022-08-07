@@ -12,10 +12,11 @@ from dataclasses import dataclass
 from typing import Generator
 
 from src import pygame, utils, common
+from src.entities.effect import RegenEffect
 
 from src.entities.systems.system import System
-from src.entities import item_component, projectile_component
-from src.entities.component import Position, Movement, Health, Inventory
+from src.entities.components import item_component, projectile_component
+from src.entities.components.component import Position, Movement, Health, Inventory
 
 
 @dataclass
@@ -202,6 +203,10 @@ class ItemUsages(types.SimpleNamespace):
 
         # Particles
         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
+        self.effect_system.add_effect(
+            item.owner,
+            RegenEffect(self.level_state).builder().heal(10).duration(9, 3).build()
+        )
 
         item.used = False
 
@@ -240,8 +245,9 @@ class CombatSystem(System):
 
         elif self.world.has_component(equipped_item, item_component.RangedWeapon):
 
-            # Gravity Bow
-            self.item_usages.handle_gravity_bow(item_data, entity)
+            if self.world.has_component(equipped_item, item_component.GravityBow):
+                # Gravity Bow
+                self.item_usages.handle_gravity_bow(item_data, entity)
 
         if self.world.has_component(equipped_item, item_component.Consumable):
             consumable = self.world.component_for_entity(equipped_item, item_component.Consumable)
