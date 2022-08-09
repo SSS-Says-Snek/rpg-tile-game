@@ -23,7 +23,7 @@ class InputSystem(System):
 
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left button
-                hotbar_ui = self.level_state.ui.hud_widgets["hotbar"]
+                hotbar_ui = self.level_state.ui.hud_widgets["hotbar"]["widget"]
 
                 if hotbar_ui.frame_rect.collidepoint(event.pos):
                     for i, hotbar_rect in enumerate(hotbar_ui.hotbar_rects):

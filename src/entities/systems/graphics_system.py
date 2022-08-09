@@ -12,6 +12,12 @@ class GraphicsSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
+    def draw_sent_widgets(self):
+        for widget in self._send_to_graphics_widgets:
+            widget.draw(self.camera)
+
+        self._send_to_graphics_widgets.clear()
+
     def _draw_mob_debug(self):
         """Draws debug rects of the mobs"""
         tilemap = self.tilemap.tilemap
@@ -169,3 +175,5 @@ class GraphicsSystem(System):
         self.draw_projectiles()
 
         screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
+
+        self.draw_sent_widgets()

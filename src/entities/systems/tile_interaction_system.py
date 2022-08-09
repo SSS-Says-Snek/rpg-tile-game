@@ -6,6 +6,10 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the tile interaction system, used for entity-to-tile interaction
 """
 
+import types
+
+import esper
+
 from src import pygame, screen, utils
 
 from src.entities.components import tile_component
@@ -24,6 +28,11 @@ class TestBlit:
 
 
 class TileInteractionSystem(System):
+    class TileInteractions(types.SimpleNamespace):
+        @staticmethod
+        def handle_sign(interactable_tile_entity, sign):
+            pass
+
     def __init__(self, level_state):
         super().__init__(level_state)
 
@@ -43,14 +52,15 @@ class TileInteractionSystem(System):
         # super().process(event_list)
 
         for entity, (pos, *_) in self.world.get_components(Position, Movement):
-            interactable_tile_entities = utils.get_neighboring_tile_entities(self.tilemap, 2, pos, interacting_tiles=True)
+            tile_entities = utils.get_neighboring_tile_entities(self.tilemap, 2, pos, interacting_tiles=True)
             player_rect = self.world.component_for_entity(self.player, Position).rect
 
-            for interactable_tile_entity in interactable_tile_entities:
-                interactable_tile = self.world.component_for_entity(interactable_tile_entity, tile_component.Tile)
-                interactable_tile_rect = interactable_tile.rect
-                if not player_rect.colliderect(interactable_tile_rect):
+            for tile_entity in tile_entities:
+                tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
+                tile_rect = tile.rect
+                if not player_rect.colliderect(tile_rect):
                     continue
 
-                if self.world.has_component(interactable_tile_entity, tile_component.Sign):
-                    pass
+                if self.world.has_component(tile_entity, tile_component.Sign):
+                    sign = self.world.component_for_entity(tile_entity, tile_component.Sign)
+                    self.send_to_graphics(sign.hover)

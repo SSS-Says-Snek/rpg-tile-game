@@ -23,20 +23,27 @@ class UI:
         self.hud_widgets = {}
 
     def draw(self):
-        for widget in self.widgets.copy().values():
+        for widget_dict in self.widgets.copy().values():
+            widget = widget_dict["widget"]
+            if not widget_dict["visible"]:
+                continue
+
             if self.camera is not None:
                 widget.draw(self.camera)
             else:
                 widget.draw()
 
-    def add_widget(self, widget, hud=False, hud_name=None):
+    def add_widget(self, widget, hud=False, hud_name=None, visible=True):
         widget.uuid = self.current_widget_uuid
-        self.widgets[self.current_widget_uuid] = widget
+        self.widgets[self.current_widget_uuid] = {"widget": widget, "visible": visible}
         if hud and hud_name:
-            self.hud_widgets[hud_name] = widget
+            self.hud_widgets[hud_name] = {"widget": widget, "visible": visible}
 
         self.current_widget_uuid += 1
         return widget.uuid
 
     def remove_widget(self, uuid):
         del self.widgets[uuid]
+
+    def toggle_visible(self, uuid):
+        self.widgets[uuid]["visible"] = not self.widgets[uuid]["visible"]

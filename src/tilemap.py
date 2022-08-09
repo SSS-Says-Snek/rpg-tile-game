@@ -17,12 +17,14 @@ from src.entities.components.component import *
 
 
 class TileMap:
-    def __init__(self, map_path: pathlib.Path, ecs_world):
+    def __init__(self, map_path: pathlib.Path, level_state):
         self.tilemap = pytmx.load_pygame(str(map_path))
         self.width = self.tilemap.width * self.tilemap.tilewidth
         self.height = self.tilemap.height * self.tilemap.tileheight
 
-        self.ecs_world = ecs_world
+        self.level_state = level_state
+        self.ecs_world = self.level_state.ecs_world
+        self.ui = self.level_state.ui
 
         # Tiles will be filled in on render_map
         self.tiles = {}
@@ -65,10 +67,12 @@ class TileMap:
 
         for obj in self.tilemap.objects:
             obj_pos = (obj.x // TILE_WIDTH, obj.y // TILE_HEIGHT)
+
+            tile = tile_component.Tile(*obj_pos, obj.width, obj.height)
             if obj.name == "sign":
                 self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
-                    tile_component.Tile(*obj_pos, obj.width, obj.height),
-                    tile_component.Sign(obj.text)
+                    tile,
+                    tile_component.Sign(tile, obj.text)
                 )
 
     def make_map(self) -> pygame.Surface:

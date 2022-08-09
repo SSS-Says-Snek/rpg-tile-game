@@ -56,8 +56,6 @@ class LevelState(State):
 
         # esper and tilemap stuff
         self.ecs_world = esper.World()
-        self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self.ecs_world)
-        self.map_surface = self.tilemap.make_map()  # Static tiles
 
         # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT)
@@ -70,6 +68,9 @@ class LevelState(State):
         self.ui.camera = self.camera
         self.ui.world = self.ecs_world
         self.ui.particle_system = self.particle_system
+
+        self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
+        self.map_surface = self.tilemap.make_map()  # Static tiles
 
         self.placeholder_background = pygame.transform.scale(
             utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.jpg"),

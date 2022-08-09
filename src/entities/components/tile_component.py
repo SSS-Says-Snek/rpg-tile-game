@@ -1,4 +1,6 @@
 from src import pygame
+from src.display.widgets.interactable_tiles import InteractableTileHover
+
 
 class Tile:
     def __init__(self, x: int, y: int, tile_width: int, tile_height: int):
@@ -12,5 +14,8 @@ class Tile:
 
 
 class Sign:
-    def __init__(self, text: str):
+    def __init__(self, tile, text: str):
+        self.tile = tile
         self.text: str = text
+
+        self.hover = InteractableTileHover(tile)
