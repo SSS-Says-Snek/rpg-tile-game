@@ -63,4 +63,4 @@ class TileInteractionSystem(System):
 
                 if self.world.has_component(tile_entity, tile_component.Sign):
                     sign = self.world.component_for_entity(tile_entity, tile_component.Sign)
-                    self.send_to_graphics(sign.hover)
+                    self.send_to_graphics(sign.hover, sign.dialogue)

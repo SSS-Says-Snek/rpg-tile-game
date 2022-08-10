@@ -13,6 +13,19 @@ from src.common import TILE_WIDTH, TILE_HEIGHT, ANIM_DIR
 from src.display import animation
 
 
+class Task:
+    def __init__(self, period):
+        # Period in milliseconds
+        self.last_invoked = 0
+        self.period = period
+
+    def update(self):
+        if pygame.time.get_ticks() - self.last_invoked > self.period:
+            self.last_invoked = pygame.time.get_ticks()
+            return True
+        return False
+
+
 def pixel_to_tile(
     pixel_pos: pygame.Vector2,
     tile_width: int = TILE_WIDTH,
@@ -90,8 +103,8 @@ def load_img(path: pathlib.Path):
 
 
 @lru_cache(maxsize=512)
-def load_font(size: int, path: pathlib.Path = common.FONT_DIR / "PixelMillenium.ttf"):
-    return pygame.font.Font(path, size)
+def load_font(size: int, font_name="PixelMillenium"):
+    return pygame.font.Font(common.FONT_DIR / f"{font_name}.ttf", size)
 
 
 def load_mob_animations(mob_settings: dict, size: tuple = (32, 32)):
