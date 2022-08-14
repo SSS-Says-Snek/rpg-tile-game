@@ -5,7 +5,6 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file contains widgets for all health bars
 """
-import abc
 import colorsys
 import math
 from typing import Any
@@ -14,12 +13,13 @@ from src import pygame, screen
 from src.types import Pos
 
 from src.display.ui import UI
+from src.display.widgets.widget import Widget
 
 from src.entities.components import item_component
 from src.entities.components.component import Position, Health
 
 
-class HealthBar(abc.ABC):
+class HealthBar(Widget):
     def __init__(
         self,
         _health_component,

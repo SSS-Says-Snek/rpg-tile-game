@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
-from src import pygame
+from src import pygame, utils
 from src.entities.components.component import Health, Position, Graphics
 
 
@@ -44,8 +44,8 @@ class Effect:
         self.duration = 0
         self.interval = 0
 
+        self.apply_effect = utils.Task(0)
         self.time_created = pygame.time.get_ticks()
-        self.last_applied = 0
 
     class Builder:
         def __init__(self, effect):
@@ -62,6 +62,8 @@ class Effect:
         def duration(self, duration: float, interval: float):
             self.effect.duration = duration
             self.effect.interval = interval
+            self.effect.apply_effect.period = interval * 1000
+
             return self
 
         def build(self):
@@ -75,9 +77,7 @@ class Effect:
         return self.Builder(self)
 
     def update(self, entity: int):
-        if pygame.time.get_ticks() - self.last_applied > self.interval * 1000:
-            self.last_applied = pygame.time.get_ticks()
-
+        if self.apply_effect.update():
             health_component = self.world.component_for_entity(entity, Health)
             health_component.hp += self.heal_power
             health_component.hp -= self.damage
@@ -100,7 +100,7 @@ class RegenEffect(Effect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def draw(self, entity, _):
+    def draw(self, entity, _):  # No camera >:(
         if random.random() < 0.12:
             pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
             size = self.level_state.ecs_world.component_for_entity(entity, Graphics).size

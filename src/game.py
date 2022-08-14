@@ -10,11 +10,11 @@ from typing import Any
 
 from src import pygame, screen, common
 
+pygame.init()
+
 from src.states.state import State
 from src.states.level_state import LevelState
 from src.display.ui import UI
-
-pygame.init()
 
 
 class Game:

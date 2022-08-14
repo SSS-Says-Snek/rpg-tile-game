@@ -48,7 +48,9 @@ class TileMap:
 
                     self.tiles[(layer_id, (x, y))] = tile_props
                     tile_img = self.tilemap.get_tile_image_by_gid(gid)
-                    components = [tile_component.Tile(x, y, tile_props["width"], tile_props["height"])]
+                    components = [
+                        tile_component.Tile(x, y, tile_props["width"], tile_props["height"])
+                    ]
                     flag_kwargs = {}
 
                     if tile_props.get("unwalkable"):
@@ -70,9 +72,9 @@ class TileMap:
 
             tile = tile_component.Tile(*obj_pos, obj.width, obj.height)
             if obj.name == "sign":
+                obj.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
-                    tile,
-                    tile_component.Sign(tile, obj.text)
+                    tile, tile_component.Sign(tile, obj.text)
                 )
 
     def make_map(self) -> pygame.Surface:

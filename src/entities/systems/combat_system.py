@@ -157,7 +157,7 @@ class ItemUsages(types.SimpleNamespace):
             return
 
         arrow_sprite = utils.load_img(
-            common.ASSETS_DIR / "imgs" / "items" / "arrows_sprite.png"
+            common.IMG_DIR / "items" / "arrows_sprite.png"
         ).convert_alpha()
 
         ranged_weapon = self.world.component_for_entity(equipped_item, item_component.RangedWeapon)
@@ -204,8 +204,7 @@ class ItemUsages(types.SimpleNamespace):
         # Particles
         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
         self.effect_system.add_effect(
-            item.owner,
-            RegenEffect(self.level_state).builder().heal(10).duration(9, 3).build()
+            item.owner, RegenEffect(self.level_state).builder().heal(10).duration(9, 3).build()
         )
 
         item.used = False

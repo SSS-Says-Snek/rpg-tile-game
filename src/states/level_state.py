@@ -155,7 +155,7 @@ class LevelState(State):
                 )
                 self.effect_system.add_effect(
                     self.player,
-                    effect.BurnEffect(self).builder().damage(10).duration(5, 1).build()
+                    effect.BurnEffect(self).builder().damage(10).duration(5, 1).build(),
                 )
 
             elif obj.name == "walker_enemy_spawn":
@@ -235,7 +235,7 @@ class LevelState(State):
                 health_potion_settings = self.settings["items"]["health_potion"]
 
                 health_potion_surf = utils.load_img(
-                    common.ASSETS_DIR / "imgs" / "items" / health_potion_settings["sprite"]
+                    common.IMG_DIR / "items" / health_potion_settings["sprite"]
                 ).convert_alpha()
                 health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 

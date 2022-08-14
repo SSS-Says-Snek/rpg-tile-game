@@ -12,13 +12,14 @@ from src.types import Pos, Size
 
 from src.display.ui import UI
 from src.display.widgets.health_bar import ItemDurabilityBar
+from src.display.widgets.widget import Widget
 
 from src.entities.components import item_component
 
 from src.entities.components.component import Inventory
 
 
-class Hotbar:
+class Hotbar(Widget):
     def __init__(self, ui: UI, entity: int, center_pos: Pos, frame_size: Size):
         self.uuid = None
         self.ui = ui

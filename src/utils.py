@@ -16,12 +16,18 @@ from src.display import animation
 class Task:
     def __init__(self, period):
         # Period in milliseconds
+        self.time_instantiated = pygame.time.get_ticks()
         self.last_invoked = 0
         self.period = period
 
     def update(self):
         if pygame.time.get_ticks() - self.last_invoked > self.period:
             self.last_invoked = pygame.time.get_ticks()
+            return True
+        return False
+
+    def time_passed(self, time):
+        if pygame.time.get_ticks() - self.time_instantiated > time:
             return True
         return False
 

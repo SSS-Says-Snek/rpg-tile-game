@@ -93,9 +93,7 @@ class VelocitySystem(System):
                 tile_next = (tile_next_beneath[0], mob_tile.y)
 
                 actual_tile_next = self.tilemap.tiles.get((0, tile_next))
-                if actual_tile_next or not self.tilemap.tiles.get(
-                    (0, tile_next_beneath)
-                ):
+                if actual_tile_next or not self.tilemap.tiles.get((0, tile_next_beneath)):
                     if actual_tile_next and not actual_tile_next.get("unwalkable"):
                         continue
                     movement.mob_specifics["movement_direction"] *= -1
