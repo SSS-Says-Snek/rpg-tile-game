@@ -12,9 +12,10 @@ class GraphicsSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    def draw_sent_widgets(self):
+    def handle_sent_widgets(self, event_list, dts):
         for widget in self._send_to_graphics_widgets:
             widget.draw(self.camera)
+            widget.update(event_list, dts)
 
         self._send_to_graphics_widgets.clear()
 
@@ -176,4 +177,4 @@ class GraphicsSystem(System):
 
         screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
 
-        self.draw_sent_widgets()
+        self.handle_sent_widgets(event_list, dts)

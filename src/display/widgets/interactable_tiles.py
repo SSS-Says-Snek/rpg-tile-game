@@ -86,29 +86,32 @@ class SignDialogue(Widget):
                 line_surf, (self.rect.x + 50, self.rect.y + 35 + i * self.font.get_height() * 1.3)
             )
 
+    def update(self, event_list, dts):
+        for event in event_list:
+            if event.type == pygame.KEYDOWN and event.key in (pygame.K_e, pygame.K_RETURN):
+                if self.state == SignState.INACTIVE:
+                    self.state = SignState.TYPING
+                else:
+                    if self.state == SignState.TYPING:
+                        self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
+                        self.text_idxs["line"] = len(self.wrapped_text) - 1
+                        self.state = SignState.DONE
+
     def draw(self, _):  # Static
         keys = pygame.key.get_pressed()
-        if self.state == SignState.INACTIVE:
-            if keys[pygame.K_e] or keys[pygame.K_RETURN]:
-                self.state = SignState.TYPING
-        else:
-            if self.state == SignState.TYPING:
-                if keys[pygame.K_e] or keys[pygame.K_RETURN]:
-                    self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
-                    self.text_idxs["line"] = len(self.wrapped_text) - 1
+
+        # Handle indexing
+        if self.state != SignState.INACTIVE:
+            if self.state == SignState.TYPING and self.update_text.update():
+                self.text_idxs["total"] += 1
+                self.text_idxs["char"] += 1
+
+                # If going onto new line
+                if self.text_idxs["char"] - 1 == len(self.wrapped_text[self.text_idxs["line"]]):
+                    self.text_idxs["char"] = 0
+                    self.text_idxs["line"] += 1
+                if self.text_idxs["total"] == len(self.text) - 1:
                     self.state = SignState.DONE
-
-                # Handle indexing
-                if self.update_text.update():
-                    self.text_idxs["total"] += 1
-                    self.text_idxs["char"] += 1
-
-                    # If going onto new line
-                    if self.text_idxs["char"] - 1 == len(self.wrapped_text[self.text_idxs["line"]]):
-                        self.text_idxs["char"] = 0
-                        self.text_idxs["line"] += 1
-                    if self.text_idxs["total"] == len(self.text) - 1:
-                        self.state = SignState.DONE
 
             # Draw body of dialogue
             # pygame.draw.rect(screen, (128, 128, 128), self.rect, border_radius=10)
