@@ -35,8 +35,9 @@ class TileMap:
         # a lot of interactable tiles have specific data other tiles won't have.
         self.interactable_tiles = {}
 
-    def render_map(self, surface: pygame.Surface) -> None:
-        surface.set_colorkey((0, 0, 0))
+    def make_map(self) -> tuple:
+        normal_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        interactable_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         for layer_id, layer in enumerate(self.tilemap.visible_layers):
             if isinstance(layer, pytmx.TiledTileLayer):
@@ -47,7 +48,7 @@ class TileMap:
                         continue
 
                     self.tiles[(layer_id, (x, y))] = tile_props
-                    tile_img = self.tilemap.get_tile_image_by_gid(gid)
+                    blit_surf = normal_surf
                     components = [
                         tile_component.Tile(x, y, tile_props["width"], tile_props["height"])
                     ]
@@ -55,14 +56,14 @@ class TileMap:
 
                     if tile_props.get("unwalkable"):
                         flag_kwargs["collidable"] = True
-
-                    if tile_props.get("type") == "dialogue":
-                        flag_kwargs["has_dialogue"] = True
+                    if tile_props.get("interactable"):
+                        blit_surf = interactable_surf
 
                     entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
-                    surface.blit(
+                    tile_img = self.tilemap.get_tile_image_by_gid(gid)
+                    blit_surf.blit(
                         tile_img,
                         (x * self.tilemap.tilewidth, y * self.tilemap.tileheight),
                     )
@@ -77,10 +78,7 @@ class TileMap:
                     tile, tile_component.Sign(tile, obj.text)
                 )
 
-    def make_map(self) -> pygame.Surface:
-        temp_surface = pygame.Surface((self.width, self.height))
-        self.render_map(temp_surface)
-        return temp_surface
+        return normal_surf, interactable_surf
 
     def get_visible_tile_layers(self):
         return [

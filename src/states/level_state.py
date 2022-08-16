@@ -70,7 +70,6 @@ class LevelState(State):
         self.ui.particle_system = self.particle_system
 
         self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
-        self.map_surface = self.tilemap.make_map()  # Static tiles
 
         self.placeholder_background = pygame.transform.scale(
             utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background2.png").convert(),
@@ -97,7 +96,7 @@ class LevelState(State):
         # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
 
     def load_spawns(self) -> None:
-        # Sorts in a way that makes player be defined first
+        # Sorts in a way that guarentees player be defined first
         for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
             if obj.name == "player_spawn":
                 player_settings = self.settings["mobs"]["player"]

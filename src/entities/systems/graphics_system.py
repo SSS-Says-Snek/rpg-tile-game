@@ -1,3 +1,9 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+"""
+
 import math
 
 import pytmx
@@ -11,6 +17,8 @@ from src.entities.components.component import Flags, Graphics, Position, Movemen
 class GraphicsSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
+
+        self.normal_map_surf, self.interactable_map_surf = self.tilemap.make_map()
 
     def handle_sent_widgets(self, event_list, dts):
         for widget in self._send_to_graphics_widgets:
@@ -162,6 +170,7 @@ class GraphicsSystem(System):
     def process(self, event_list, dts) -> None:
         # Blits background
         screen.blit(self.level_state.placeholder_background, (0, 0))
+        screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
 
         # No shake :( thinking
         self.camera.adjust_to(
@@ -175,6 +184,6 @@ class GraphicsSystem(System):
 
         self.draw_projectiles()
 
-        screen.blit(self.level_state.map_surface, self.camera.apply((0, 0)))
+        screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
 
         self.handle_sent_widgets(event_list, dts)

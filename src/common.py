@@ -26,5 +26,5 @@ ASSETS_DIR: pathlib.Path = pathlib.Path("assets")
 DATA_DIR: pathlib.Path = ASSETS_DIR / "data"
 MAP_DIR: pathlib.Path = ASSETS_DIR / "maps"
 FONT_DIR: pathlib.Path = ASSETS_DIR / "fonts"
-IMG_DIR : pathlib.Path = ASSETS_DIR / "imgs"
+IMG_DIR: pathlib.Path = ASSETS_DIR / "imgs"
 ANIM_DIR: pathlib.Path = ASSETS_DIR / "imgs" / "animations"

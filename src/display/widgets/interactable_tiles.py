@@ -1,3 +1,9 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+"""
+
 import math
 
 from src import pygame, screen, utils
@@ -57,6 +63,9 @@ class SignDialogue(Widget):
         self.text_idxs = {"total": 0, "line": 0, "char": 0}
         self.update_text = utils.Task(25)
 
+        self.show_cursor = True
+        self.cursor_blink = utils.Task(500)
+
         self.wrapped_text = self.wrap_text(self.text)
 
     def wrap_text(self, text: str):
@@ -80,10 +89,20 @@ class SignDialogue(Widget):
         return wrapped_text
 
     def blit_wrapped_text(self, wrapped_text):
+        x, y = 0, 0
+        line_surf = None
+
         for i, wrapped_line in enumerate(wrapped_text):
             line_surf = self.font.render(wrapped_line, False, (78, 53, 36))
-            screen.blit(
-                line_surf, (self.rect.x + 50, self.rect.y + 35 + i * self.font.get_height() * 1.3)
+            x, y = self.rect.x + 50, self.rect.y + 35 + i * self.font.get_height() * 1.3
+            screen.blit(line_surf, (x, y))
+
+        if line_surf is not None and self.show_cursor:
+            # Utilizes last line to get cursor pos
+            pygame.draw.rect(
+                screen,
+                (78, 53, 36),
+                (x + line_surf.get_width(), y, 2, line_surf.get_height() * 4 / 5),
             )
 
     def update(self, event_list, dts):
@@ -91,7 +110,8 @@ class SignDialogue(Widget):
             if event.type == pygame.KEYDOWN and event.key in (pygame.K_e, pygame.K_RETURN):
                 if self.state == SignState.INACTIVE:
                     self.state = SignState.TYPING
-                else:
+                    self.update_text.time_instantiated = pygame.time.get_ticks()
+                elif self.update_text.time_passed(50):
                     if self.state == SignState.TYPING:
                         self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
                         self.text_idxs["line"] = len(self.wrapped_text) - 1
@@ -112,6 +132,8 @@ class SignDialogue(Widget):
                     self.text_idxs["line"] += 1
                 if self.text_idxs["total"] == len(self.text) - 1:
                     self.state = SignState.DONE
+            elif self.state == SignState.DONE and self.cursor_blink.update():
+                self.show_cursor = not self.show_cursor
 
             # Draw body of dialogue
             # pygame.draw.rect(screen, (128, 128, 128), self.rect, border_radius=10)
