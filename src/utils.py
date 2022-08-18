@@ -26,6 +26,9 @@ class Task:
             return True
         return False
 
+    def update_time(self):
+        self.time_instantiated = pygame.time.get_ticks()
+
     def time_passed(self, time):
         if pygame.time.get_ticks() - self.time_instantiated > time:
             return True
@@ -111,6 +114,18 @@ def load_img(path: pathlib.Path):
 @lru_cache(maxsize=512)
 def load_font(size: int, font_name="PixelMillenium"):
     return pygame.font.Font(common.FONT_DIR / f"{font_name}.ttf", size)
+
+def outline(surf: pygame.Surface):
+    new_surf = pygame.Surface((surf.get_width() + 1, surf.get_height() + 1))
+    surf_mask = pygame.mask.from_surface(surf)
+    outline_surf = surf_mask.to_surface().set_colorkey((0, 0, 0))
+
+    new_surf.blit(outline_surf, (0, 0))
+    new_surf.blit(outline_surf, (1, 0))
+    new_surf.blit(outline_surf, (0, 1))
+    new_surf.blit(outline_surf, (1, 1))
+
+    return new_surf
 
 
 def load_mob_animations(mob_settings: dict, size: tuple = (32, 32)):

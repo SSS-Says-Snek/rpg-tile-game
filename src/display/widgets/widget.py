@@ -4,6 +4,7 @@ This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
 
+
 class Widget:
     def draw(self, camera):
         pass

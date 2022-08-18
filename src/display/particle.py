@@ -52,11 +52,11 @@ class ParticleSystem(set):
                 .build()
             )
 
-    def create_effect_particle(self, color_func, pos, offset: tuple = (0, 0)):
+    def create_effect_particle(self, color_func, pos, angle_gauss: tuple = (180, 140), offset: tuple = (0, 0)):
         self.add(
             Particle()
             .builder()
-            .at(pygame.Vector2(pos.x + offset[0], pos.y + offset[1]), random.gauss(180, 140))
+            .at(pygame.Vector2(pos.x + offset[0], pos.y + offset[1]), random.gauss(*angle_gauss))
             .gravity(gravity_acc=0.35, gravity_y_vel=-5)
             .hsv(*color_func())
             .lifespan(frames=40)

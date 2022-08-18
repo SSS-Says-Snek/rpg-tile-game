@@ -140,7 +140,6 @@ class LevelState(State):
                         pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
                     ),
                     item_component.MeleeWeapon(attack_damage=sword_settings["damage"]),
-                    # item_component.Consumable(num_uses=40),
                     item_component.SlashingSword(),
                 )
 

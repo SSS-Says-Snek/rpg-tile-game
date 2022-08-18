@@ -12,8 +12,9 @@ from src.display.widgets.widget import Widget
 
 
 def create_tile_hover_surf(font):
-    surf = pygame.Surface((TILE_WIDTH, TILE_HEIGHT), pygame.SRCALPHA)
-    pygame.draw.rect(surf, (255, 0, 0), ((0, 0), surf.get_size()), border_radius=5)
+    surf = pygame.Surface((TILE_WIDTH + 4, TILE_HEIGHT + 4), pygame.SRCALPHA)
+    pygame.draw.rect(surf, (249, 204, 127), ((0, 0), surf.get_size()), border_radius=5)
+    pygame.draw.rect(surf, (80, 46, 23), ((0, 0), surf.get_size()), width=2, border_radius=5)
 
     txt_surf = font.render("E", True, (0, 0, 0))
     txt_surf_rect = txt_surf.get_rect(center=(TILE_WIDTH // 2 + 2, TILE_HEIGHT // 2 + 1))
@@ -34,9 +35,10 @@ class TileHover(Widget):
 
     def __init__(self, tile):
         self.x = tile.x * tile.tile_width
-        self.y = (tile.y - 2) * tile.tile_height
+        self.y = tile.y * tile.tile_height
+        self.hover_y = self.y - 2 * tile.tile_height
 
-        self.rect = pygame.Rect(self.x, self.y, tile.tile_width, tile.tile_height)
+        self.rect = pygame.Rect(self.x, self.hover_y, tile.tile_width, tile.tile_height)
 
     def draw(self, camera):
         # Adjust bob
@@ -44,6 +46,7 @@ class TileHover(Widget):
         rect_copy.y += round(math.sin(pygame.time.get_ticks() / 150) * 5)
 
         screen.blit(self.SURF, camera.apply(rect_copy))
+        # screen.blit(self.outline, camera.apply(self.x, self.y))
 
 
 class SignDialogue(Widget):
@@ -108,18 +111,20 @@ class SignDialogue(Widget):
     def update(self, event_list, dts):
         for event in event_list:
             if event.type == pygame.KEYDOWN and event.key in (pygame.K_e, pygame.K_RETURN):
-                if self.state == SignState.INACTIVE:
+                if self.state == SignState.INACTIVE and self.update_text.time_passed(50):
                     self.state = SignState.TYPING
-                    self.update_text.time_instantiated = pygame.time.get_ticks()
-                elif self.update_text.time_passed(50):
-                    if self.state == SignState.TYPING:
-                        self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
-                        self.text_idxs["line"] = len(self.wrapped_text) - 1
-                        self.state = SignState.DONE
+                    self.update_text.update_time()
+                elif self.state == SignState.TYPING and self.update_text.time_passed(50):
+                    self.state = SignState.DONE
+                    self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
+                    self.text_idxs["line"] = len(self.wrapped_text) - 1
+                    self.update_text.update_time()
+                elif self.state == SignState.DONE and self.update_text.time_passed(50):
+                    self.state = SignState.INACTIVE
+                    self.text_idxs = {"total": 0, "line": 0, "char": 0}
+                    self.update_text.update_time()
 
     def draw(self, _):  # Static
-        keys = pygame.key.get_pressed()
-
         # Handle indexing
         if self.state != SignState.INACTIVE:
             if self.state == SignState.TYPING and self.update_text.update():
