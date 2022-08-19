@@ -11,10 +11,9 @@ import types
 import esper
 
 from src import pygame, screen, utils
-
 from src.entities.components import tile_component
-from src.entities.systems.system import System
 from src.entities.components.component import *
+from src.entities.systems.system import System
 
 
 class TestBlit:

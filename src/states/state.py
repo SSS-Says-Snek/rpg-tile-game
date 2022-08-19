@@ -6,8 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the State base class for all game states
 """
 
-import importlib
 import abc
+import importlib
 from typing import TYPE_CHECKING
 
 from src import pygame, screen
@@ -30,7 +30,7 @@ class State(abc.ABC):
     def handle_event(self, event: pygame.event.Event):
         pass
 
-    def update(self) -> None:
+    def update(self, event_list: list, dts: dict) -> None:
         pass
 
     def change_state(self, desired_state_str: str):

@@ -11,10 +11,9 @@ from __future__ import annotations
 import pygame
 
 from src import utils
-from src.entities.systems.system import System
-
 from src.entities.components import item_component
-from src.entities.components.component import Position, Movement, Graphics, Flags, Inventory
+from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
+from src.entities.systems.system import System
 
 
 class CollisionSystem(System):

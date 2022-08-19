@@ -9,9 +9,8 @@ This file defines the projectile system, used to move and handle projectiles
 import math
 
 from src import pygame, utils
-
-from src.entities.systems.system import System
 from src.entities.components import component, projectile_component
+from src.entities.systems.system import System
 
 
 class ProjectileSystem(System):

@@ -7,11 +7,11 @@ This file defines the TileMap class, which is used to further interact with pytm
 """
 
 import pathlib
+
 import pygame
 import pytmx
 
-from src.common import TILE_WIDTH, TILE_HEIGHT
-
+from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.entities.components import tile_component
 from src.entities.components.component import *
 

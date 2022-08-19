@@ -7,7 +7,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 import math
 
 from src import pygame, screen, utils
-from src.common import WIDTH, IMG_DIR, TILE_WIDTH, TILE_HEIGHT
+from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
 from src.display.widgets.widget import Widget
 
 
@@ -57,6 +57,7 @@ class SignDialogue(Widget):
         self.text = text
         self.width = 750
         self.height = 200
+        self.x_offset = 50
 
         self.font = utils.load_font(16, "Minecraftia")
         self.rect = pygame.Rect(0, 0, self.width, self.height)
@@ -82,7 +83,10 @@ class SignDialogue(Widget):
 
             # Checks word by word to see the longest possible line that doesn't exceed the width
             while i < len(words):
-                if self.font.size(" ".join(words[start : i + 1]))[0] > self.width - 100:
+                if (
+                    self.font.size(" ".join(words[start : i + 1]))[0]
+                    > self.width - 2 * self.x_offset
+                ):
                     wrapped_text.append(" ".join(words[start:i]))
                     start = i
                 i += 1
@@ -97,7 +101,7 @@ class SignDialogue(Widget):
 
         for i, wrapped_line in enumerate(wrapped_text):
             line_surf = self.font.render(wrapped_line, False, (78, 53, 36))
-            x, y = self.rect.x + 50, self.rect.y + 35 + i * self.font.get_height() * 1.3
+            x, y = self.rect.x + self.x_offset, self.rect.y + 35 + i * self.font.get_height() * 1.3
             screen.blit(line_surf, (x, y))
 
         if line_surf is not None and self.show_cursor:
@@ -110,19 +114,22 @@ class SignDialogue(Widget):
 
     def update(self, event_list, dts):
         for event in event_list:
-            if event.type == pygame.KEYDOWN and event.key in (pygame.K_e, pygame.K_RETURN):
-                if self.state == SignState.INACTIVE and self.update_text.time_passed(50):
+            if (
+                event.type == pygame.KEYDOWN
+                and event.key in (pygame.K_e, pygame.K_RETURN)
+                and self.update_text.time_passed(50)
+            ):
+                if self.state == SignState.INACTIVE:
                     self.state = SignState.TYPING
-                    self.update_text.update_time()
-                elif self.state == SignState.TYPING and self.update_text.time_passed(50):
+                elif self.state == SignState.TYPING:
                     self.state = SignState.DONE
                     self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
                     self.text_idxs["line"] = len(self.wrapped_text) - 1
-                    self.update_text.update_time()
-                elif self.state == SignState.DONE and self.update_text.time_passed(50):
+                elif self.state == SignState.DONE:
                     self.state = SignState.INACTIVE
                     self.text_idxs = {"total": 0, "line": 0, "char": 0}
-                    self.update_text.update_time()
+
+                self.update_text.update_time()
 
     def draw(self, _):  # Static
         # Handle indexing

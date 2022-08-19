@@ -4,7 +4,7 @@ This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
 
-from typing import TYPE_CHECKING, Union, Tuple, List
+from typing import TYPE_CHECKING, List, Tuple, Union
 
 from src import pygame
 

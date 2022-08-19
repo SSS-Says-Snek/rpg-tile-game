@@ -11,12 +11,11 @@ import types
 from dataclasses import dataclass
 from typing import Generator
 
-from src import pygame, utils, common
-from src.entities.effect import RegenEffect
-
-from src.entities.systems.system import System
+from src import common, pygame, utils
 from src.entities.components import item_component, projectile_component
-from src.entities.components.component import Position, Movement, Health, Inventory
+from src.entities.components.component import Health, Inventory, Movement, Position
+from src.entities.effect import RegenEffect
+from src.entities.systems.system import System
 
 
 @dataclass
@@ -248,6 +247,7 @@ class CombatSystem(System):
                 # Gravity Bow
                 self.item_usages.handle_gravity_bow(item_data, entity)
 
+        # Consumables
         if self.world.has_component(equipped_item, item_component.Consumable):
             consumable = self.world.component_for_entity(equipped_item, item_component.Consumable)
             if not item.used:

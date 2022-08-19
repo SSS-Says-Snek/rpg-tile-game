@@ -7,16 +7,14 @@ This file contains widgets for the inventory
 """
 
 import pygame.gfxdraw
-from src import pygame, screen
-from src.types import Pos, Size
 
+from src import pygame, screen
 from src.display.ui import UI
 from src.display.widgets.health_bar import ItemDurabilityBar
 from src.display.widgets.widget import Widget
-
 from src.entities.components import item_component
-
 from src.entities.components.component import Inventory
+from src.types import Pos, Size
 
 
 class Hotbar(Widget):

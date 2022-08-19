@@ -8,13 +8,13 @@ This file defines the Game class, which contains vital data for states and is us
 import json
 from typing import Any
 
-from src import pygame, screen, common
+from src import common, pygame, screen
 
 pygame.init()
 
-from src.states.state import State
-from src.states.level_state import LevelState
 from src.display.ui import UI
+from src.states.level_state import LevelState
+from src.states.state import State
 
 
 class Game:
@@ -30,26 +30,22 @@ class Game:
         self.state: State = LevelState(self)
         self.loaded_states: dict[type(State), State] = {LevelState: self.state}
         self.running: bool = True
-        self.dts: dict[str, Any] = {"raw_dt": 0.0, "dt": 0.0}
-        self.events: list[pygame.event.Event] = []
 
         pygame.display.set_caption(self.settings["game"]["name"])
 
     def run(self) -> None:
         while self.running:
             # Set dt and events for other stuff to access via states
-            self.events = pygame.event.get()
-            self.dts["raw_dt"] = self.clock.tick(common.FPS) / 1000
-            self.dts["raw_dt"] = min(self.dts["raw_dt"], 0.2)
-
-            self.dts["dt"] = self.dts["raw_dt"] * common.FPS
+            events = pygame.event.get()
+            dts = {"raw_dt": self.clock.tick(common.FPS) / 1000}
+            dts["dt"] = dts["raw_dt"] * common.FPS
 
             pygame.display.set_caption(
                 f"{self.settings['game']['name']} - {self.clock.get_fps():.3} FPS"
             )
 
             # Event loop
-            for event in self.events:
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
 
@@ -57,7 +53,7 @@ class Game:
                 self.state.handle_event(event)
 
             # State runs other functions that get called once a frame
-            self.state.update()
+            self.state.update(events, dts)
 
             # State handles drawing
             self.state.draw()

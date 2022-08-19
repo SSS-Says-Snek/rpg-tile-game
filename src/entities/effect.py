@@ -7,13 +7,12 @@ Copyright (c) 2022-present SSS-Says-Snek
 import random
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
 from src import pygame, utils
 from src.display.particle import Particle
-from src.entities.components.component import Health, Position, Graphics
+from src.entities.components.component import Graphics, Health, Position
 
 
 class EffectSystem:

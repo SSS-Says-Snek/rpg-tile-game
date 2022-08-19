@@ -8,12 +8,12 @@ I decided for particles to NOT be ECS entities.
 """
 
 import random
-from math import radians, sin, cos
+from math import cos, radians, sin
 from typing import Callable, Union
 
 import pygame.gfxdraw
-from src import pygame, screen, utils
 
+from src import pygame, screen, utils
 from src.display.camera import Camera
 
 
@@ -52,7 +52,9 @@ class ParticleSystem(set):
                 .build()
             )
 
-    def create_effect_particle(self, color_func, pos, angle_gauss: tuple = (180, 140), offset: tuple = (0, 0)):
+    def create_effect_particle(
+        self, color_func, pos, angle_gauss: tuple = (180, 140), offset: tuple = (0, 0)
+    ):
         self.add(
             Particle()
             .builder()

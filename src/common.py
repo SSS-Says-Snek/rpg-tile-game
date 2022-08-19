@@ -7,8 +7,8 @@ This file defines some common variables
 """
 from __future__ import annotations
 
-
 import pathlib
+
 import pygame
 
 TILE_WIDTH: int = 32

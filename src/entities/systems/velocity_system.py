@@ -9,9 +9,9 @@ This file defines the velocity system, used to "move" entities around
 import math
 
 from src import pygame, utils
-
+from src.display.particle import Particle
 from src.entities.components import ai_component, component
-from src.entities.components.component import Flags, Position, Movement, Graphics
+from src.entities.components.component import Flags, Graphics, Movement, Position
 from src.entities.systems.system import System
 
 
@@ -47,6 +47,8 @@ class VelocitySystem(System):
                 ) and player_pos.on_ground:
                     player_pos.on_ground = False
                     player_movement.vel.y = self.player_settings["jump_vel"]
+
+                    # TODO: Add jump particles
 
     def process(self, event_list, dts) -> None:
         self.handle_player_keys(event_list)

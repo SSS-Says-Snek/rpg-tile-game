@@ -10,39 +10,39 @@ This file defines the level state, which is the state where the main game happen
 import esper
 
 # Important modules
-from src import pygame, common, utils
-from src.entities.systems.npc_combat_system import NPCCombatSystem
-from src.entities.systems.tile_interaction_system import TileInteractionSystem
-from src.tilemap import TileMap
+from src import common, pygame, utils
 
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
-from src.display.widgets.health_bar import PlayerHealthBar, MobHealthBar
+from src.display.widgets.health_bar import MobHealthBar, PlayerHealthBar
 from src.display.widgets.inventory import Hotbar
+
+# Non-ECS systems
+from src.entities import effect
 
 # Components
 from src.entities.components import ai_component, item_component
 from src.entities.components.component import (
     Flags,
-    Position,
-    Movement,
     Graphics,
     Health,
-    MeleeAttack,
     Inventory,
+    MeleeAttack,
+    Movement,
+    Position,
 )
-
-# Non-ECS systems
-from src.entities import effect
 
 # Systems
 from src.entities.systems.collision_system import CollisionSystem
-from src.entities.systems.graphics_system import GraphicsSystem
-from src.entities.systems.velocity_system import VelocitySystem
 from src.entities.systems.combat_system import CombatSystem
-from src.entities.systems.projectile_system import ProjectileSystem
+from src.entities.systems.graphics_system import GraphicsSystem
 from src.entities.systems.input_system import InputSystem
+from src.entities.systems.npc_combat_system import NPCCombatSystem
+from src.entities.systems.projectile_system import ProjectileSystem
+from src.entities.systems.tile_interaction_system import TileInteractionSystem
+from src.entities.systems.velocity_system import VelocitySystem
+from src.tilemap import TileMap
 
 # State (for inheritance)
 from .state import State
@@ -291,8 +291,8 @@ class LevelState(State):
             if event.key == pygame.K_F3:
                 self.debug = not self.debug
 
-    def update(self) -> None:
-        self.ecs_world.process(self.game_class.events, self.game_class.dts)
+    def update(self, events, dts) -> None:
+        self.ecs_world.process(events, dts)
 
         self.particle_system.update()
         self.effect_system.update()

@@ -5,7 +5,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 """
 
 from src import pygame
-from src.display.widgets.interactable_tiles import TileHover, SignDialogue
+from src.display.widgets.interactable_tiles import SignDialogue, TileHover
 
 
 class Tile:

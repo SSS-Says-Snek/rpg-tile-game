@@ -8,8 +8,8 @@ This file defines some utility functions
 import pathlib
 from functools import lru_cache
 
-from src import pygame, common
-from src.common import TILE_WIDTH, TILE_HEIGHT, ANIM_DIR
+from src import common, pygame
+from src.common import ANIM_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.display import animation
 
 
@@ -114,6 +114,7 @@ def load_img(path: pathlib.Path):
 @lru_cache(maxsize=512)
 def load_font(size: int, font_name="PixelMillenium"):
     return pygame.font.Font(common.FONT_DIR / f"{font_name}.ttf", size)
+
 
 def outline(surf: pygame.Surface):
     new_surf = pygame.Surface((surf.get_width() + 1, surf.get_height() + 1))

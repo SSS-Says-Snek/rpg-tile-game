@@ -7,11 +7,11 @@ Copyright (c) 2022-present SSS-Says-Snek
 import math
 
 import pytmx
-from src import pygame, screen, utils
 
-from src.entities.systems.system import System
+from src import pygame, screen, utils
 from src.entities.components import item_component, projectile_component
-from src.entities.components.component import Flags, Graphics, Position, Movement, Inventory
+from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
+from src.entities.systems.system import System
 
 
 class GraphicsSystem(System):
