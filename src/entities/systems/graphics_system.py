@@ -5,12 +5,15 @@ Copyright (c) 2022-present SSS-Says-Snek
 """
 
 import math
+import random
 
 import pytmx
 
-from src import pygame, screen, utils
+from src import common, pygame, screen, utils
+from src.display import particle
 from src.entities.components import item_component, projectile_component
-from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
+from src.entities.components.component import (Flags, Graphics, Inventory,
+                                               Movement, Position)
 from src.entities.systems.system import System
 
 
@@ -19,6 +22,7 @@ class GraphicsSystem(System):
         super().__init__(level_state)
 
         self.normal_map_surf, self.interactable_map_surf = self.tilemap.make_map()
+        self.wind_gust = -15
 
     def handle_sent_widgets(self, event_list, dts):
         for widget in self._send_to_graphics_widgets:
@@ -186,4 +190,26 @@ class GraphicsSystem(System):
 
         screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
 
+        self.level_state.ui.draw()
         self.handle_sent_widgets(event_list, dts)
+
+        # Adds wind gust particles
+        if random.random() < 0.35:
+            if random.random() < 0.05:
+                self.wind_gust = random.uniform(-15, -2.5)
+
+            self.particle_system.add(
+                particle.WindParticle()
+                .builder()
+                .at(
+                    pygame.Vector2(
+                        random.randint(0, self.camera.camera.x + common.WIDTH),
+                        random.randint(0, self.camera.camera.y + common.HEIGHT),
+                    )
+                )
+                .starting_vel(pygame.Vector2(self.wind_gust, random.uniform(0.3, 1.8)))
+                .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
+                .lifespan(1000)
+                .size(7)
+                .build()
+            )

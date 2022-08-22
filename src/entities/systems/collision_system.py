@@ -12,7 +12,8 @@ import pygame
 
 from src import utils
 from src.entities.components import item_component
-from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
+from src.entities.components.component import (Flags, Graphics, Inventory,
+                                               Movement, Position)
 from src.entities.systems.system import System
 
 

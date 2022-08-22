@@ -6,7 +6,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file contains the implementation of the Particle system as well as particles.
 I decided for particles to NOT be ECS entities.
 """
-
+import math
 import random
 from math import cos, radians, sin
 from typing import Callable, Union
@@ -69,7 +69,7 @@ class ParticleSystem(set):
 
     def create_fire_particle(self, pos, offset: tuple = (0, 0)):
         self.create_effect_particle(
-            lambda: (random.gauss(20, 20), random.gauss(1, 0.1)), pos, offset
+            lambda: (random.gauss(20, 20), random.gauss(1, 0.1)), pos, offset=offset
         )
 
     def create_regen_particle(self, pos, offset: tuple = (0, 0)):
@@ -83,13 +83,12 @@ class ParticleSystem(set):
             .builder()
             .at(pos=pos)
             .color(color=color)
-            .constant_vel(constant_vel=pygame.Vector2(0, -3))
+            .starting_vel(starting_vel=pygame.Vector2(0, -3))
             .lifespan(frames=30)
             .size(size=20)
             .text(text=txt)
             .effect_easeout_drift(easeout_speed=0.93)
             .effect_fade(start_fade_frac=0.5)
-            .die_only_lifespan()
             .build()
         )
 
@@ -104,16 +103,18 @@ class Particle:
         # Default values
         self.pos = pygame.Vector2(0, 0)
         self.draw_pos = pygame.Vector2(0, 0)
-        self.constant_vel = pygame.Vector2(0, 0)
+        self.starting_vel = pygame.Vector2(0, 0)
+        self.vel = pygame.Vector2(0, 0)
+        self.per_frame_vel = pygame.Vector2(0, 0)
         self.color = pygame.Color(0, 0, 0, 255)
         self.angle = 0
-        self.speed = 0
-        self.lifespan = 60
+        self.speed = None
+        self.lifespan = None
         self.size = 10
         self.gravity = 0
 
-        self.die_only_lifespan = False
         self.alive = True
+        self.static = False
         self.life = 0
         self.gravity_vel = 0
         self.effects = set()
@@ -134,10 +135,6 @@ class Particle:
             self.particle.color = pygame.Color(color)
             return self
 
-        def constant_vel(self, constant_vel: pygame.Vector2):
-            self.particle.constant_vel = constant_vel.copy()
-            return self
-
         def gravity(self, gravity_acc, gravity_y_vel: float = 0):
             self.particle.gravity = gravity_acc
             self.particle.gravity_vel = gravity_y_vel
@@ -150,7 +147,7 @@ class Particle:
             self.particle.color.hsva = (h, s, v, 100)
             return self
 
-        def lifespan(self, frames: int):
+        def lifespan(self, frames: Union[int, None]):
             self.particle.lifespan = frames
             return self
 
@@ -162,8 +159,13 @@ class Particle:
             self.particle.speed = speed
             return self
 
-        def die_only_lifespan(self):
-            self.particle.die_only_lifespan = True
+        def starting_vel(self, starting_vel: pygame.Vector2):
+            self.particle.vel = starting_vel.copy()
+            self.particle.starting_vel = starting_vel.copy()
+            return self
+
+        def static(self):
+            self.particle.static = True
             return self
 
         # CUSTOM EFFECTS
@@ -194,28 +196,37 @@ class Particle:
         self.life += 1
         self.gravity_vel += self.gravity
 
-        self.pos += (
-            cos(radians(self.angle)) * self.speed,
-            sin(radians(self.angle)) * self.speed,
-        )
-        self.pos += self.constant_vel
+        if self.speed is not None:
+            self.pos += (
+                cos(radians(self.angle)) * self.speed,
+                sin(radians(self.angle)) * self.speed,
+            )
+        self.pos += self.vel
         self.pos.y += self.gravity_vel
         self.draw_pos = self.pos.copy()
 
-        if self.life >= self.lifespan:
-            if self.die_only_lifespan:
-                self.alive = False
-            elif self.speed <= 0 or self.size <= 0 or self.color.a == 0:
-                self.alive = False
+        if (
+            (self.lifespan is not None and self.life >= self.lifespan)
+            or (self.speed is not None and self.speed <= 0)
+            or self.size <= 0
+            or self.color.a == 0
+        ):
+            self.alive = False
 
         for effect in self.effects:
             effect(self)
 
+        self.per_frame_vel.update()
+
     def draw(self, camera):
         # For now ONLY SQUARE (ofc I'll add derived particles)
+        particle_rect = pygame.Rect(*self.draw_pos, self.size, self.size)
+        if not self.static:
+            particle_rect = camera.apply(particle_rect)
+
         pygame.gfxdraw.box(
             screen,
-            camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size)),
+            particle_rect,
             self.color,
         )
 
@@ -238,10 +249,11 @@ class TextParticle(Particle):
 
         def effect_easeout_drift(self, easeout_speed: float):
             def easeout_y_drift(particle):
-                particle.constant_vel.y *= easeout_speed
+                particle.vel.y *= easeout_speed
 
             return self._effect(easeout_y_drift)
 
+    # For the typehints
     def builder(self):
         return self.Builder(self)
 
@@ -249,4 +261,15 @@ class TextParticle(Particle):
         self.text_surf.set_alpha(self.color.a)
         screen.blit(
             self.text_surf, camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size))
+        )
+
+
+class WindParticle(Particle):
+    def update(self):
+        super().update()
+
+        self.vel.x += (self.starting_vel.x - self.vel.x) / 20
+        self.vel.x += (-2 / 50 + self.starting_vel.x - self.vel.x) / 7
+        self.per_frame_vel.x = (
+            math.sin(pygame.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2
         )

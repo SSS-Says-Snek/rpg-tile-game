@@ -22,6 +22,7 @@ class Game:
         self.screen = screen
         self.clock = pygame.time.Clock()
 
+        # UI DRAWING MUST BE HANDLED IN THE STATE CODE DUE TO CONFLICTS FROM LEVEL_STATE
         self.ui = UI(None)
 
         with open(common.DATA_DIR / "settings.json") as f:
@@ -57,9 +58,6 @@ class Game:
 
             # State handles drawing
             self.state.draw()
-
-            # UI drawing
-            self.ui.draw()
 
             # State detector/switcher
             if self.state.next_state != self.state.__class__:

@@ -5,34 +5,26 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the level state, which is the state where the main game happens
 """
+import math
+import random
 
 # ECS system
 import esper
 
 # Important modules
 from src import common, pygame, utils
-
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
 from src.display.widgets.health_bar import MobHealthBar, PlayerHealthBar
 from src.display.widgets.inventory import Hotbar
-
 # Non-ECS systems
 from src.entities import effect
-
 # Components
 from src.entities.components import ai_component, item_component
-from src.entities.components.component import (
-    Flags,
-    Graphics,
-    Health,
-    Inventory,
-    MeleeAttack,
-    Movement,
-    Position,
-)
-
+from src.entities.components.component import (Flags, Graphics, Health,
+                                               Inventory, MeleeAttack,
+                                               Movement, Position)
 # Systems
 from src.entities.systems.collision_system import CollisionSystem
 from src.entities.systems.combat_system import CombatSystem
@@ -292,6 +284,7 @@ class LevelState(State):
                 self.debug = not self.debug
 
     def update(self, events, dts) -> None:
+        # Draws UI in GraphicsSystem
         self.ecs_world.process(events, dts)
 
         self.particle_system.update()
