@@ -5,9 +5,11 @@ Copyright (c) 2022-present SSS-Says-Snek
 """
 
 import math
+from enum import IntFlag, auto
 
 from src import pygame, screen, utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
+from src.display.transition import EaseTransition
 from src.display.widgets.widget import Widget
 
 
@@ -23,10 +25,14 @@ def create_tile_hover_surf(font):
     return surf
 
 
-class SignState:
-    INACTIVE = 0
-    TYPING = 1
-    DONE = 2
+class SignState(IntFlag):
+    INACTIVE = auto()
+    TRANSITION_UP = auto()
+    TYPING = auto()
+    DONE = auto()
+    TRANSITION_DOWN = auto()
+
+    WRITABLE = TRANSITION_UP | TYPING
 
 
 class TileHover(Widget):
@@ -51,13 +57,11 @@ class TileHover(Widget):
 
 class SignDialogue(Widget):
     DIALOGUE_BACKGROUND = utils.load_img(IMG_DIR / "misc" / "dialogue_background.png")
-    DIALOGUE_BACKGROUND_RECT = DIALOGUE_BACKGROUND.get_rect(center=(WIDTH // 2, 680))
 
     def __init__(self, text):
         self.text = text
-        self.width = 750
-        self.height = 200
-        self.x_offset = 50
+        self.width, self.height = self.DIALOGUE_BACKGROUND.get_size()
+        self.x_offset = 80
 
         self.font = utils.load_font(16, "Minecraftia")
         self.rect = pygame.Rect(0, 0, self.width, self.height)
@@ -69,8 +73,11 @@ class SignDialogue(Widget):
 
         self.show_cursor = True
         self.cursor_blink = utils.Task(500)
-
         self.wrapped_text = self.wrap_text(self.text)
+
+        # Easing transitions
+        self.transition_up = EaseTransition(800, self.rect.y, 1000, EaseTransition.ease_out_exp)
+        self.transition_down = EaseTransition(self.rect.y, 800, 1000, EaseTransition.ease_out_exp)
 
     def wrap_text(self, text: str):
         wrapped_text = []
@@ -120,21 +127,31 @@ class SignDialogue(Widget):
                 and self.update_text.time_passed(50)
             ):
                 if self.state == SignState.INACTIVE:
-                    self.state = SignState.TYPING
-                elif self.state == SignState.TYPING:
+                    self.state = SignState.TRANSITION_UP
+
+                    self.transition_up.start()
+                    self.transition_down.stop()
+                elif self.state in (SignState.TRANSITION_UP, SignState.TYPING):
                     self.state = SignState.DONE
                     self.text_idxs["char"] = len(self.wrapped_text[-1]) - 1
                     self.text_idxs["line"] = len(self.wrapped_text) - 1
                 elif self.state == SignState.DONE:
-                    self.state = SignState.INACTIVE
-                    self.text_idxs = {"total": 0, "line": 0, "char": 0}
+                    self.state = SignState.TRANSITION_DOWN
+
+                    self.transition_up.stop()
+                    self.transition_down.start()
 
                 self.update_text.update_time()
 
     def draw(self, _):  # Static
-        # Handle indexing
+        # Handle indexing and transition update
         if self.state != SignState.INACTIVE:
-            if self.state == SignState.TYPING and self.update_text.update():
+            self.transition_up.update()
+            self.transition_down.update()
+
+            if self.state == SignState.TRANSITION_UP and not self.transition_up.transitioning:
+                self.state = SignState.TYPING
+            if self.state in SignState.WRITABLE and self.update_text.update():
                 self.text_idxs["total"] += 1
                 self.text_idxs["char"] += 1
 
@@ -146,10 +163,19 @@ class SignDialogue(Widget):
                     self.state = SignState.DONE
             elif self.state == SignState.DONE and self.cursor_blink.update():
                 self.show_cursor = not self.show_cursor
+            elif (
+                self.state == SignState.TRANSITION_DOWN and not self.transition_down.transitioning
+            ):
+                self.state = SignState.INACTIVE
+                self.text_idxs = {"total": 0, "line": 0, "char": 0}
 
             # Draw body of dialogue
-            # pygame.draw.rect(screen, (128, 128, 128), self.rect, border_radius=10)
-            screen.blit(self.DIALOGUE_BACKGROUND, self.DIALOGUE_BACKGROUND_RECT)
+            # if self.e.value is not None:
+            if self.transition_down.value is not None:
+                self.rect.y = self.transition_down.value
+            elif self.transition_up.value is not None:
+                self.rect.y = self.transition_up.value
+            screen.blit(self.DIALOGUE_BACKGROUND, self.rect)
 
             # Handle the typing
             wrap_text_copy = self.wrapped_text

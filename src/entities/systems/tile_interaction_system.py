@@ -16,16 +16,6 @@ from src.entities.components.component import *
 from src.entities.systems.system import System
 
 
-class TestBlit:
-    def __init__(self):
-        self.text = "OMGGGGG"
-
-        self.txt_surf = pygame.font.SysFont("arial", 24).render("OMG", True, (0, 0, 0))
-
-    def draw(self, camera):
-        screen.blit(self.txt_surf, camera.apply((400, 400)))
-
-
 class TileInteractionSystem(System):
     class TileInteractions(types.SimpleNamespace):
         @staticmethod
