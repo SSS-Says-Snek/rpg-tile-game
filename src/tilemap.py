@@ -62,7 +62,7 @@ class TileMap:
                     entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
-                    tile_img = self.tilemap.get_tile_image_by_gid(gid)
+                    tile_img = self.tilemap.get_tile_image_by_gid(gid).convert_alpha()
                     blit_surf.blit(
                         tile_img,
                         (x * self.tilemap.tilewidth, y * self.tilemap.tileheight),

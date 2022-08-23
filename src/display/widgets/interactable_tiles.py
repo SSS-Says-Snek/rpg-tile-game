@@ -56,7 +56,7 @@ class TileHover(Widget):
 
 
 class SignDialogue(Widget):
-    DIALOGUE_BACKGROUND = utils.load_img(IMG_DIR / "misc" / "dialogue_background.png")
+    DIALOGUE_BACKGROUND = utils.load_img(IMG_DIR / "misc" / "dialogue_background.png").convert_alpha()
 
     def __init__(self, text):
         self.text = text
