@@ -32,11 +32,11 @@ class VelocitySystem(System):
         player_movement.vel.x = 0
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            player_movement.vel.x = -player_movement.angular_speed
+            player_movement.vel.x = -player_movement.speed
             player_pos.direction = -1
             player_graphics.sprites_state = "left"
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            player_movement.vel.x = player_movement.angular_speed
+            player_movement.vel.x = player_movement.speed
             player_pos.direction = 1
             player_graphics.sprites_state = "right"
 
@@ -78,14 +78,14 @@ class VelocitySystem(System):
                     < follows_entity_close.follow_range
                 ):
                     if entity_followed_pos.pos.x > pos.pos.x:
-                        movement.vel.x = movement.angular_speed
+                        movement.vel.x = movement.speed
                         pos.direction = 1
                     elif entity_followed_pos.pos.x < pos.pos.x:
-                        movement.vel.x = -movement.angular_speed
+                        movement.vel.x = -movement.speed
                         pos.direction = -1
 
             if flags.mob_type == "walker_enemy":
-                movement.vel.x = movement.angular_speed * movement.mob_specifics["movement_direction"]
+                movement.vel.x = movement.speed * movement.mob_specifics["movement_direction"]
 
                 mob_tile = utils.pixel_to_tile(pos.pos)
                 tile_next_beneath = (

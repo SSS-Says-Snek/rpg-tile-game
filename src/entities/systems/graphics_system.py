@@ -174,57 +174,7 @@ class GraphicsSystem(System):
                 self.camera.apply(projectile_pos.pos),
             )
 
-    def process(self, event_list, dts) -> None:
-        # Blits background
-        screen.blit(self.level_state.placeholder_background, (0, 0))
-
-        self.particle_system.draw_pre_interactables()
-        screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
-
-        # No shake :( thinking
-        self.camera.adjust_to(
-            dts["dt"],
-            self.world.component_for_entity(self.player, Position).pos,
-        )
-
-        self.draw_mobs(dts)
-
-        self.draw_world_items()
-
-        self.draw_projectiles()
-
-        self.particle_system.draw_pre_tilemap()
-        screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
-
-        self.particle_system.draw_pre_ui()
-        self.level_state.ui.draw()
-        self.particle_system.draw_post_ui()
-
-        self.handle_sent_widgets(event_list, dts)
-
-        # Adds wind gust particles
-        if random.random() < 0.35:
-            if random.random() < 0.05:
-                self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
-
-            self.particle_system.add(
-                particle.WindParticle()
-                .builder()
-                .at(
-                    pygame.Vector2(
-                        random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
-                        random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
-                    )
-                )
-                .starting_vel(
-                    pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8))
-                )
-                .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
-                .lifespan(500)
-                .size(random.randint(5, 8))
-                .build()
-            )
-
+    def draw_clouds(self):
         if random.random() < 0.022:
             self.particle_system.add(
                 ImageParticle()
@@ -253,3 +203,59 @@ class GraphicsSystem(System):
                 .effect_fade(0.9)
                 .build()
             )
+
+    def draw_wind_particles(self):
+        # Adds wind gust particles
+        if random.random() < 0.35:
+            if random.random() < 0.05:
+                self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
+
+            self.particle_system.add(
+                particle.WindParticle()
+                .builder()
+                .at(
+                    pygame.Vector2(
+                        random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
+                        random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
+                    )
+                )
+                .starting_vel(
+                    pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8))
+                )
+                .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
+                .lifespan(500)
+                .size(random.randint(5, 8))
+                .build()
+            )
+
+    def process(self, event_list, dts) -> None:
+        # Blits background
+        screen.blit(self.level_state.placeholder_background, (0, 0))
+
+        self.particle_system.draw_pre_interactables()
+        screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
+
+        # No shake :( thinking
+        self.camera.adjust_to(
+            dts["dt"],
+            self.world.component_for_entity(self.player, Position).pos,
+        )
+
+        self.draw_mobs(dts)
+
+        self.draw_world_items()
+
+        self.draw_projectiles()
+
+        self.particle_system.draw_pre_tilemap()
+        screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
+
+        self.particle_system.draw_pre_ui()
+        self.level_state.ui.draw()
+        self.particle_system.draw_post_ui()
+
+        self.handle_sent_widgets(event_list, dts)
+
+        self.draw_wind_particles()
+
+        self.draw_clouds()
