@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
 from src import pygame, utils
-from src.display.particle import Particle
 from src.entities.components.component import Graphics, Health, Position
 
 
@@ -36,9 +35,6 @@ class EffectSystem:
     def draw(self):
         for entity, effect in self.effect_dict.items():
             effect.draw(entity, self.camera)
-
-
-# TODO: Add effect inheritance
 
 
 class Effect:

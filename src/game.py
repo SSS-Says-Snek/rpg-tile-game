@@ -6,7 +6,6 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the Game class, which contains vital data for states and is used to run the game
 """
 import json
-from typing import Any
 
 from src import common, pygame, screen
 

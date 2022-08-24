@@ -9,7 +9,6 @@ This file defines the velocity system, used to "move" entities around
 import math
 
 from src import pygame, utils
-from src.display.particle import Particle
 from src.entities.components import ai_component, component
 from src.entities.components.component import (Flags, Graphics, Movement,
                                                Position)
