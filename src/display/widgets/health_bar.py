@@ -106,11 +106,11 @@ class HealthBar(Widget):
             if self.health_component.hp > 0:
                 self.flash_size -= 1
                 self.flash_size *= 0.98
-                self.flash_size = max(0, self.flash_size - 3)
+                self.flash_size = max(0.0, self.flash_size - 0.8)
             else:
                 self.flash_size -= 1 / 4
                 self.flash_size *= 0.985
-                self.flash_size = max(0, self.flash_size)
+                self.flash_size = max(0.0, self.flash_size)
 
         pygame.draw.rect(self.screen, (0, 0, 0), rects[0], width=self.border_width)
         pygame.draw.rect(self.screen, hp_color, rects[1])

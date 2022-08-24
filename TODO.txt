@@ -1,0 +1,15 @@
+RANKED FROM HIGHEST TO LOWEST PRIORITY (SUBCATEGORIES INCLUDED)
+Use ✔ … ❌
+
+1. Polish the game …
+    - Add wind (ALMOST DONE, NEEDS LEAF SPRITE) …
+    - Add clouds ✔
+    - Add foliage/trees ❌
+    - Add feedback to most actions (E.g jump particles) ❌
+    - Add animations ❌
+2. Add more enemies/create better enemy AI ❌
+3. Add more items ❌
+4. Add combat skills ❌
+5. Add logic puzzles and create a better game framework …
+6. Add NPCs ❌
+7. Add cutscenes ❌

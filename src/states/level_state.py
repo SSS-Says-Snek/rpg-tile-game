@@ -5,9 +5,6 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the level state, which is the state where the main game happens
 """
-import math
-import random
-
 # ECS system
 import esper
 
@@ -271,7 +268,6 @@ class LevelState(State):
                 pass
 
     def draw(self) -> None:
-        self.particle_system.draw()
         self.effect_system.draw()
 
         if self.camera.shake_frames > 0:

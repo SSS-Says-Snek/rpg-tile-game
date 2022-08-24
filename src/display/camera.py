@@ -23,13 +23,21 @@ class Camera:
         self.shake_frames = 0
         self.shake_pixels = 5
 
-    def apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list]):
+    def apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list], parallax=None):
         if isinstance(target_pos, tuple) or isinstance(target_pos, list):
             target_pos = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
         elif isinstance(target_pos, pygame.Vector2):
             target_pos = pygame.Rect(target_pos.x, target_pos.y, 0, 0)
 
-        return target_pos.move((-self.camera.x, -self.camera.y))
+        if parallax is None:
+            return target_pos.move((-self.camera.x, -self.camera.y))
+
+        # Parallax
+        return pygame.Rect(
+            target_pos.x - self.camera.x * parallax,
+            target_pos.y - self.camera.y * parallax,
+            *target_pos.size
+        )
 
     def hard_apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list]):
         if isinstance(target_pos, tuple) or isinstance(target_pos, list):

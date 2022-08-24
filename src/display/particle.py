@@ -22,6 +22,7 @@ class ParticleSystem(set):
         super().__init__(*args, **kwargs)
 
         self.camera = camera
+        self.draw = self.draw_pre_ui
 
     def update(self) -> None:
         dead_particles = set()
@@ -34,9 +35,28 @@ class ParticleSystem(set):
 
         self.difference_update(dead_particles)
 
-    def draw(self):
+    #############################################################################################
+    # DRAWING FUNCTIONS: If drawing particles not on LevelState, just use ParticleSystem.draw() #
+    #############################################################################################
+
+    def _draw_base(self, draw_when):
         for particle in self:
-            particle.draw(self.camera)
+            if particle.draw_when == draw_when:
+                particle.draw(self.camera)
+
+    def draw_pre_interactables(self):
+        self._draw_base("pre_interactables")
+
+    def draw_pre_tilemap(self):
+        self._draw_base("pre_tilemap")
+
+    def draw_pre_ui(self):
+        for particle in self:
+            if particle.draw_when is None:
+                particle.draw(self.camera)
+
+    def draw_post_ui(self):
+        self._draw_base("post_ui")
 
     def create_hit_particles(self, num_particles, pos, color_list) -> None:
         for _ in range(num_particles):
@@ -47,7 +67,7 @@ class ParticleSystem(set):
                 .color(color=random.choice(color_list))
                 .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
                 .lifespan(frames=40)
-                .speed(speed=random.gauss(1.4, 0.8))
+                .angular_speed(speed=random.gauss(1.4, 0.8))
                 .effect_fade(start_fade_frac=0.5)
                 .build()
             )
@@ -62,7 +82,7 @@ class ParticleSystem(set):
             .gravity(gravity_acc=0.35, gravity_y_vel=-5)
             .hsv(*color_func())
             .lifespan(frames=40)
-            .speed(speed=random.gauss(1.4, 0.8))
+            .angular_speed(speed=random.gauss(1.4, 0.8))
             .effect_fade(start_fade_frac=0.5)
             .build()
         )
@@ -74,7 +94,7 @@ class ParticleSystem(set):
 
     def create_regen_particle(self, pos, offset: tuple = (0, 0)):
         self.create_effect_particle(
-            lambda: (random.gauss(120, 20), random.gauss(1, 0.08)), pos, offset
+            lambda: (random.gauss(120, 20), random.gauss(1, 0.08)), pos, offset=offset
         )
 
     def create_text_particle(self, pos, txt, color=(0, 0, 0)):
@@ -108,13 +128,15 @@ class Particle:
         self.per_frame_vel = pygame.Vector2(0, 0)
         self.color = pygame.Color(0, 0, 0, 255)
         self.angle = 0
-        self.speed = None
+        self.angular_speed = None
         self.lifespan = None
         self.size = 10
         self.gravity = 0
+        self.parallax_val = None
 
         self.alive = True
         self.static = False
+        self.draw_when = None
         self.life = 0
         self.gravity_vel = 0
         self.effects = set()
@@ -135,6 +157,10 @@ class Particle:
             self.particle.color = pygame.Color(color)
             return self
 
+        def draw_when(self, when):
+            self.particle.draw_when = when
+            return self
+
         def gravity(self, gravity_acc, gravity_y_vel: float = 0):
             self.particle.gravity = gravity_acc
             self.particle.gravity_vel = gravity_y_vel
@@ -151,12 +177,16 @@ class Particle:
             self.particle.lifespan = frames
             return self
 
+        def parallax(self, parallax_val):
+            self.particle.parallax_val = parallax_val
+            return self
+
         def size(self, size: float):
             self.particle.size = size
             return self
 
-        def speed(self, speed: float):
-            self.particle.speed = speed
+        def angular_speed(self, speed: float):
+            self.particle.angular_speed = speed
             return self
 
         def starting_vel(self, starting_vel: pygame.Vector2):
@@ -196,10 +226,10 @@ class Particle:
         self.life += 1
         self.gravity_vel += self.gravity
 
-        if self.speed is not None:
+        if self.angular_speed is not None:
             self.pos += (
-                cos(radians(self.angle)) * self.speed,
-                sin(radians(self.angle)) * self.speed,
+                cos(radians(self.angle)) * self.angular_speed,
+                sin(radians(self.angle)) * self.angular_speed,
             )
         self.pos += self.vel
         self.pos.y += self.gravity_vel
@@ -207,7 +237,7 @@ class Particle:
 
         if (
             (self.lifespan is not None and self.life >= self.lifespan)
-            or (self.speed is not None and self.speed <= 0)
+            or (self.angular_speed is not None and self.angular_speed <= 0)
             or self.size <= 0
             or self.color.a == 0
         ):
@@ -229,6 +259,52 @@ class Particle:
             particle_rect,
             self.color,
         )
+
+
+class ImageParticle(Particle):
+    def __init__(self):
+        super().__init__()
+
+        self.image = None
+
+    class Builder(Particle.Builder):
+        def image(self, image, convert_mode="alpha", scale=None, colorkey=None):
+            if convert_mode == "convert":
+                image = image.convert()
+            elif convert_mode == "alpha":
+                image = image.convert_alpha()
+            if scale:
+                image = pygame.transform.smoothscale(
+                    image, (image.get_width() * scale, image.get_height() * scale)
+                )
+            if colorkey:
+                image.set_colorkey(colorkey)
+
+            self.particle.image = image
+
+            return self
+
+        def effect_fade(self, start_fade_frac: float = 0):
+            def fade(particle):
+                start_fade = start_fade_frac * particle.lifespan
+                if particle.life < start_fade:
+                    return
+
+                adj_alpha = (particle.life - start_fade) / (particle.lifespan - start_fade)
+                particle.image.set_alpha(max(min(int((1 - adj_alpha) * 255), 255), 0))
+
+            return self._effect(fade)
+
+    # For the typehints
+    def builder(self):
+        return self.Builder(self)
+
+    def draw(self, camera):
+        if not self.static:
+            # It's technically now a rect, but that doesn't matter
+            self.draw_pos = camera.apply(self.draw_pos, self.parallax_val)
+
+        screen.blit(self.image, self.draw_pos)
 
 
 class TextParticle(Particle):

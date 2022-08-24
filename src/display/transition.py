@@ -52,6 +52,10 @@ class EaseTransition:
         return 1 - (-x * 2 + 2) ** 2 / 2
 
     @staticmethod
+    def ease_out_quad(x):
+        return 1 - (1 - x) ** 2
+
+    @staticmethod
     def ease_out_exp(x):
         if x == 1:
             return 1

@@ -11,6 +11,7 @@ import pytmx
 
 from src import common, pygame, screen, utils
 from src.display import particle
+from src.display.particle import ImageParticle
 from src.entities.components import item_component, projectile_component
 from src.entities.components.component import (Flags, Graphics, Inventory,
                                                Movement, Position)
@@ -23,6 +24,8 @@ class GraphicsSystem(System):
 
         self.normal_map_surf, self.interactable_map_surf = self.tilemap.make_map()
         self.wind_gusts = [-15, -15, -15]
+        self.cloud_parallax = 0.35
+        self.cloud_paths = list((common.IMG_DIR / "misc" / "clouds").iterdir())
 
     def handle_sent_widgets(self, event_list, dts):
         for widget in self._send_to_graphics_widgets:
@@ -174,6 +177,8 @@ class GraphicsSystem(System):
     def process(self, event_list, dts) -> None:
         # Blits background
         screen.blit(self.level_state.placeholder_background, (0, 0))
+
+        self.particle_system.draw_pre_interactables()
         screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
 
         # No shake :( thinking
@@ -188,29 +193,63 @@ class GraphicsSystem(System):
 
         self.draw_projectiles()
 
+        self.particle_system.draw_pre_tilemap()
         screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
 
+        self.particle_system.draw_pre_ui()
         self.level_state.ui.draw()
+        self.particle_system.draw_post_ui()
+
         self.handle_sent_widgets(event_list, dts)
 
         # Adds wind gust particles
         if random.random() < 0.35:
             if random.random() < 0.05:
-                self.wind_gust = random.uniform(-15, -2.5)
-                self.wind_gusts = [random.uniform(-15, -2.5) for _ in range(3)]
+                self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
 
             self.particle_system.add(
                 particle.WindParticle()
                 .builder()
                 .at(
                     pygame.Vector2(
-                        random.randint(0, self.camera.camera.x + common.WIDTH),
-                        random.randint(0, self.camera.camera.y + common.HEIGHT),
+                        random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
+                        random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
                     )
                 )
-                .starting_vel(pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8)))
+                .starting_vel(
+                    pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8))
+                )
                 .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
                 .lifespan(500)
                 .size(random.randint(5, 8))
+                .build()
+            )
+
+        if random.random() < 0.022:
+            self.particle_system.add(
+                ImageParticle()
+                .builder()
+                .at(
+                    pygame.Vector2(
+                        # MAGIC NUMBERS - DON'T QUESTION
+                        # Gist: Spawns clouds at appropriate pos outside of screen
+                        common.WIDTH + (self.camera.camera.x + common.WIDTH) * self.cloud_parallax +
+                        random.randint(-300, 400),
+
+                        self.camera.camera.y * self.cloud_parallax +
+                        random.randint(-75, 125)
+                    )
+                )
+                .image(
+                    utils.load_img(random.choice(self.cloud_paths)),
+                    scale=random.uniform(0.6, 1.1),
+                )
+                .starting_vel(
+                    pygame.Vector2(random.choice(self.wind_gusts) / random.uniform(13, 17) - 0.3, 0)
+                )
+                .lifespan(2000)
+                .draw_when("pre_interactables")
+                .parallax(self.cloud_parallax)
+                .effect_fade(0.9)
                 .build()
             )

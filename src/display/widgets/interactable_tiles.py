@@ -19,7 +19,7 @@ def create_tile_hover_surf(font):
     pygame.draw.rect(surf, (80, 46, 23), ((0, 0), surf.get_size()), width=2, border_radius=5)
 
     txt_surf = font.render("E", True, (0, 0, 0))
-    txt_surf_rect = txt_surf.get_rect(center=(TILE_WIDTH // 2 + 2, TILE_HEIGHT // 2 + 1))
+    txt_surf_rect = txt_surf.get_rect(center=(TILE_WIDTH // 2 + 2, TILE_HEIGHT // 2 + 3))
     surf.blit(txt_surf, txt_surf_rect)
 
     return surf
@@ -33,6 +33,7 @@ class SignState(IntFlag):
     TRANSITION_DOWN = auto()
 
     WRITABLE = TRANSITION_UP | TYPING
+    BOBBING = TYPING | DONE
 
 
 class TileHover(Widget):
@@ -56,7 +57,9 @@ class TileHover(Widget):
 
 
 class SignDialogue(Widget):
-    DIALOGUE_BACKGROUND = utils.load_img(IMG_DIR / "misc" / "dialogue_background.png").convert_alpha()
+    DIALOGUE_BACKGROUND = utils.load_img(
+        IMG_DIR / "misc" / "dialogue_background.png"
+    ).convert_alpha()
 
     def __init__(self, text):
         self.text = text
@@ -76,7 +79,7 @@ class SignDialogue(Widget):
         self.wrapped_text = self.wrap_text(self.text)
 
         # Easing transitions
-        self.transition_up = EaseTransition(800, self.rect.y, 1000, EaseTransition.ease_out_exp)
+        self.transition_up = EaseTransition(800, self.rect.y, 1000, EaseTransition.ease_out_quad)
         self.transition_down = EaseTransition(self.rect.y, 800, 1000, EaseTransition.ease_out_exp)
 
     def wrap_text(self, text: str):
@@ -149,9 +152,15 @@ class SignDialogue(Widget):
             self.transition_up.update()
             self.transition_down.update()
 
+            if self.transition_down.value is not None:
+                self.rect.y = self.transition_down.value
+            elif self.transition_up.value is not None:
+                self.rect.y = self.transition_up.value
+            draw_rect = self.rect.copy()
+
             if self.state == SignState.TRANSITION_UP and not self.transition_up.transitioning:
                 self.state = SignState.TYPING
-            if self.state in SignState.WRITABLE and self.update_text.update():
+            elif self.state in SignState.WRITABLE and self.update_text.update():
                 self.text_idxs["total"] += 1
                 self.text_idxs["char"] += 1
 
@@ -170,12 +179,7 @@ class SignDialogue(Widget):
                 self.text_idxs = {"total": 0, "line": 0, "char": 0}
 
             # Draw body of dialogue
-            # if self.e.value is not None:
-            if self.transition_down.value is not None:
-                self.rect.y = self.transition_down.value
-            elif self.transition_up.value is not None:
-                self.rect.y = self.transition_up.value
-            screen.blit(self.DIALOGUE_BACKGROUND, self.rect)
+            screen.blit(self.DIALOGUE_BACKGROUND, draw_rect)
 
             # Handle the typing
             wrap_text_copy = self.wrapped_text
