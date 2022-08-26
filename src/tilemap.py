@@ -11,9 +11,28 @@ import pathlib
 import pygame
 import pytmx
 
-from src.common import TILE_HEIGHT, TILE_WIDTH
+from src import utils
+from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.entities.components import tile_component
 from src.entities.components.component import *
+
+
+def extract_color(img, color, add_surf=None):
+    img = img.copy()
+    img.set_colorkey(color)
+    mask = pygame.mask.from_surface(img)
+    surf = mask.to_surface(setcolor=(0, 0, 0, 0), unsetcolor=color)
+    if add_surf:
+        base_surf = pygame.Surface(img.get_size())
+        base_surf.fill(color)
+        add_surf = (add_surf[0].convert(), add_surf[1])
+        add_surf[0].set_colorkey(add_surf[1])
+        base_surf.blit(add_surf[0], (0, 0))
+        base_surf.blit(surf, (0, 0))
+        base_surf.set_colorkey((0, 0, 0))
+        return base_surf
+    else:
+        return surf
 
 
 class TileMap:
@@ -34,6 +53,7 @@ class TileMap:
         # and are created through Tiled objects, rather than tiles. This is because
         # a lot of interactable tiles have specific data other tiles won't have.
         self.interactable_tiles = {}
+        self.deco_tiles = {}
 
     def make_map(self) -> tuple:
         normal_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -78,6 +98,32 @@ class TileMap:
                     tile, tile_component.Sign(tile, obj.text)
                 )
 
+            if obj.name.startswith("tree"):
+                tree_layer_col = [[192, 199, 65], [100, 125, 52], [23, 67, 75]]
+                img = utils.load_img(IMG_DIR / "misc" / "foliage" / f"{obj.name}.png")
+                img = pygame.transform.scale2x(img)
+                img.set_colorkey((0, 0, 0))
+
+                layers = []
+                for i, color in enumerate(tree_layer_col):
+                    if i == 0:
+                        layers.append(extract_color(img, color))
+                    else:
+                        layers.append(
+                            extract_color(
+                                img,
+                                color,
+                                add_surf=(
+                                    layers[-1],
+                                    tree_layer_col[i - 1],
+                                ),
+                            )
+                        )
+
+                self.deco_tiles[obj_pos] = self.ecs_world.create_entity(
+                    tile, tile_component.Decoration(img, layers)
+                )
+
         return normal_surf, interactable_surf
 
     def get_visible_tile_layers(self):
@@ -95,10 +141,10 @@ class TileMap:
 
             if self.ecs_world.component_for_entity(tile_entity, Flags).collidable:
                 unwalkable_tile_rect = pygame.Rect(
-                    tile.x * tile.tile_width,
-                    tile.y * tile.tile_height,
-                    tile.tile_width,
-                    tile.tile_height,
+                    tile.x * tile.obj_width,
+                    tile.y * tile.obj_height,
+                    tile.obj_width,
+                    tile.obj_height,
                 )
                 unwalkable_tile_rects.append(unwalkable_tile_rect)
 

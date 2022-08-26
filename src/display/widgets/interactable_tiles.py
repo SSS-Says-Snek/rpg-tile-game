@@ -41,11 +41,11 @@ class TileHover(Widget):
     SURF = create_tile_hover_surf(FONT)
 
     def __init__(self, tile):
-        self.x = tile.x * tile.tile_width
-        self.y = tile.y * tile.tile_height
-        self.hover_y = self.y - 2 * tile.tile_height
+        self.x = tile.x * tile.obj_width
+        self.y = tile.y * tile.obj_height
+        self.hover_y = self.y - 2 * tile.obj_height
 
-        self.rect = pygame.Rect(self.x, self.hover_y, tile.tile_width, tile.tile_height)
+        self.rect = pygame.Rect(self.x, self.hover_y, tile.obj_width, tile.obj_height)
 
     def draw(self, camera):
         # Adjust bob
@@ -79,8 +79,12 @@ class SignDialogue(Widget):
         self.wrapped_text = self.wrap_text(self.text)
 
         # Easing transitions
-        self.transition_up = EaseTransition(800, self.rect.y, 1000, EaseTransition.ease_out_quad)
-        self.transition_down = EaseTransition(self.rect.y, 800, 1000, EaseTransition.ease_out_exp)
+        self.transition_up = EaseTransition(
+            800, self.rect.y, 1000, EaseTransition.ease_out_exp, default_end=self.rect.y
+        )
+        self.transition_down = EaseTransition(
+            self.rect.y, 800, 1000, EaseTransition.ease_out_exp, default_end=800
+        )
 
     def wrap_text(self, text: str):
         wrapped_text = []
@@ -152,9 +156,9 @@ class SignDialogue(Widget):
             self.transition_up.update()
             self.transition_down.update()
 
-            if self.transition_down.value is not None:
+            if self.transition_down.transitioning:
                 self.rect.y = self.transition_down.value
-            elif self.transition_up.value is not None:
+            elif self.transition_up.transitioning:
                 self.rect.y = self.transition_up.value
             draw_rect = self.rect.copy()
 

@@ -33,13 +33,19 @@ class FadeTransition:
 
 class EaseTransition:
     def __init__(
-        self, begin: float, end: float, duration: int, ease_func: Callable[[float], float]
+        self,
+        begin: float,
+        end: float,
+        duration: int,
+        ease_func: Callable[[float], float],
+        default_end=None,
     ):
         self.begin = begin
         self.end = end
         self.range = end - begin
         self.duration = duration
         self.ease_func = ease_func
+        self.default_end = default_end
 
         self.transitioning = False
         self.time_started = 0
@@ -67,7 +73,7 @@ class EaseTransition:
 
     def stop(self):
         self.transitioning = False
-        self.value = None
+        self.value = self.default_end
 
     def update(self):
         if not self.transitioning:
@@ -78,4 +84,4 @@ class EaseTransition:
 
         if pygame.time.get_ticks() - self.time_started > self.duration:
             self.transitioning = False
-            self.value = None
+            self.value = self.default_end
