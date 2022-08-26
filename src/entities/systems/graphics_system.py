@@ -25,6 +25,7 @@ class GraphicsSystem(System):
 
         self.normal_map_surf, self.interactable_map_surf = self.tilemap.make_map()
         self.wind_gusts = [-15, -15, -15]
+        self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
         self.cloud_parallax = 0.3
         self.cloud_paths = list((common.IMG_DIR / "misc" / "clouds").iterdir())
 
@@ -35,16 +36,16 @@ class GraphicsSystem(System):
 
         self._send_to_graphics_widgets.clear()
 
-    def _draw_tree_layer(self, layer, adj_rect):
+    def _draw_tree_layer(self, layer, adj_rect, anim_offset):
         screen.blit(
-            pygame.transform.rotate(layer, math.sin(pygame.time.get_ticks() / 800)),
+            pygame.transform.rotate(layer, math.sin(pygame.time.get_ticks() / 800) * 1.4),
             self.camera.apply(
                 pygame.Vector2(adj_rect.topleft)
                 + pygame.Vector2(
-                    math.sin(pygame.time.get_ticks() / 600) * 2,
-                    math.sin(pygame.time.get_ticks() / 750) * 1.5,
+                    math.sin(pygame.time.get_ticks() / 600 + anim_offset) * 2,
+                    math.sin(pygame.time.get_ticks() / 750 + anim_offset) * 1.5,
                 )
-                * (self.wind_gusts[0] / 7.5)
+                * (self.wind_gusts[self.random_wind_gust_idx] / 7.5)
             ),
         )
 
@@ -225,6 +226,7 @@ class GraphicsSystem(System):
         if random.random() < 0.35:
             if random.random() < 0.05:
                 self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
+                self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
 
             self.particle_system.add(
                 particle.WindParticle()
@@ -250,14 +252,14 @@ class GraphicsSystem(System):
         ):
             adj_rect = tile_deco.img.get_rect(midbottom=tile.rect.midbottom)
 
-            self._draw_tree_layer(tile_deco.layers[-1], adj_rect)
+            self._draw_tree_layer(tile_deco.layers[-1], adj_rect, tile_deco.anim_offset)
             screen.blit(tile_deco.img, self.camera.apply(adj_rect))
 
             for i, layer in enumerate(tile_deco.layers[1::-1]):
                 if i == 0:
                     screen.blit(layer, self.camera.apply(adj_rect))
                 else:
-                    self._draw_tree_layer(layer, adj_rect)
+                    self._draw_tree_layer(layer, adj_rect, tile_deco.anim_offset)
 
     def process(self, event_list, dts) -> None:
         # Blits background

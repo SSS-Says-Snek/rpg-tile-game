@@ -3,6 +3,7 @@ This file is a part of the source code for rpg-tile-game
 This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
+import random
 
 from src import pygame
 from src.common import TILE_HEIGHT, TILE_WIDTH
@@ -33,3 +34,4 @@ class Decoration:
     def __init__(self, img, layers):
         self.img = img
         self.layers = layers
+        self.anim_offset = random.uniform(1, 3)
