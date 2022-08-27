@@ -223,7 +223,7 @@ class GraphicsSystem(System):
 
     def draw_wind_particles(self):
         # Adds wind gust particles
-        if random.random() < 0.35:
+        if random.random() < 0.19:
             if random.random() < 0.05:
                 self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
                 self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
@@ -260,6 +260,25 @@ class GraphicsSystem(System):
                     screen.blit(layer, self.camera.apply(adj_rect))
                 else:
                     self._draw_tree_layer(layer, adj_rect, tile_deco.anim_offset)
+
+            if random.random() < 0.07:
+                self.particle_system.add(
+                    particle.WindParticle()
+                        .builder()
+                        .at(
+                        pygame.Vector2(
+                            random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
+                            random.randint(tile.rect.y, tile.rect.y + tile.rect.height),
+                        )
+                    )
+                        .starting_vel(
+                        pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8)) / 1.5
+                    )
+                        .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
+                        .lifespan(500)
+                        .size(random.randint(5, 8))
+                        .build()
+                )
 
     def process(self, event_list, dts) -> None:
         # Blits background

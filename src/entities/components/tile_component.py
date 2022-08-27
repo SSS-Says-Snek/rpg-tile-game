@@ -34,4 +34,4 @@ class Decoration:
     def __init__(self, img, layers):
         self.img = img
         self.layers = layers
-        self.anim_offset = random.uniform(1, 3)
+        self.anim_offset = random.uniform(1, 6)
