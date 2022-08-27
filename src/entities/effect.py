@@ -74,7 +74,7 @@ class Effect:
 
     @property
     def on(self):
-        return not pygame.time.get_ticks() - self.time_created < self.duration * 1000
+        return not pygame.time.get_ticks() - self.time_created > self.duration * 1000
 
     def builder(self):
         return self.Builder(self)
