@@ -4,6 +4,8 @@ This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
 
+from __future__ import annotations
+
 import math
 import random
 
@@ -228,22 +230,12 @@ class GraphicsSystem(System):
                 self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
                 self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
 
-            self.particle_system.add(
-                particle.WindParticle()
-                .builder()
-                .at(
-                    pygame.Vector2(
-                        random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
-                        random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
-                    )
-                )
-                .starting_vel(
-                    pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8))
-                )
-                .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
-                .lifespan(500)
-                .size(random.randint(5, 8))
-                .build()
+            self.particle_system.create_wind_particle(
+                pygame.Vector2(
+                    random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
+                    random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
+                ),
+                self.wind_gusts,
             )
 
     def animate_trees(self):
@@ -262,22 +254,13 @@ class GraphicsSystem(System):
                     self._draw_tree_layer(layer, adj_rect, tile_deco.anim_offset)
 
             if random.random() < 0.07:
-                self.particle_system.add(
-                    particle.WindParticle()
-                        .builder()
-                        .at(
-                        pygame.Vector2(
-                            random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
-                            random.randint(tile.rect.y, tile.rect.y + tile.rect.height),
-                        )
-                    )
-                        .starting_vel(
-                        pygame.Vector2(random.choice(self.wind_gusts), random.uniform(0.3, 1.8)) / 1.5
-                    )
-                        .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
-                        .lifespan(500)
-                        .size(random.randint(5, 8))
-                        .build()
+                self.particle_system.create_wind_particle(
+                    pygame.Vector2(
+                        random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
+                        random.randint(tile.rect.y, tile.rect.y + tile.rect.height),
+                    ),
+                    self.wind_gusts,
+                    movement_factor=1.5,
                 )
 
     def process(self, event_list, dts) -> None:

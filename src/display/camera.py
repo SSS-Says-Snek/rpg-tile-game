@@ -7,6 +7,8 @@ This file defines the Camera class, used to shift objects around
 with respect to the player
 """
 
+from __future__ import annotations
+
 import random
 from typing import Union
 
@@ -36,7 +38,7 @@ class Camera:
         return pygame.Rect(
             target_pos.x - self.camera.x * parallax,
             target_pos.y - self.camera.y * parallax,
-            *target_pos.size
+            *target_pos.size,
         )
 
     def hard_apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list]):

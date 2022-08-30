@@ -3,6 +3,8 @@ This file is a part of the source code for rpg-tile-game
 This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
+from __future__ import annotations
+
 import random
 
 from src import pygame
@@ -21,8 +23,18 @@ class Tile:
         self.rect = pygame.Rect(x * TILE_WIDTH, y * TILE_HEIGHT, obj_width, obj_height)
 
 
+class Interactable:
+    def __init__(self, img):
+        self.outline_img = self.create_outline_img(img)
+
+    @staticmethod
+    def create_outline_img(img: pygame.Surface):
+        e = pygame.Surface((img.get_width() + 1, img.get_height() + 1))
+        pass
+
+
 class Sign:
-    def __init__(self, tile, text: str):
+    def __init__(self, tile: Tile, text: str):
         self.tile = tile
         self.text: str = text
 
@@ -31,7 +43,7 @@ class Sign:
 
 
 class Decoration:
-    def __init__(self, img, layers):
+    def __init__(self, img: pygame.Surface, layers: list):
         self.img = img
         self.layers = layers
         self.anim_offset = random.uniform(1, 6)

@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the TileMap class, which is used to further interact with pytmx
 """
 
+from __future__ import annotations
+
 import pathlib
 
 import pygame

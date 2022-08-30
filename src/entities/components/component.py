@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines components (data-only) for the game entities (integer IDs)
 """
 
+from __future__ import annotations
+
 __all__ = [
     "References",
     "Flags",

@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the input system, used to get player inputs
 """
 
+from __future__ import annotations
+
 from src import pygame
 from src.entities.components import item_component
 from src.entities.components.component import Inventory
@@ -29,7 +31,7 @@ class InputSystem(System):
                         adjusted_hotbar_rect = pygame.Rect(
                             hotbar_rect.x + hotbar_ui.frame_rect.x,
                             hotbar_rect.y,
-                            *hotbar_rect.size
+                            *hotbar_rect.size,
                         )
 
                         if adjusted_hotbar_rect.collidepoint(pygame.mouse.get_pos()):

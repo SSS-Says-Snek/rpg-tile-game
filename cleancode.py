@@ -3,6 +3,8 @@ A simple script to automate code cleanups.
 Did not copy majority from PygameCommunityBot again
 """
 
+from __future__ import annotations
+
 import glob
 import os
 import pathlib
@@ -88,6 +90,13 @@ def cleanup_code():
 
     print("\n====================== Reorganizing imports ======================")
     subprocess.run([sys.executable, "-m", "isort", "."])
+
+    print("\n====================== Adding future imports ======================")
+    subprocess.run(
+        [sys.executable, "-m", "isort", ".", "--add-import", "from __future__ import annotations"],
+        stdout=subprocess.DEVNULL,
+    )
+    print("Done!")
 
     # What is going on
     # print("\n====================== Reorganizing imports ======================")

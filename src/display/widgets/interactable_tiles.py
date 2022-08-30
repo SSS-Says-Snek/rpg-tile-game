@@ -4,6 +4,8 @@ This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
 
+from __future__ import annotations
+
 import math
 from enum import IntFlag, auto
 

@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines projectile components, similar to the components in component.py
 """
+from __future__ import annotations
+
 import math
 
 from src import pygame, utils

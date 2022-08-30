@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the projectile system, used to move and handle projectiles
 """
 
+from __future__ import annotations
+
 import math
 
 from src import pygame, utils
@@ -41,7 +43,7 @@ class ProjectileSystem(System):
             projectile_graphics.current_img, _ = utils.rot_center(
                 projectile_graphics.original_img,
                 math.degrees(math.atan2(projectile.vel.y, projectile.vel.x)) * projectile.vel_dir,
-                *projectile_pos.pos
+                *projectile_pos.pos,
             )
 
             # Handle projectile to entity collision

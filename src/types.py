@@ -4,6 +4,8 @@ This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, List, Tuple, Union
 
 from src import pygame

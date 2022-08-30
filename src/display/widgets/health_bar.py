@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file contains widgets for all health bars
 """
+from __future__ import annotations
+
 import colorsys
 import math
 from typing import Any

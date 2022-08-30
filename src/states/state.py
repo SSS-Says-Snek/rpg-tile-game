@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the State base class for all game states
 """
 
+from __future__ import annotations
+
 import abc
 import importlib
 from typing import TYPE_CHECKING

@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the level state, which is the state where the main game happens
 """
+from __future__ import annotations
+
 # ECS system
 import esper
 

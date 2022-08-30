@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the NPC combat system, which handles non-player entities to entity
 combat
 """
+from __future__ import annotations
+
 from src import pygame
 from src.entities.components import ai_component, item_component
 from src.entities.components.component import (Health, Inventory, MeleeAttack,

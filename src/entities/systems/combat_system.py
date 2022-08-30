@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the CombatSystem, which is used to interact and use items
 """
+from __future__ import annotations
+
 import math
 import operator
 import types

@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file contains the implementation of the Particle system as well as particles.
 I decided for particles to NOT be ECS entities.
 """
+from __future__ import annotations
+
 import math
 import random
 from math import cos, radians, sin
@@ -13,7 +15,7 @@ from typing import Callable, Union
 
 import pygame.gfxdraw
 
-from src import pygame, screen, utils
+from src import common, pygame, screen, utils
 from src.display.camera import Camera
 
 
@@ -109,6 +111,26 @@ class ParticleSystem(set):
             .text(text=txt)
             .effect_easeout_drift(easeout_speed=0.93)
             .effect_fade(start_fade_frac=0.5)
+            .build()
+        )
+
+    def create_wind_particle(self, pos, wind_gusts, movement_factor=1):
+        self.add(
+            WindParticle()
+            .builder()
+            .at(
+                pygame.Vector2(
+                    random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
+                    random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
+                )
+            )
+            .starting_vel(
+                pygame.Vector2(random.choice(wind_gusts), random.uniform(0.3, 1.8))
+                / movement_factor
+            )
+            .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
+            .lifespan(500)
+            .size(random.randint(5, 8))
             .build()
         )
 

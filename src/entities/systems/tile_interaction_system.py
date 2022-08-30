@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the tile interaction system, used for entity-to-tile interaction
 """
 
+from __future__ import annotations
+
 import types
 
 from src import pygame, utils

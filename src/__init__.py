@@ -6,4 +6,6 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file imports some common things from... common
 """
 
+from __future__ import annotations
+
 from .common import pygame, screen

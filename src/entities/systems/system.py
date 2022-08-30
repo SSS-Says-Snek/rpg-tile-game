@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file contains the base class of all systems
 """
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import esper

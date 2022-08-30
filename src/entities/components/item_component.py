@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines item components, similar to the components in component.py
 """
 
+from __future__ import annotations
+
 from src import pygame
 
 

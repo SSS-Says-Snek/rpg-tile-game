@@ -5,6 +5,9 @@ Copyright (c) 2022-present SSS-Says-Snek
 """
 
 
+from __future__ import annotations
+
+
 class FollowsEntityClose:
     def __init__(self, entity: int, follow_range: int):
         self.entity_followed = entity

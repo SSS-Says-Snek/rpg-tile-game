@@ -5,6 +5,9 @@ Copyright (c) 2022-present SSS-Says-Snek
 """
 
 
+from __future__ import annotations
+
+
 class Widget:
     def draw(self, camera):
         pass

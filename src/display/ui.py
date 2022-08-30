@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines the UI class, used to handle... the game UI
 """
+from __future__ import annotations
+
 from typing import Optional
 
 import esper

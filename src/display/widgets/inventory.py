@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file contains widgets for the inventory
 """
 
+from __future__ import annotations
+
 import pygame.gfxdraw
 
 from src import pygame, screen

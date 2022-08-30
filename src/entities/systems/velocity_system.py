@@ -6,6 +6,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 This file defines the velocity system, used to "move" entities around
 """
 
+from __future__ import annotations
+
 import math
 
 from src import pygame, utils

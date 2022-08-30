@@ -5,6 +5,8 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines some utility functions
 """
+from __future__ import annotations
+
 import pathlib
 from functools import lru_cache
 
