@@ -53,9 +53,7 @@ class ParticleSystem(set):
         self._draw_base("pre_tilemap")
 
     def draw_pre_ui(self):
-        for particle in self:
-            if particle.draw_when is None:
-                particle.draw(self.camera)
+        self._draw_base("pre_ui")
 
     def draw_post_ui(self):
         self._draw_base("post_ui")
@@ -158,7 +156,7 @@ class Particle:
 
         self.alive = True
         self.static = False
-        self.draw_when = None
+        self.draw_when = "pre_ui"
         self.life = 0
         self.gravity_vel = 0
         self.effects = set()

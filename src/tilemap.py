@@ -47,6 +47,8 @@ class TileMap:
         self.ecs_world = self.level_state.ecs_world
         self.ui = self.level_state.ui
 
+        self.tilename_to_img = {}
+
         # Tiles will be filled in on render_map
         self.tiles = {}
         self.entity_tiles = {}
@@ -69,6 +71,7 @@ class TileMap:
                     if tile_props is None:
                         continue
 
+                    tile_img = self.tilemap.get_tile_image_by_gid(gid).convert_alpha()
                     self.tiles[(layer_id, (x, y))] = tile_props
                     blit_surf = normal_surf
                     components = [
@@ -80,11 +83,14 @@ class TileMap:
                         flag_kwargs["collidable"] = True
                     if tile_props.get("interactable"):
                         blit_surf = interactable_surf
+                    if tile_props.get("tile_img"):
+                        tile_img_name = tile_props["tile_img"]
+                        if tile_img_name not in self.tilename_to_img:
+                            self.tilename_to_img[tile_img_name] = tile_img
 
                     entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
-                    tile_img = self.tilemap.get_tile_image_by_gid(gid).convert_alpha()
                     blit_surf.blit(
                         tile_img,
                         (x * self.tilemap.tilewidth, y * self.tilemap.tileheight),
@@ -97,7 +103,8 @@ class TileMap:
             if obj.name == "sign":
                 obj.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                 self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
-                    tile, tile_component.Sign(tile, obj.text)
+                    tile, tile_component.Interactable(tile, self.tilename_to_img["sign"]),
+                    tile_component.Sign(obj.text)
                 )
 
             if obj.name.startswith("tree"):

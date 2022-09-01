@@ -24,23 +24,30 @@ class Tile:
 
 
 class Interactable:
-    def __init__(self, img):
+    def __init__(self, tile: Tile, img):
         self.outline_img = self.create_outline_img(img)
+        self.hover = TileHover(tile, self.outline_img)
 
     @staticmethod
     def create_outline_img(img: pygame.Surface):
-        e = pygame.Surface((img.get_width() + 1, img.get_height() + 1))
-        pass
+        surf = pygame.Surface((img.get_width() + 3, img.get_height() + 3), pygame.SRCALPHA)
+        mask = pygame.mask.from_surface(img)
+        mask_outline = mask.outline()
+
+        # Blit semi-accurate outline of surf
+        pygame.draw.polygon(surf, (255, 255, 255), mask_outline, 2)
+
+        return surf
 
 
 class Sign:
-    def __init__(self, tile: Tile, text: str):
-        self.tile = tile
+    def __init__(self, text: str):
         self.text: str = text
 
-        self.hover = TileHover(tile)
         self.dialogue = SignDialogue(text)
 
+
+# TODO: Split into foliage
 
 class Decoration:
     def __init__(self, img: pygame.Surface, layers: list):

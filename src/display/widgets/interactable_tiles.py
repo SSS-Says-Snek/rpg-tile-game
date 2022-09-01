@@ -42,10 +42,11 @@ class TileHover(Widget):
     FONT = utils.load_font(32)
     SURF = create_tile_hover_surf(FONT)
 
-    def __init__(self, tile):
+    def __init__(self, tile, outline):
         self.x = tile.x * tile.obj_width
         self.y = tile.y * tile.obj_height
         self.hover_y = self.y - 2 * tile.obj_height
+        self.outline = outline
 
         self.rect = pygame.Rect(self.x, self.hover_y, tile.obj_width, tile.obj_height)
 
@@ -55,7 +56,7 @@ class TileHover(Widget):
         rect_copy.y += round(math.sin(pygame.time.get_ticks() / 150) * 5)
 
         screen.blit(self.SURF, camera.apply(rect_copy))
-        # screen.blit(self.outline, camera.apply(self.x, self.y))
+        screen.blit(self.outline, camera.apply((self.x - 1, self.y - 1)))
 
 
 class SignDialogue(Widget):

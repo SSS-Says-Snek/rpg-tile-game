@@ -5,6 +5,7 @@
   <properties>
    <property name="interactable" type="bool" value="true"/>
    <property name="tile" type="bool" value="true"/>
+   <property name="tile_img" value="sign"/>
   </properties>
  </tile>
  <tile id="1">

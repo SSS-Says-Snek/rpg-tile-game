@@ -31,12 +31,34 @@ class GraphicsSystem(System):
         self.cloud_parallax = 0.3
         self.cloud_paths = list((common.IMG_DIR / "misc" / "clouds").iterdir())
 
-    def handle_sent_widgets(self, event_list, dts):
-        for widget in self._send_to_graphics_widgets:
-            widget.draw(self.camera)
-            widget.update(event_list, dts)
+    #####################################################################
+    # DRAWING FUNCTIONS: Very similar to ParticleSystem's draw handling #
+    #####################################################################
 
-        self._send_to_graphics_widgets.clear()
+    def handle_widgets_base(self, event_list, dts, when):
+        for widget, widget_when in self._send_to_graphics_widgets:
+            if widget_when == when:
+                widget.draw(self.camera)
+                widget.update(event_list, dts)
+
+    def handle_pre_interactable_widgets(self, event_list, dts):
+        self.handle_widgets_base(event_list, dts, "pre_interactables")
+
+    def handle_post_interactable_widgets(self, event_list, dts):
+        self.handle_widgets_base(event_list, dts, "post_interactables")
+
+    def handle_pre_tilemap_widgets(self, event_list, dts):
+        self.handle_widgets_base(event_list, dts, "pre_tilemap")
+
+    def handle_pre_ui_widgets(self, event_list, dts):
+        self.handle_widgets_base(event_list, dts, "pre_ui")
+
+    def handle_post_ui_widgets(self, event_list, dts):
+        self.handle_widgets_base(event_list, dts, "post_ui")
+
+    ####################
+    # Helper functions #
+    ####################
 
     def _draw_tree_layer(self, layer, adj_rect, anim_offset):
         screen.blit(
@@ -267,14 +289,16 @@ class GraphicsSystem(System):
         # Blits background
         screen.blit(self.level_state.placeholder_background, (0, 0))
 
-        self.particle_system.draw_pre_interactables()
-        screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
-
         # No shake :( thinking
         self.camera.adjust_to(
             dts["dt"],
             self.world.component_for_entity(self.player, Position).pos,
         )
+
+        self.particle_system.draw_pre_interactables()
+        self.handle_pre_interactable_widgets(event_list, dts)
+        screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
+        self.handle_post_interactable_widgets(event_list, dts)
 
         self.animate_trees()
 
@@ -285,14 +309,18 @@ class GraphicsSystem(System):
         self.draw_projectiles()
 
         self.particle_system.draw_pre_tilemap()
+        self.handle_pre_tilemap_widgets(event_list, dts)
         screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
 
         self.particle_system.draw_pre_ui()
+        self.handle_pre_ui_widgets(event_list, dts)
         self.level_state.ui.draw()
         self.particle_system.draw_post_ui()
-
-        self.handle_sent_widgets(event_list, dts)
+        self.handle_post_ui_widgets(event_list, dts)
 
         self.draw_wind_particles()
 
         self.draw_clouds()
+
+        # Cleanup widgets
+        self._send_to_graphics_widgets.clear()

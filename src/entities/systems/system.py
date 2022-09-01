@@ -31,8 +31,8 @@ class System(esper.Processor):
 
         self.world: esper.World = self.world
 
-    def send_to_graphics(self, *widgets):
-        self._send_to_graphics_widgets.extend(widgets)
+    def send_to_graphics(self, *widgets, when="post_ui"):
+        self._send_to_graphics_widgets.extend(zip(widgets, [when] * len(widgets)))
 
     def process(self, event_list, dts) -> None:
         pass
