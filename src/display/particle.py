@@ -116,12 +116,7 @@ class ParticleSystem(set):
         self.add(
             WindParticle()
             .builder()
-            .at(
-                pygame.Vector2(
-                    random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
-                    random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
-                )
-            )
+            .at(pos)
             .starting_vel(
                 pygame.Vector2(random.choice(wind_gusts), random.uniform(0.3, 1.8))
                 / movement_factor
