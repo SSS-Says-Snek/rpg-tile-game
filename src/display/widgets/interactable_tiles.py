@@ -43,12 +43,12 @@ class TileHover(Widget):
     SURF = create_tile_hover_surf(FONT)
 
     def __init__(self, tile, outline):
-        self.x = tile.x * tile.obj_width
-        self.y = tile.y * tile.obj_height
-        self.hover_y = self.y - 2 * tile.obj_height
+        self.x = tile.x * tile.width
+        self.y = tile.y * tile.height
+        self.hover_y = self.y - 2 * tile.height
         self.outline = outline
 
-        self.rect = pygame.Rect(self.x, self.hover_y, tile.obj_width, tile.obj_height)
+        self.rect = pygame.Rect(self.x, self.hover_y, tile.width, tile.height)
 
     def draw(self, camera):
         # Adjust bob

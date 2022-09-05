@@ -12,8 +12,8 @@ import math
 
 from src import pygame, utils
 from src.entities.components import ai_component, component
-from src.entities.components.component import (Flags, Graphics, Movement,
-                                               Position)
+from src.entities.components.component import Flags, Graphics, Movement, Position
+
 from src.entities.systems.system import System
 
 
@@ -87,7 +87,7 @@ class VelocitySystem(System):
                         pos.direction = -1
 
             if flags.mob_type == "walker_enemy":
-                movement.vel.x = movement.speed * movement.mob_specifics["movement_direction"]
+                movement.vel.x = movement.speed * pos.direction
 
                 mob_tile = utils.pixel_to_tile(pos.pos)
                 tile_next_beneath = (
@@ -100,4 +100,4 @@ class VelocitySystem(System):
                 if actual_tile_next or not self.tilemap.tiles.get((0, tile_next_beneath)):
                     if actual_tile_next and not actual_tile_next.get("unwalkable"):
                         continue
-                    movement.mob_specifics["movement_direction"] *= -1
+                    pos.direction *= -1

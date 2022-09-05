@@ -13,6 +13,7 @@ import types
 from src import pygame, utils
 from src.entities.components import tile_component
 from src.entities.components.component import *
+
 from src.entities.systems.system import System
 
 
@@ -38,8 +39,6 @@ class TileInteractionSystem(System):
         return False
 
     def process(self, event_list, dts) -> None:
-        # super().process(event_list)
-
         for entity, (pos, *_) in self.world.get_components(Position, Movement):
             tile_entities = utils.get_neighboring_tile_entities(
                 self.tilemap, 2, pos, interacting_tiles=True
@@ -48,8 +47,10 @@ class TileInteractionSystem(System):
 
             for tile_entity in tile_entities:
                 tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
-                interactable = self.world.component_for_entity(tile_entity, tile_component.Interactable)
                 tile_rect = tile.rect
+                interactable = self.world.component_for_entity(
+                    tile_entity, tile_component.Interactable
+                )
 
                 # No interaction? Skip
                 if not player_rect.colliderect(tile_rect):
@@ -57,5 +58,5 @@ class TileInteractionSystem(System):
 
                 if self.world.has_component(tile_entity, tile_component.Sign):
                     sign = self.world.component_for_entity(tile_entity, tile_component.Sign)
-                    self.send_to_graphics(interactable.hover, when="post_interactables")
                     self.send_to_graphics(sign.dialogue)
+                    self.send_to_graphics(interactable.hover, when="post_interactables")

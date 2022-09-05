@@ -12,12 +12,10 @@ import random
 import pytmx
 
 from src import common, pygame, screen, utils
-from src.display import particle
 from src.display.particle import ImageParticle
-from src.entities.components import (item_component, projectile_component,
-                                     tile_component)
-from src.entities.components.component import (Flags, Graphics, Inventory,
-                                               Movement, Position)
+from src.entities.components import item_component, projectile_component, tile_component
+from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
+
 from src.entities.systems.system import System
 
 

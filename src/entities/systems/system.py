@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class System(esper.Processor):
+    # For system-to-graphics interaction
     _send_to_graphics_widgets = []
 
     def __init__(self, level_state: "LevelState"):

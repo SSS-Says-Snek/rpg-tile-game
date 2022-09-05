@@ -13,14 +13,14 @@ from src.display.widgets.interactable_tiles import SignDialogue, TileHover
 
 
 class Tile:
-    def __init__(self, x: int, y: int, obj_width: int, obj_height: int):
+    def __init__(self, x: int, y: int, width: int, height: int):
         self.x = x
         self.y = y
 
-        self.obj_width: int = obj_width
-        self.obj_height: int = obj_height
+        self.width: int = width
+        self.height: int = height
 
-        self.rect = pygame.Rect(x * TILE_WIDTH, y * TILE_HEIGHT, obj_width, obj_height)
+        self.rect = pygame.Rect(x * TILE_WIDTH, y * TILE_HEIGHT, width, height)
 
 
 class Interactable:
@@ -48,6 +48,7 @@ class Sign:
 
 
 # TODO: Split into foliage
+
 
 class Decoration:
     def __init__(self, img: pygame.Surface, layers: list):

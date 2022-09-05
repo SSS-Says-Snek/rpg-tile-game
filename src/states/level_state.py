@@ -12,27 +12,39 @@ import esper
 
 # Important modules
 from src import common, pygame, utils
+
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
 from src.display.widgets.health_bar import MobHealthBar, PlayerHealthBar
 from src.display.widgets.inventory import Hotbar
+
 # Non-ECS systems
 from src.entities import effect
+
 # Components
 from src.entities.components import ai_component, item_component
-from src.entities.components.component import (Flags, Graphics, Health,
-                                               Inventory, MeleeAttack,
-                                               Movement, Position)
+from src.entities.components.component import (
+    Flags,
+    Graphics,
+    Health,
+    Inventory,
+    MeleeAttack,
+    Movement,
+    Position,
+)
+
 # Systems
-from src.entities.systems.collision_system import CollisionSystem
-from src.entities.systems.combat_system import CombatSystem
-from src.entities.systems.graphics_system import GraphicsSystem
-from src.entities.systems.input_system import InputSystem
-from src.entities.systems.npc_combat_system import NPCCombatSystem
-from src.entities.systems.projectile_system import ProjectileSystem
-from src.entities.systems.tile_interaction_system import TileInteractionSystem
-from src.entities.systems.velocity_system import VelocitySystem
+from src.entities.systems import (
+    CollisionSystem,
+    CombatSystem,
+    GraphicsSystem,
+    InputSystem,
+    NPCCombatSystem,
+    ProjectileSystem,
+    TileInteractionSystem,
+    VelocitySystem,
+)
 from src.tilemap import TileMap
 
 # State (for inheritance)

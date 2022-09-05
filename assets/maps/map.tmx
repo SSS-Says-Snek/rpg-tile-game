@@ -107,7 +107,7 @@
  </layer>
  <objectgroup id="6" name="foliage_deco">
   <object id="11" name="tree_1" x="128" y="1408" width="96" height="96"/>
-  <object id="12" name="tree_1" x="480" y="1280" width="96" height="96"/>
+  <object id="12" name="tree_1" x="608" y="1024" width="96" height="96"/>
   <object id="15" name="tree_1" x="192" y="1184" width="96" height="96"/>
  </objectgroup>
  <objectgroup id="2" name="items">

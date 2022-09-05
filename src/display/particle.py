@@ -15,7 +15,7 @@ from typing import Callable, Union
 
 import pygame.gfxdraw
 
-from src import common, pygame, screen, utils
+from src import pygame, screen, utils
 from src.display.camera import Camera
 
 

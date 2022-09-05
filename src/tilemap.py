@@ -24,7 +24,7 @@ def extract_color(img, color, add_surf=None):
     img.set_colorkey(color)
     mask = pygame.mask.from_surface(img)
     surf = mask.to_surface(setcolor=(0, 0, 0, 0), unsetcolor=color)
-    if add_surf:
+    if add_surf is not None:
         base_surf = pygame.Surface(img.get_size())
         base_surf.fill(color)
         add_surf = (add_surf[0].convert(), add_surf[1])
@@ -33,8 +33,7 @@ def extract_color(img, color, add_surf=None):
         base_surf.blit(surf, (0, 0))
         base_surf.set_colorkey((0, 0, 0))
         return base_surf
-    else:
-        return surf
+    return surf
 
 
 class TileMap:
@@ -101,10 +100,15 @@ class TileMap:
 
             tile = tile_component.Tile(*obj_pos, obj.width, obj.height)
             if obj.name == "sign":
-                obj.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                obj.text = (
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+                    "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+                    "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                )
                 self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
-                    tile, tile_component.Interactable(tile, self.tilename_to_img["sign"]),
-                    tile_component.Sign(obj.text)
+                    tile,
+                    tile_component.Interactable(tile, self.tilename_to_img["sign"]),
+                    tile_component.Sign(obj.text),
                 )
 
             if obj.name.startswith("tree"):
@@ -150,10 +154,10 @@ class TileMap:
 
             if self.ecs_world.component_for_entity(tile_entity, Flags).collidable:
                 unwalkable_tile_rect = pygame.Rect(
-                    tile.x * tile.obj_width,
-                    tile.y * tile.obj_height,
-                    tile.obj_width,
-                    tile.obj_height,
+                    tile.x * tile.width,
+                    tile.y * tile.height,
+                    tile.width,
+                    tile.height,
                 )
                 unwalkable_tile_rects.append(unwalkable_tile_rect)
 
