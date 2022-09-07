@@ -75,7 +75,9 @@ def tile_to_pixel(
     return pygame.Vector2(tile_pos.x * tile_width, tile_pos.y * tile_height)
 
 
-def get_neighboring_tile_entities(tilemap: "TileMap", radius: int, pos, interacting_tiles=False) -> list:
+def get_neighboring_tile_entities(
+    tilemap: "TileMap", radius: int, pos, interacting_tiles=False
+) -> list:
     neighboring_tile_entities = []
 
     for layer_id in range(len(tilemap.get_visible_tile_layers())):

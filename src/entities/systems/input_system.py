@@ -11,9 +11,8 @@ from __future__ import annotations
 from src import pygame
 from src.entities.components import item_component
 from src.entities.components.component import Inventory
-
 from src.entities.systems.system import System
-from src.types import Events, Dts
+from src.types import Dts, Events
 
 
 class InputSystem(System):

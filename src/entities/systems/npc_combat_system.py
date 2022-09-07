@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from src import pygame
 from src.entities.components import ai_component, item_component
-from src.entities.components.component import Health, Inventory, MeleeAttack, Movement, Position
-
+from src.entities.components.component import (Health, Inventory, MeleeAttack,
+                                               Movement, Position)
 from src.entities.systems.system import System
-from src.types import Events, Dts
+from src.types import Dts, Events
 
 
 class NPCCombatSystem(System):

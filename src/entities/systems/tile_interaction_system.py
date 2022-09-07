@@ -13,9 +13,8 @@ import types
 from src import pygame, utils
 from src.entities.components import tile_component
 from src.entities.components.component import *
-
 from src.entities.systems.system import System
-from src.types import Events, Dts
+from src.types import Dts, Events
 
 
 class TileInteractionSystem(System):

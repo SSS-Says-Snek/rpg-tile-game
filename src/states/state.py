@@ -13,7 +13,7 @@ import importlib
 from typing import TYPE_CHECKING
 
 from src import pygame, screen
-from src.types import Events, Dts
+from src.types import Dts, Events
 
 if TYPE_CHECKING:
     from src.game import Game

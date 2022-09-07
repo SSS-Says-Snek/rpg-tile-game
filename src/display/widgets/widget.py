@@ -8,7 +8,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 from __future__ import annotations
 
 from src.display.camera import Camera
-from src.types import Events, Dts
+from src.types import Dts, Events
 
 
 class Widget:

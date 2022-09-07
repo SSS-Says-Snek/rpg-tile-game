@@ -15,9 +15,9 @@ from typing import Generator
 
 from src import common, pygame, utils
 from src.entities.components import item_component, projectile_component
-from src.entities.components.component import Health, Inventory, Movement, Position
+from src.entities.components.component import (Health, Inventory, Movement,
+                                               Position)
 from src.entities.effect import RegenEffect
-
 from src.entities.systems.system import System
 from src.types import Dts, Events
 

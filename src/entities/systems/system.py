@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import esper
+
 from src.display.widgets.widget import Widget
 from src.types import Dts, Events
 

@@ -12,7 +12,6 @@ import math
 
 from src import pygame, utils
 from src.entities.components import component, projectile_component
-
 from src.entities.systems.system import System
 from src.types import Dts, Events
 

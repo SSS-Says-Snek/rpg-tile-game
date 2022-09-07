@@ -9,7 +9,6 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -25,7 +24,9 @@ from src.entities.components.component import *
 from src.types import Color
 
 
-def extract_color(img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None):
+def extract_color(
+    img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None
+):
     img = img.copy()
     img.set_colorkey(color)
     mask = pygame.mask.from_surface(img)

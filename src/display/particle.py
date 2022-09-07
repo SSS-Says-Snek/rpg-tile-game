@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 import random
 from math import cos, radians, sin
-from typing import Callable, Union, Optional
+from typing import Callable, Optional, Union
 
 import pygame.gfxdraw
 
@@ -75,7 +75,11 @@ class ParticleSystem(set):
             )
 
     def create_effect_particle(
-        self, color_func: Callable[[], tuple[float, float]], pos: pygame.Vector2, angle_gauss: tuple[float, float] = (180, 140), offset: tuple[float, float] = (0, 0)
+        self,
+        color_func: Callable[[], tuple[float, float]],
+        pos: pygame.Vector2,
+        angle_gauss: tuple[float, float] = (180, 140),
+        offset: tuple[float, float] = (0, 0),
     ):
         self.add(
             Particle()
@@ -99,7 +103,9 @@ class ParticleSystem(set):
             lambda: (random.gauss(120, 20), random.gauss(1, 0.08)), pos, offset=offset
         )
 
-    def create_text_particle(self, pos: pygame.Vector2, txt: str, color: tuple[int, int, int] = (0, 0, 0)):
+    def create_text_particle(
+        self, pos: pygame.Vector2, txt: str, color: tuple[int, int, int] = (0, 0, 0)
+    ):
         self.add(
             TextParticle()
             .builder()
@@ -114,7 +120,9 @@ class ParticleSystem(set):
             .build()
         )
 
-    def create_wind_particle(self, pos: pygame.Vector2, wind_gusts: list[float], movement_factor: float = 1):
+    def create_wind_particle(
+        self, pos: pygame.Vector2, wind_gusts: list[float], movement_factor: float = 1
+    ):
         self.add(
             WindParticle()
             .builder()
@@ -285,7 +293,13 @@ class ImageParticle(Particle):
         self.image = None
 
     class Builder(Particle.Builder):
-        def image(self, image: pygame.Surface, convert_mode: str = "alpha", scale: Optional[float] = None, colorkey: Optional[Color] = None):
+        def image(
+            self,
+            image: pygame.Surface,
+            convert_mode: str = "alpha",
+            scale: Optional[float] = None,
+            colorkey: Optional[Color] = None,
+        ):
             if convert_mode == "convert":
                 image = image.convert()
             elif convert_mode == "alpha":

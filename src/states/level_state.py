@@ -7,47 +7,30 @@ This file defines the level state, which is the state where the main game happen
 """
 from __future__ import annotations
 
-from src.types import Events, Dts
-
 # ECS system
 import esper
 
 # Important modules
 from src import common, pygame, utils
-
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
 from src.display.widgets.health_bar import MobHealthBar, PlayerHealthBar
 from src.display.widgets.inventory import Hotbar
-
 # Non-ECS systems
 from src.entities import effect
-
 # Components
 from src.entities.components import ai_component, item_component
-from src.entities.components.component import (
-    Flags,
-    Graphics,
-    Health,
-    Inventory,
-    MeleeAttack,
-    Movement,
-    Position,
-)
-
+from src.entities.components.component import (Flags, Graphics, Health,
+                                               Inventory, MeleeAttack,
+                                               Movement, Position)
 # Systems
-from src.entities.systems import (
-    CollisionSystem,
-    CombatSystem,
-    GraphicsSystem,
-    InputSystem,
-    NPCCombatSystem,
-    ProjectileSystem,
-    TileInteractionSystem,
-    VelocitySystem,
-)
+from src.entities.systems import (CollisionSystem, CombatSystem,
+                                  GraphicsSystem, InputSystem, NPCCombatSystem,
+                                  ProjectileSystem, TileInteractionSystem,
+                                  VelocitySystem)
 from src.tilemap import TileMap
+from src.types import Dts, Events
 
 # State (for inheritance)
 from .state import State

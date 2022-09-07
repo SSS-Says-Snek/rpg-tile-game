@@ -37,7 +37,13 @@ class ItemPosition:
 
 
 class ItemGraphics:
-    def __init__(self, sprite: pygame.Surface, icon: Optional[pygame.Surface] = None, world_sprite: Optional[pygame.Surface] = None, flip_on_dir: bool = False):
+    def __init__(
+        self,
+        sprite: pygame.Surface,
+        icon: Optional[pygame.Surface] = None,
+        world_sprite: Optional[pygame.Surface] = None,
+        flip_on_dir: bool = False,
+    ):
         self.original_img = sprite
         self.current_img = sprite
         self.size = sprite.get_rect().size

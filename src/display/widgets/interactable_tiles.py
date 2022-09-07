@@ -18,7 +18,7 @@ from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
 from src.display.camera import Camera
 from src.display.transition import EaseTransition
 from src.display.widgets.widget import Widget
-from src.types import Events, Dts
+from src.types import Dts, Events
 
 
 def create_tile_hover_surf(font: pygame.font.Font) -> pygame.Surface:
