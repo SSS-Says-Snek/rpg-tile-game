@@ -8,14 +8,20 @@ from __future__ import annotations
 
 import math
 from enum import IntFlag, auto
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.entities.components.tile_component import Tile
 
 from src import pygame, screen, utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
+from src.display.camera import Camera
 from src.display.transition import EaseTransition
 from src.display.widgets.widget import Widget
+from src.types import Events, Dts
 
 
-def create_tile_hover_surf(font):
+def create_tile_hover_surf(font: pygame.font.Font) -> pygame.Surface:
     surf = pygame.Surface((TILE_WIDTH + 4, TILE_HEIGHT + 4), pygame.SRCALPHA)
     pygame.draw.rect(surf, (249, 204, 127), ((0, 0), surf.get_size()), border_radius=5)
     pygame.draw.rect(surf, (80, 46, 23), ((0, 0), surf.get_size()), width=2, border_radius=5)
@@ -42,7 +48,7 @@ class TileHover(Widget):
     FONT = utils.load_font(32)
     SURF = create_tile_hover_surf(FONT)
 
-    def __init__(self, tile, outline):
+    def __init__(self, tile: "Tile", outline: pygame.Surface):
         self.x = tile.x * tile.width
         self.y = tile.y * tile.height
         self.hover_y = self.y - 2 * tile.height
@@ -50,7 +56,7 @@ class TileHover(Widget):
 
         self.rect = pygame.Rect(self.x, self.hover_y, tile.width, tile.height)
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         # Adjust bob
         rect_copy = self.rect.copy()
         rect_copy.y += round(math.sin(pygame.time.get_ticks() / 150) * 5)
@@ -64,7 +70,7 @@ class SignDialogue(Widget):
         IMG_DIR / "misc" / "dialogue_background.png"
     ).convert_alpha()
 
-    def __init__(self, text):
+    def __init__(self, text: str):
         self.text = text
         self.width, self.height = self.DIALOGUE_BACKGROUND.get_size()
         self.x_offset = 80
@@ -112,7 +118,7 @@ class SignDialogue(Widget):
 
         return wrapped_text
 
-    def blit_wrapped_text(self, wrapped_text):
+    def blit_wrapped_text(self, wrapped_text: list[str]):
         x, y = 0, 0
         line_surf = None
 
@@ -129,7 +135,7 @@ class SignDialogue(Widget):
                 (x + line_surf.get_width(), y, 2, line_surf.get_height() * 4 / 5),
             )
 
-    def update(self, event_list, dts):
+    def update(self, event_list: Events, dts: Dts):
         for event in event_list:
             if (
                 event.type == pygame.KEYDOWN

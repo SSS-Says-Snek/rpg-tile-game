@@ -73,7 +73,7 @@ class Hotbar(Widget):
             )
             self.hotbar_durability_bars.append(durability_bar)
 
-    def idx_to_pixelx(self, idx):
+    def idx_to_pixelx(self, idx: int):
         return idx * self.frame_size[0] + idx * self.spacing
 
     def draw(self, _):  # Camera not used

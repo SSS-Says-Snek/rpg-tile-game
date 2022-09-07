@@ -17,6 +17,7 @@ from src.entities.components import item_component, projectile_component, tile_c
 from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
 
 from src.entities.systems.system import System
+from src.types import Events, Dts
 
 
 class GraphicsSystem(System):
@@ -33,32 +34,32 @@ class GraphicsSystem(System):
     # DRAWING FUNCTIONS: Very similar to ParticleSystem's draw handling #
     #####################################################################
 
-    def handle_widgets_base(self, event_list, dts, when):
+    def handle_widgets_base(self, event_list: Events, dts: Dts, when: str):
         for widget, widget_when in self._send_to_graphics_widgets:
             if widget_when == when:
                 widget.draw(self.camera)
                 widget.update(event_list, dts)
 
-    def handle_pre_interactable_widgets(self, event_list, dts):
+    def handle_pre_interactable_widgets(self, event_list: Events, dts: Dts):
         self.handle_widgets_base(event_list, dts, "pre_interactables")
 
-    def handle_post_interactable_widgets(self, event_list, dts):
+    def handle_post_interactable_widgets(self, event_list: Events, dts: Dts):
         self.handle_widgets_base(event_list, dts, "post_interactables")
 
-    def handle_pre_tilemap_widgets(self, event_list, dts):
+    def handle_pre_tilemap_widgets(self, event_list: Events, dts: Dts):
         self.handle_widgets_base(event_list, dts, "pre_tilemap")
 
-    def handle_pre_ui_widgets(self, event_list, dts):
+    def handle_pre_ui_widgets(self, event_list: Events, dts: Dts):
         self.handle_widgets_base(event_list, dts, "pre_ui")
 
-    def handle_post_ui_widgets(self, event_list, dts):
+    def handle_post_ui_widgets(self, event_list: Events, dts: Dts):
         self.handle_widgets_base(event_list, dts, "post_ui")
 
     ####################
     # Helper functions #
     ####################
 
-    def _draw_tree_layer(self, layer, adj_rect, anim_offset):
+    def _draw_tree_layer(self, layer: pygame.Surface, adj_rect: pygame.Rect, anim_offset: float):
         screen.blit(
             pygame.transform.rotate(layer, math.sin(pygame.time.get_ticks() / 800) * 1.4),
             self.camera.apply(
@@ -98,7 +99,7 @@ class GraphicsSystem(System):
                         width=1,
                     )
 
-    def _draw_mob(self, dts, entity, graphics, pos):
+    def _draw_mob(self, dts: Dts, entity: int, graphics: Graphics, pos: Position):
         """Draws the actual mob sprite and animations"""
         if not self.world.component_for_entity(entity, Flags).rotatable:
             if self.level_state.debug:
@@ -147,7 +148,7 @@ class GraphicsSystem(System):
             )
             screen.blit(rotated_sprite, self.camera.apply(new_pos))
 
-    def _draw_mob_item(self, entity, pos):
+    def _draw_mob_item(self, entity: int, pos: Position):
         """Draws the mob's equipped item (if any)"""
         if self.world.has_component(entity, Inventory):  # entity == self.player:
             inventory = self.world.component_for_entity(entity, Inventory)
@@ -176,7 +177,7 @@ class GraphicsSystem(System):
 
                 item_graphics.current_img = item_graphics.original_img
 
-    def draw_mobs(self, dts):
+    def draw_mobs(self, dts: Dts):
         """Draws all mobs appropriately"""
         for entity, (graphics, pos) in self.world.get_components(Graphics, Position):
             if self.level_state.debug:
@@ -283,7 +284,7 @@ class GraphicsSystem(System):
                     movement_factor=1.5,
                 )
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         # Blits background
         screen.blit(self.level_state.placeholder_background, (0, 0))
 

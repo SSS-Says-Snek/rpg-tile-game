@@ -10,6 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import esper
+from src.display.widgets.widget import Widget
+from src.types import Dts, Events
 
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
@@ -32,8 +34,8 @@ class System(esper.Processor):
 
         self.world: esper.World = self.world
 
-    def send_to_graphics(self, *widgets, when="post_ui"):
+    def send_to_graphics(self, *widgets: Widget, when: str = "post_ui"):
         self._send_to_graphics_widgets.extend(zip(widgets, [when] * len(widgets)))
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         pass

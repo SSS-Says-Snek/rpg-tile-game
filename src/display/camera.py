@@ -13,10 +13,11 @@ import random
 from typing import Union
 
 from src import pygame
+from src.types import Pos
 
 
 class Camera:
-    def __init__(self, camera_width, camera_height):
+    def __init__(self, camera_width: int, camera_height: int):
         self.camera_width = camera_width
         self.camera_height = camera_height
         self.camera = pygame.Rect(0, 0, self.camera_width, self.camera_height)
@@ -25,7 +26,7 @@ class Camera:
         self.shake_frames = 0
         self.shake_pixels = 5
 
-    def apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list], parallax=None):
+    def apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list], parallax: float = None):
         if isinstance(target_pos, tuple) or isinstance(target_pos, list):
             target_pos = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
         elif isinstance(target_pos, pygame.Vector2):
@@ -41,7 +42,7 @@ class Camera:
             *target_pos.size,
         )
 
-    def hard_apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list]):
+    def hard_apply(self, target_pos: Pos):
         if isinstance(target_pos, tuple) or isinstance(target_pos, list):
             target_pos = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
         elif isinstance(target_pos, pygame.Vector2):
@@ -49,12 +50,12 @@ class Camera:
 
         return target_pos.move(self.camera.topleft)
 
-    def adjust_to(self, dt, target_pos):
+    def adjust_to(self, dt: float, target_pos: pygame.Vector2):
         self.camera.x += dt * (target_pos.x - self.camera.x - self.camera_width // 2) // 20
 
         self.camera.y += dt * (target_pos.y - self.camera.y - self.camera_height // 2) // 20
 
-    def hard_adjust_to(self, target_pos):
+    def hard_adjust_to(self, target_pos: pygame.Vector2):
         x = self.camera_width // 2 - target_pos.x + self.shake_offset.x
         y = self.camera_height // 2 - target_pos.y + self.shake_offset.y
         self.camera.topleft = (x, y)

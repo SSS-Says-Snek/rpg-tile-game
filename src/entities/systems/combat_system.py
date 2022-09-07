@@ -19,6 +19,7 @@ from src.entities.components.component import Health, Inventory, Movement, Posit
 from src.entities.effect import RegenEffect
 
 from src.entities.systems.system import System
+from src.types import Dts, Events
 
 
 @dataclass
@@ -29,7 +30,7 @@ class ItemData:
     item: item_component.Item
     item_graphics: item_component.ItemGraphics
     item_pos: item_component.ItemPosition
-    interactable_entities: Generator
+    interactable_entities: Generator[tuple[int, list], None, None]
 
     def __iter__(self):
         return iter(
@@ -47,7 +48,7 @@ class ItemData:
 
 # Trying to refactor the item usages, still thinking
 class ItemUsages(types.SimpleNamespace):
-    def __init__(self, outer, **kwargs):
+    def __init__(self, outer: CombatSystem, **kwargs):
         super().__init__(**kwargs)
 
         self.outer = outer
@@ -57,7 +58,7 @@ class ItemUsages(types.SimpleNamespace):
         return self.outer.__dict__[item]
 
     # Slashing sword
-    def handle_slashing_sword(self, item_data):
+    def handle_slashing_sword(self, item_data: ItemData):
         # Initialization
         (
             equipped_item,
@@ -144,7 +145,7 @@ class ItemUsages(types.SimpleNamespace):
             melee_weapon.hit = False
 
     # Gravity Bow
-    def handle_gravity_bow(self, item_data, entity):
+    def handle_gravity_bow(self, item_data: ItemData, entity: int):
         (
             equipped_item,
             pos,
@@ -194,7 +195,7 @@ class ItemUsages(types.SimpleNamespace):
         item.used = False
 
     # Health potion
-    def handle_health_potion(self, item_data):
+    def handle_health_potion(self, item_data: ItemData):
         item, pos, equipped_item = item_data.item, item_data.pos, item_data.equipped_item
 
         owner_health = self.world.component_for_entity(item.owner, Health)
@@ -220,15 +221,15 @@ class CombatSystem(System):
 
     def handle_items(
         self,
-        equipped_item,
-        item_pos,
-        item_graphics,
-        pos,
-        item,
-        pivot_pos,
-        interactable_entities,
-        inventory,
-        entity,
+        equipped_item: int,
+        item_pos: item_component.ItemPosition,
+        item_graphics: item_component.ItemGraphics,
+        pos: Position,
+        item: item_component.Item,
+        pivot_pos: tuple[int, int],
+        interactable_entities: Generator[tuple[int, list], None, None],
+        inventory: Inventory,
+        entity: int,
     ):
         item_data = ItemData(
             equipped_item, pos, pivot_pos, item, item_graphics, item_pos, interactable_entities
@@ -267,7 +268,7 @@ class CombatSystem(System):
                 self.item_usages.handle_health_potion(item_data)
 
     # Actual processing
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         for entity, (pos, _) in self.world.get_components(Position, Movement):
             # Player to entity combat
             # For now, only player can wield weapons. Could definitely change

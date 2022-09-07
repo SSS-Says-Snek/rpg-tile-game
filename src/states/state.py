@@ -13,6 +13,7 @@ import importlib
 from typing import TYPE_CHECKING
 
 from src import pygame, screen
+from src.types import Events, Dts
 
 if TYPE_CHECKING:
     from src.game import Game
@@ -25,14 +26,14 @@ class State(abc.ABC):
         self.screen = screen
 
     @abc.abstractmethod
-    def draw(self) -> None:
+    def draw(self):
         pass
 
     @abc.abstractmethod
     def handle_event(self, event: pygame.event.Event):
         pass
 
-    def update(self, event_list: list, dts: dict) -> None:
+    def update(self, event_list: Events, dts: Dts):
         pass
 
     def change_state(self, desired_state_str: str):

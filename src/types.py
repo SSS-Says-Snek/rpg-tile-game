@@ -6,7 +6,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import TYPE_CHECKING, Union, Sequence
 
 from src import pygame
 
@@ -15,5 +15,8 @@ if TYPE_CHECKING:
     pass
 
 
-Pos = Union[Tuple[int, int], List[int], pygame.Vector2, "Position"]
-Size = Union[Tuple[int, int], List[int]]
+Pos = Union[tuple[int, int], list[int], pygame.Vector2, "Position"]
+Size = Union[tuple[int, int], list[int]]
+Color = Union[tuple[int, int, int], list[int], pygame.Color]
+Events = list[pygame.event.Event]
+Dts = dict[str, float]

@@ -13,13 +13,14 @@ from src.entities.components import ai_component, item_component
 from src.entities.components.component import Health, Inventory, MeleeAttack, Movement, Position
 
 from src.entities.systems.system import System
+from src.types import Events, Dts
 
 
 class NPCCombatSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         for entity, (pos, movement) in self.world.get_components(Position, Movement):
             # Non-player to entity (including player) damage interaction
             # FOR NOW! SUPER INEFFICIENT

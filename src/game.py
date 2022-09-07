@@ -35,7 +35,7 @@ class Game:
 
         pygame.display.set_caption(self.settings["game"]["name"])
 
-    def run(self) -> None:
+    def run(self):
         while self.running:
             # Set dt and events for other stuff to access via states
             events = pygame.event.get()

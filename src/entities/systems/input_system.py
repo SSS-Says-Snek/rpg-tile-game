@@ -13,13 +13,14 @@ from src.entities.components import item_component
 from src.entities.components.component import Inventory
 
 from src.entities.systems.system import System
+from src.types import Events, Dts
 
 
 class InputSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         inventory = self.world.component_for_entity(self.player, Inventory)
         equipped_item = inventory.inventory[inventory.equipped_item_idx]
 

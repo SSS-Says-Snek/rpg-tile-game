@@ -10,6 +10,11 @@ from __future__ import annotations
 
 import pathlib
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.states.level_state import LevelState
+
 import pygame
 import pytmx
 
@@ -17,9 +22,10 @@ from src import utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.entities.components import tile_component
 from src.entities.components.component import *
+from src.types import Color
 
 
-def extract_color(img, color, add_surf=None):
+def extract_color(img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None):
     img = img.copy()
     img.set_colorkey(color)
     mask = pygame.mask.from_surface(img)
@@ -37,7 +43,7 @@ def extract_color(img, color, add_surf=None):
 
 
 class TileMap:
-    def __init__(self, map_path: pathlib.Path, level_state):
+    def __init__(self, map_path: pathlib.Path, level_state: "LevelState"):
         self.tilemap = pytmx.load_pygame(str(map_path))
         self.width = self.tilemap.width * self.tilemap.tilewidth
         self.height = self.tilemap.height * self.tilemap.tileheight
@@ -58,7 +64,7 @@ class TileMap:
         self.interactable_tiles = {}
         self.deco_tiles = {}
 
-    def make_map(self) -> tuple:
+    def make_map(self) -> tuple[pygame.Surface, pygame.Surface]:
         normal_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         interactable_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -139,14 +145,14 @@ class TileMap:
 
         return normal_surf, interactable_surf
 
-    def get_visible_tile_layers(self):
+    def get_visible_tile_layers(self) -> list[pytmx.TiledTileLayer]:
         return [
             layer
             for layer in self.tilemap.visible_layers
             if isinstance(layer, pytmx.TiledTileLayer)
         ]
 
-    def get_unwalkable_rects(self, neighboring_tiles):
+    def get_unwalkable_rects(self, neighboring_tiles: list[int]) -> list[pygame.Rect]:
         unwalkable_tile_rects = []
 
         for tile_entity in neighboring_tiles:

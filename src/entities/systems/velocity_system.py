@@ -15,6 +15,7 @@ from src.entities.components import ai_component, component
 from src.entities.components.component import Flags, Graphics, Movement, Position
 
 from src.entities.systems.system import System
+from src.types import Events, Dts
 
 
 class VelocitySystem(System):
@@ -24,7 +25,7 @@ class VelocitySystem(System):
         self.settings = self.level_state.settings
         self.player_settings = self.settings["mobs"]["player"]
 
-    def handle_player_keys(self, event_list):
+    def handle_player_keys(self, event_list: Events):
         keys = pygame.key.get_pressed()
         player_movement = self.world.component_for_entity(self.player, Movement)
         player_pos = self.world.component_for_entity(self.player, Position)
@@ -52,7 +53,7 @@ class VelocitySystem(System):
 
                     # TODO: Add jump particles
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         self.handle_player_keys(event_list)
 
         for entity, (flags, pos, movement) in self.world.get_components(Flags, Position, Movement):

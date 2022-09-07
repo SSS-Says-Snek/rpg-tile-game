@@ -36,12 +36,12 @@ class References:  # Thinking about it
 class Flags:
     def __init__(
         self,
-        has_dialogue=False,
-        collidable=False,
-        rotatable=False,
-        mob_type=None,
-        damageable=False,
-        collide_with_player=False,
+        has_dialogue: bool = False,
+        collidable: bool = False,
+        rotatable: bool = False,
+        mob_type: Optional[str] = None,
+        damageable: bool = False,
+        collide_with_player: bool = False,
     ):
         self.has_dialogue = has_dialogue
         self.collidable = collidable
@@ -60,14 +60,14 @@ class Graphics:
         animations: Optional[dict] = None,
         animation_speeds: Optional[dict] = None,
     ):
-        self.sprite: Optional[pygame.Surface] = sprite
-        self.animations: dict = animations if animations is not None else {}
-        self.animation_speeds: dict = animation_speeds if animation_speeds is not None else {}
+        self.sprite = sprite
+        self.animations = animations if animations is not None else {}
+        self.animation_speeds = animation_speeds if animation_speeds is not None else {}
 
         if self.sprite is not None:
-            self.size: tuple = self.sprite.get_size()
+            self.size = self.sprite.get_size()
         elif self.animations is not None:
-            self.size: tuple = list(self.animations.values())[0].frames[0].get_size()
+            self.size = list(self.animations.values())[0].frames[0].get_size()
 
 
 class Position:
@@ -84,27 +84,25 @@ class Movement:
     def __init__(
         self,
         speed: float,
-        acc: pygame.Vector2 = None,
+        acc: Optional[pygame.Vector2] = None,
         gravity_acc: float = 1.3,
-        rot=0,
+        rot: float = 0,
     ):
-        self.speed: float = speed
-        self.vel: pygame.Vector2 = pygame.Vector2(0, 0)
+        self.speed = speed
+        self.vel = pygame.Vector2(0, 0)
 
         if acc is None:
-            self.acc: pygame.Vector2 = pygame.Vector2(0, 0)
+            self.acc = pygame.Vector2(0, 0)
         else:
-            self.acc: pygame.Vector2 = acc
-        self.gravity_acc: pygame.Vector2 = pygame.Vector2(0, gravity_acc)
+            self.acc = acc
+        self.gravity_acc = pygame.Vector2(0, gravity_acc)
         self.rot = rot
-
-        self.mob_specifics: collections.defaultdict = collections.defaultdict(lambda: None)
 
 
 class Health:
     def __init__(self, hp: float, max_hp: int):
-        self._hp: float = hp
-        self.max_hp: float = max_hp
+        self._hp = hp
+        self.max_hp = max_hp
 
     @property
     def hp(self):

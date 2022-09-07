@@ -8,18 +8,21 @@ This file defines item components, similar to the components in component.py
 
 from __future__ import annotations
 
+from typing import Optional
+
 from src import pygame
+from src.entities.components.component import Inventory
 
 
 class Item:
-    def __init__(self, name, cooldown, owner=None):
+    def __init__(self, name: str, cooldown: float, owner: Optional[int] = None):
         self.name = name
         self.owner = owner
         self.used = False
 
         self.cooldown = cooldown
 
-    def use(self, inventory_component):
+    def use(self, inventory_component: Inventory):
         self.used = True
 
         inventory_component.cooldown = self.cooldown
@@ -27,14 +30,14 @@ class Item:
 
 
 class ItemPosition:
-    def __init__(self, pos, in_inventory=False):
+    def __init__(self, pos: pygame.Vector2, in_inventory: bool = False):
         self.pos = pos
         self.rect = None
         self.in_inventory = in_inventory
 
 
 class ItemGraphics:
-    def __init__(self, sprite, icon=None, world_sprite=None, flip_on_dir=False):
+    def __init__(self, sprite: pygame.Surface, icon: Optional[pygame.Surface] = None, world_sprite: Optional[pygame.Surface] = None, flip_on_dir: bool = False):
         self.original_img = sprite
         self.current_img = sprite
         self.size = sprite.get_rect().size
@@ -54,7 +57,7 @@ class ItemGraphics:
 
 
 class Consumable:
-    def __init__(self, num_uses=1):
+    def __init__(self, num_uses: int = 1):
         self.total_uses = num_uses
         self.uses_left = num_uses
         self.consumed = False
@@ -69,7 +72,7 @@ class Consumable:
 
 
 class MeleeWeapon:
-    def __init__(self, attack_damage, effects=None):
+    def __init__(self, attack_damage: int, effects=None):
         self.attack_damage = attack_damage
 
         self.hit = False
@@ -84,27 +87,28 @@ class RangedWeapon:
 
 
 class SlashingSword:
-    def __init__(self, angle=0):
+    def __init__(self, angle: float = 0):
         self.angle = angle
 
         self.rect = None  # Reassign position after interaction with ItemPosition
 
 
 class GravityBow:
-    def __init__(self, launch_vel, angle=0):
+    def __init__(self, launch_vel: pygame.Vector2, angle: float = 0):
         self.angle = angle
         self.launch_vel = launch_vel
 
 
 class HealthPotion:
-    def __init__(self, heal_power):
+    def __init__(self, heal_power: int):
         self.heal_power = heal_power
 
 
 class Projectile:
-    def __init__(self, vel, gravity=False):
+    def __init__(self, vel: pygame.Vector2, gravity: bool = False):
         self.vel = vel
         self.gravity = gravity
 
 
+# Aliases
 Durability = Consumable

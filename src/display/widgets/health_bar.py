@@ -22,7 +22,7 @@ from src.types import Pos
 class HealthBar(Widget):
     def __init__(
         self,
-        _health_component,
+        health_component,
         screen,
         ui: UI,
         entity: int,
@@ -42,7 +42,7 @@ class HealthBar(Widget):
         self.height = height
         self.border_width = border_width
 
-        self.health_component = self.ui.world.component_for_entity(self.entity, _health_component)
+        self.health_component = self.ui.world.component_for_entity(self.entity, health_component)
 
         if isinstance(self.pos, Position):
             self.border_rect = pygame.Rect(
@@ -146,7 +146,7 @@ class PlayerHealthBar(HealthBar):
         health_component: Any = Health,
     ):
         super().__init__(
-            _health_component=health_component,
+            health_component=health_component,
             screen=screen,
             ui=ui,
             entity=entity,
@@ -183,7 +183,7 @@ class MobHealthBar(HealthBar):
         center: bool = False,
     ):
         super().__init__(
-            _health_component=Health,
+            health_component=Health,
             screen=screen,
             ui=ui,
             entity=entity,

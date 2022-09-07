@@ -24,7 +24,7 @@ class Tile:
 
 
 class Interactable:
-    def __init__(self, tile: Tile, img):
+    def __init__(self, tile: Tile, img: pygame.Surface):
         self.outline_img = self.create_outline_img(img)
         self.hover = TileHover(tile, self.outline_img)
 
@@ -51,7 +51,7 @@ class Sign:
 
 
 class Decoration:
-    def __init__(self, img: pygame.Surface, layers: list):
+    def __init__(self, img: pygame.Surface, layers: list[pygame.Surface]):
         self.img = img
         self.layers = layers
         self.anim_offset = random.uniform(1, 6)

@@ -5,7 +5,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 """
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Optional
 
 from src import pygame, screen
 
@@ -14,7 +14,7 @@ class FadeTransition:
     FADE_IN = 0
     FADE_OUT = 1
 
-    def __init__(self, mode: int, fade_rate: float, screen_to_fade=screen):
+    def __init__(self, mode: int, fade_rate: float, screen_to_fade: pygame.Surface = screen):
         self.mode = mode
         self.fade_rate = fade_rate
         self.screen_to_fade = screen_to_fade
@@ -40,7 +40,7 @@ class EaseTransition:
         end: float,
         duration: int,
         ease_func: Callable[[float], float],
-        default_end=None,
+        default_end: Optional[float] = None,
     ):
         self.begin = begin
         self.end = end
@@ -54,17 +54,17 @@ class EaseTransition:
         self.value = None
 
     @staticmethod
-    def ease_in_out_quad(x):
+    def ease_in_out_quad(x: float):
         if x < 0.5:
             return 2 * x**2
         return 1 - (-x * 2 + 2) ** 2 / 2
 
     @staticmethod
-    def ease_out_quad(x):
+    def ease_out_quad(x: float):
         return 1 - (1 - x) ** 2
 
     @staticmethod
-    def ease_out_exp(x):
+    def ease_out_exp(x: float):
         if x == 1:
             return 1
         return 1 - (2 ** (-10 * x))

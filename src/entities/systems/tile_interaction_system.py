@@ -15,6 +15,7 @@ from src.entities.components import tile_component
 from src.entities.components.component import *
 
 from src.entities.systems.system import System
+from src.types import Events, Dts
 
 
 class TileInteractionSystem(System):
@@ -27,18 +28,18 @@ class TileInteractionSystem(System):
         super().__init__(level_state)
 
     @staticmethod
-    def get_event(event_list, event_type):
+    def get_event(event_list: Events, event_type: int):
         for event in event_list:
             if event.type == event_type:
                 return event
 
-    def check_for_key(self, event_list, key, event_type=pygame.KEYDOWN):
+    def check_for_key(self, event_list: Events, key: int, event_type: int = pygame.KEYDOWN):
         event = self.get_event(event_list, event_type)
         if event is not None and event.key == key:
             return True
         return False
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         for entity, (pos, *_) in self.world.get_components(Position, Movement):
             tile_entities = utils.get_neighboring_tile_entities(
                 self.tilemap, 2, pos, interacting_tiles=True

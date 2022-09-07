@@ -7,10 +7,13 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 from __future__ import annotations
 
+from src.display.camera import Camera
+from src.types import Events, Dts
+
 
 class Widget:
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         pass
 
-    def update(self, event_list, dts):
+    def update(self, event_list: Events, dts: Dts):
         pass

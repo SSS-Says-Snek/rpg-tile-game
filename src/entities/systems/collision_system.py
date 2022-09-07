@@ -15,6 +15,7 @@ from src.entities.components import item_component
 from src.entities.components.component import Flags, Graphics, Inventory, Movement, Position
 
 from src.entities.systems.system import System
+from src.types import Dts, Events
 
 
 class CollisionSystem(System):
@@ -52,7 +53,7 @@ class CollisionSystem(System):
                     collision_types["top"] = True
         return collision_types
 
-    def process(self, event_list, dts) -> None:
+    def process(self, event_list: Events, dts: Dts):
         # super().process(event_list)
 
         # Mob

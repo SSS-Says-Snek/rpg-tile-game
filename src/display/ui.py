@@ -10,12 +10,14 @@ from __future__ import annotations
 from typing import Optional
 
 import esper
+from src.display.camera import Camera
 
 from src.display.particle import ParticleSystem
+from src.display.widgets.widget import Widget
 
 
 class UI:
-    def __init__(self, camera):
+    def __init__(self, camera: Optional[Camera]):
         self.current_widget_uuid = 0
 
         self.camera = camera
@@ -35,7 +37,7 @@ class UI:
             else:
                 widget.draw()
 
-    def add_widget(self, widget, hud=False, hud_name=None, visible=True):
+    def add_widget(self, widget: Widget, hud: bool = False, hud_name: Optional[str] = None, visible: bool = True):
         widget.uuid = self.current_widget_uuid
         self.widgets[self.current_widget_uuid] = {"widget": widget, "visible": visible}
         if hud and hud_name:
@@ -44,8 +46,8 @@ class UI:
         self.current_widget_uuid += 1
         return widget.uuid
 
-    def remove_widget(self, uuid):
+    def remove_widget(self, uuid: int):
         del self.widgets[uuid]
 
-    def toggle_visible(self, uuid):
+    def toggle_visible(self, uuid: int):
         self.widgets[uuid]["visible"] = not self.widgets[uuid]["visible"]

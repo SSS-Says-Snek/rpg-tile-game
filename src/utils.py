@@ -9,6 +9,10 @@ from __future__ import annotations
 
 import pathlib
 from functools import lru_cache
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.tilemap import TileMap
 
 from src import common, pygame
 from src.common import ANIM_DIR, TILE_HEIGHT, TILE_WIDTH
@@ -16,7 +20,7 @@ from src.display import animation
 
 
 class Task:
-    def __init__(self, period):
+    def __init__(self, period: int):
         # Period in milliseconds
         self.time_instantiated = pygame.time.get_ticks()
         self.last_invoked = 0
@@ -31,7 +35,7 @@ class Task:
     def update_time(self):
         self.time_instantiated = pygame.time.get_ticks()
 
-    def time_passed(self, time):
+    def time_passed(self, time: float):
         if pygame.time.get_ticks() - self.time_instantiated > time:
             return True
         return False
@@ -71,7 +75,7 @@ def tile_to_pixel(
     return pygame.Vector2(tile_pos.x * tile_width, tile_pos.y * tile_height)
 
 
-def get_neighboring_tile_entities(tilemap, radius: int, pos, interacting_tiles=False) -> list:
+def get_neighboring_tile_entities(tilemap: "TileMap", radius: int, pos, interacting_tiles=False) -> list:
     neighboring_tile_entities = []
 
     for layer_id in range(len(tilemap.get_visible_tile_layers())):
@@ -114,7 +118,7 @@ def load_img(path: pathlib.Path):
 
 
 @lru_cache(maxsize=512)
-def load_font(size: int, font_name="PixelMillenium"):
+def load_font(size: int, font_name: str = "PixelMillenium"):
     return pygame.font.Font(common.FONT_DIR / f"{font_name}.ttf", size)
 
 
@@ -131,7 +135,7 @@ def outline(surf: pygame.Surface):
     return new_surf
 
 
-def load_mob_animations(mob_settings: dict, size: tuple = (32, 32)):
+def load_mob_animations(mob_settings: dict, size: tuple[int, int] = (32, 32)):
     animations = {
         animation_type: animation.Animation(
             ANIM_DIR / mob_settings["animation_dir"] / f"{animation_type}.png", size

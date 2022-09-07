@@ -7,6 +7,8 @@ This file defines the level state, which is the state where the main game happen
 """
 from __future__ import annotations
 
+from src.types import Events, Dts
+
 # ECS system
 import esper
 
@@ -98,7 +100,7 @@ class LevelState(State):
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
         # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
 
-    def load_spawns(self) -> None:
+    def load_spawns(self):
         # Sorts in a way that guarentees player be defined first
         for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
             if obj.name == "player_spawn":
@@ -166,9 +168,6 @@ class LevelState(State):
                     walker_settings
                 )
 
-                movement = Movement(walker_settings["speed"])
-                movement.mob_specifics["movement_direction"] = 1
-
                 walker_enemy = self.ecs_world.create_entity(
                     Flags(collidable=True, mob_type="walker_enemy", damageable=True),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
@@ -182,7 +181,7 @@ class LevelState(State):
                         damage=walker_settings["attack_damage"],
                         collision=walker_settings["attack_collision"],
                     ),
-                    movement,
+                    Movement(walker_settings["speed"]),
                 )
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
@@ -281,19 +280,19 @@ class LevelState(State):
             elif obj.name == "jetpack_item":
                 pass
 
-    def draw(self) -> None:
+    def draw(self):
         self.effect_system.draw()
 
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
 
-    def handle_event(self, event) -> None:
+    def handle_event(self, event: pygame.event.Event):
         # self.change_state("level_state.TestState")
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_F3:
                 self.debug = not self.debug
 
-    def update(self, events, dts) -> None:
+    def update(self, events: Events, dts: Dts):
         # Draws UI in GraphicsSystem
         self.ecs_world.process(events, dts)
 

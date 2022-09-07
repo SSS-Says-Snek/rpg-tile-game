@@ -11,12 +11,14 @@ from __future__ import annotations
 import math
 import random
 from math import cos, radians, sin
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 
 import pygame.gfxdraw
 
 from src import pygame, screen, utils
 from src.display.camera import Camera
+from src.entities.components.component import Position
+from src.types import Color
 
 
 class ParticleSystem(set):
@@ -26,7 +28,7 @@ class ParticleSystem(set):
         self.camera = camera
         self.draw = self.draw_pre_ui
 
-    def update(self) -> None:
+    def update(self):
         dead_particles = set()
 
         for particle in self:
@@ -41,7 +43,7 @@ class ParticleSystem(set):
     # DRAWING FUNCTIONS: If drawing particles not on LevelState, just use ParticleSystem.draw() #
     #############################################################################################
 
-    def _draw_base(self, draw_when):
+    def _draw_base(self, draw_when: str):
         for particle in self:
             if particle.draw_when == draw_when:
                 particle.draw(self.camera)
@@ -58,7 +60,7 @@ class ParticleSystem(set):
     def draw_post_ui(self):
         self._draw_base("post_ui")
 
-    def create_hit_particles(self, num_particles, pos, color_list) -> None:
+    def create_hit_particles(self, num_particles: int, pos: Position, color_list: list[Color]):
         for _ in range(num_particles):
             self.add(
                 Particle()
@@ -73,7 +75,7 @@ class ParticleSystem(set):
             )
 
     def create_effect_particle(
-        self, color_func, pos, angle_gauss: tuple = (180, 140), offset: tuple = (0, 0)
+        self, color_func: Callable[[], tuple[float, float]], pos: pygame.Vector2, angle_gauss: tuple[float, float] = (180, 140), offset: tuple[float, float] = (0, 0)
     ):
         self.add(
             Particle()
@@ -87,17 +89,17 @@ class ParticleSystem(set):
             .build()
         )
 
-    def create_fire_particle(self, pos, offset: tuple = (0, 0)):
+    def create_fire_particle(self, pos: pygame.Vector2, offset: tuple[float, float] = (0, 0)):
         self.create_effect_particle(
             lambda: (random.gauss(20, 20), random.gauss(1, 0.1)), pos, offset=offset
         )
 
-    def create_regen_particle(self, pos, offset: tuple = (0, 0)):
+    def create_regen_particle(self, pos: pygame.Vector2, offset: tuple[float, float] = (0, 0)):
         self.create_effect_particle(
             lambda: (random.gauss(120, 20), random.gauss(1, 0.08)), pos, offset=offset
         )
 
-    def create_text_particle(self, pos, txt, color=(0, 0, 0)):
+    def create_text_particle(self, pos: pygame.Vector2, txt: str, color: tuple[int, int, int] = (0, 0, 0)):
         self.add(
             TextParticle()
             .builder()
@@ -112,7 +114,7 @@ class ParticleSystem(set):
             .build()
         )
 
-    def create_wind_particle(self, pos, wind_gusts, movement_factor=1):
+    def create_wind_particle(self, pos: pygame.Vector2, wind_gusts: list[float], movement_factor: float = 1):
         self.add(
             WindParticle()
             .builder()
@@ -172,16 +174,16 @@ class Particle:
             self.particle.color = pygame.Color(color)
             return self
 
-        def draw_when(self, when):
+        def draw_when(self, when: str):
             self.particle.draw_when = when
             return self
 
-        def gravity(self, gravity_acc, gravity_y_vel: float = 0):
+        def gravity(self, gravity_acc: float, gravity_y_vel: float = 0):
             self.particle.gravity = gravity_acc
             self.particle.gravity_vel = gravity_y_vel
             return self
 
-        def hsv(self, hue, saturation: float = 1.0, value: float = 1.0):
+        def hsv(self, hue: float, saturation: float = 1.0, value: float = 1.0):
             h = round(hue) % 360
             s = max(min(round(100 * saturation), 100), 0)
             v = max(min(round(100 * value), 100), 0)
@@ -192,7 +194,7 @@ class Particle:
             self.particle.lifespan = frames
             return self
 
-        def parallax(self, parallax_val):
+        def parallax(self, parallax_val: float):
             self.particle.parallax_val = parallax_val
             return self
 
@@ -263,7 +265,7 @@ class Particle:
 
         self.per_frame_vel.update()
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         # For now ONLY SQUARE (ofc I'll add derived particles)
         particle_rect = pygame.Rect(*self.draw_pos, self.size, self.size)
         if not self.static:
@@ -283,7 +285,7 @@ class ImageParticle(Particle):
         self.image = None
 
     class Builder(Particle.Builder):
-        def image(self, image, convert_mode="alpha", scale=None, colorkey=None):
+        def image(self, image: pygame.Surface, convert_mode: str = "alpha", scale: Optional[float] = None, colorkey: Optional[Color] = None):
             if convert_mode == "convert":
                 image = image.convert()
             elif convert_mode == "alpha":
@@ -314,7 +316,7 @@ class ImageParticle(Particle):
     def builder(self):
         return self.Builder(self)
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         if not self.static:
             # It's technically now a rect, but that doesn't matter
             self.draw_pos = camera.apply(self.draw_pos, self.parallax_val)
@@ -329,7 +331,7 @@ class TextParticle(Particle):
         self.text_surf = None
 
     class Builder(Particle.Builder):
-        def text(self, text: str, font_path=None):
+        def text(self, text: str, font_path: Optional[str] = None):
             if font_path is None:
                 font = utils.load_font(self.particle.size)
             else:
@@ -348,7 +350,7 @@ class TextParticle(Particle):
     def builder(self):
         return self.Builder(self)
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         self.text_surf.set_alpha(self.color.a)
         screen.blit(
             self.text_surf, camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size))

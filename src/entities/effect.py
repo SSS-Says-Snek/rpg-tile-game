@@ -24,10 +24,10 @@ class EffectSystem:
         self.particle_system = self.level_state.particle_system
         self.camera = self.level_state.camera
 
-    def add_effect(self, entity: int, effect: "Effect"):
+    def add_effect(self, entity: int, effect: Effect):
         self.effect_dict[entity] = effect
 
-    def update(self) -> None:
+    def update(self):
         for entity, effect in self.effect_dict.copy().items():
             effect.update(entity)
 
@@ -92,7 +92,7 @@ class BurnEffect(Effect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def draw(self, entity, _):
+    def draw(self, entity: int, _):
         if random.random() < 0.3:
             pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
             size = self.level_state.ecs_world.component_for_entity(entity, Graphics).size
@@ -105,7 +105,7 @@ class RegenEffect(Effect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def draw(self, entity, _):  # No camera >:(
+    def draw(self, entity: int, _):  # No camera >:(
         if random.random() < 0.12:
             pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
             size = self.level_state.ecs_world.component_for_entity(entity, Graphics).size
