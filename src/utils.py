@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import pathlib
 from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
+from src.types import Color
 
 if TYPE_CHECKING:
     from src.tilemap import TileMap
@@ -97,6 +99,25 @@ def get_neighboring_tile_entities(
     return neighboring_tile_entities
 
 
+def extract_color(
+    img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None
+):
+    img = img.copy()
+    img.set_colorkey(color)
+    mask = pygame.mask.from_surface(img)
+    surf = mask.to_surface(setcolor=(0, 0, 0, 0), unsetcolor=color)
+    if add_surf is not None:
+        base_surf = pygame.Surface(img.get_size())
+        base_surf.fill(color)
+        add_surf = (add_surf[0].convert(), add_surf[1])
+        add_surf[0].set_colorkey(add_surf[1])
+        base_surf.blit(add_surf[0], (0, 0))
+        base_surf.blit(surf, (0, 0))
+        base_surf.set_colorkey((0, 0, 0))
+        return base_surf
+    return surf
+
+
 def rot_center(image: pygame.Surface, angle: float, x: int, y: int):
     """Rotates an image based on its center to avoid different"""
     rotated_image = pygame.transform.rotate(image, angle)
@@ -115,8 +136,24 @@ def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float
 
 
 @lru_cache(maxsize=256)
-def load_img(path: pathlib.Path):
+def load_img(path: pathlib.Path) -> pygame.Surface:
     return pygame.image.load(path)
+
+
+@lru_cache(maxsize=64)
+def load_imgs(path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None) -> list[pygame.Surface]:
+    imgs = [pygame.image.load(file) for file in path.iterdir()]
+
+    if convert_mode == "alpha":
+        imgs = list(map(lambda img: img.convert_alpha(), imgs))
+    elif convert_mode == "convert":
+        imgs = list(map(lambda img: img.convert(), imgs))
+
+    if colorkey is not None:
+        for img in imgs:
+            img.set_colorkey(colorkey)
+
+    return imgs
 
 
 @lru_cache(maxsize=512)

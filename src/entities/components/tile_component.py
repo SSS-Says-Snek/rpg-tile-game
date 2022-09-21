@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import random
 
-from src import pygame
-from src.common import TILE_HEIGHT, TILE_WIDTH
+from src import pygame, utils
+from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.display.widgets.interactable_tiles import SignDialogue, TileHover
 
 
@@ -42,16 +42,39 @@ class Interactable:
 
 class Sign:
     def __init__(self, text: str):
-        self.text: str = text
-
+        self.text = text
         self.dialogue = SignDialogue(text)
 
 
 # TODO: Split into foliage
-
-
 class Decoration:
     def __init__(self, img: pygame.Surface, layers: list[pygame.Surface]):
         self.img = img
         self.layers = layers
         self.anim_offset = random.uniform(1, 6)
+
+
+class GrassBlades:
+    GRASS_BLADES = utils.load_imgs(IMG_DIR / "misc" / "grass", colorkey=(0, 0, 0))
+
+    def __init__(self, tile_x: int, tile_y: int, grass_section_width: int):
+        self.tile_x = tile_x
+        self.tile_y = tile_y
+        self.tile_grass_section_width = grass_section_width // TILE_WIDTH
+        self.grass_section_width = grass_section_width
+        self.num_blades = random.randint(4, 10)  # Blades per tile
+        self.blades = []
+
+        for _ in range(int(self.num_blades * self.tile_grass_section_width)):
+            self.blades.append(
+                {
+                    "x": random.randint(0, self.grass_section_width),
+                    "angle": 0,
+                    "rotate_info": (
+                        random.uniform(0.6, 1.2),
+                        random.uniform(10, 24),
+                    ),  # wind "weight" (blowing to one side) and det max angle
+                    "img": random.choice(self.GRASS_BLADES),
+                }
+            )
+        self.blades.sort(key=lambda blade: blade["x"])

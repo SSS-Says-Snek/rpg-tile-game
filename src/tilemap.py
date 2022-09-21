@@ -21,26 +21,6 @@ from src import utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.entities.components import tile_component
 from src.entities.components.component import *
-from src.types import Color
-
-
-def extract_color(
-    img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None
-):
-    img = img.copy()
-    img.set_colorkey(color)
-    mask = pygame.mask.from_surface(img)
-    surf = mask.to_surface(setcolor=(0, 0, 0, 0), unsetcolor=color)
-    if add_surf is not None:
-        base_surf = pygame.Surface(img.get_size())
-        base_surf.fill(color)
-        add_surf = (add_surf[0].convert(), add_surf[1])
-        add_surf[0].set_colorkey(add_surf[1])
-        base_surf.blit(add_surf[0], (0, 0))
-        base_surf.blit(surf, (0, 0))
-        base_surf.set_colorkey((0, 0, 0))
-        return base_surf
-    return surf
 
 
 class TileMap:
@@ -63,7 +43,6 @@ class TileMap:
         # and are created through Tiled objects, rather than tiles. This is because
         # a lot of interactable tiles have specific data other tiles won't have.
         self.interactable_tiles = {}
-        self.deco_tiles = {}
 
     def make_map(self) -> tuple[pygame.Surface, pygame.Surface]:
         normal_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -127,10 +106,10 @@ class TileMap:
                 layers = []
                 for i, color in enumerate(tree_layer_col):
                     if i == 0:
-                        layers.append(extract_color(img, color))
+                        layers.append(utils.extract_color(img, color))
                     else:
                         layers.append(
-                            extract_color(
+                            utils.extract_color(
                                 img,
                                 color,
                                 add_surf=(
@@ -140,8 +119,13 @@ class TileMap:
                             )
                         )
 
-                self.deco_tiles[obj_pos] = self.ecs_world.create_entity(
+                self.ecs_world.create_entity(
                     tile, tile_component.Decoration(img, layers)
+                )
+
+            if obj.name == "grass":
+                self.ecs_world.create_entity(
+                    tile, tile_component.GrassBlades(*obj_pos, obj.width)
                 )
 
         return normal_surf, interactable_surf

@@ -308,7 +308,7 @@ class ImageParticle(Particle):
                 image = pygame.transform.smoothscale(
                     image, (image.get_width() * scale, image.get_height() * scale)
                 )
-            if colorkey:
+            if colorkey is not None:
                 image.set_colorkey(colorkey)
 
             self.particle.image = image

@@ -15,6 +15,8 @@ if TYPE_CHECKING:
     pass
 
 
+TilePos = int
+CoordPos = int
 Pos = Union[tuple[int, int], list[int], pygame.Vector2, "Position"]
 Size = Union[tuple[int, int], list[int]]
 Color = Union[tuple[int, int, int], list[int], pygame.Color]

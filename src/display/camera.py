@@ -73,3 +73,6 @@ class Camera:
 
         if self.shake_frames == 0:
             self.shake_offset.x, self.shake_offset.y = 0, 0
+
+    def visible(self, other_rect, strict=False):
+        return other_rect in self.camera or (not strict and self.camera.colliderect(other_rect))

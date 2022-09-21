@@ -12,6 +12,7 @@ import random
 import pytmx
 
 from src import common, pygame, screen, utils
+from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.display.particle import ImageParticle
 from src.entities.components import (item_component, projectile_component,
                                      tile_component)
@@ -260,11 +261,40 @@ class GraphicsSystem(System):
                 self.wind_gusts,
             )
 
+    def animate_grass(self):
+        for entity, (tile, tile_grass) in self.world.get_components(
+            tile_component.Tile, tile_component.GrassBlades
+        ):
+            if not self.camera.visible(tile.rect):
+                continue
+
+            for blade in tile_grass.blades:
+                img_to_blit = pygame.transform.rotate(
+                    blade["img"],
+                    -(math.sin(pygame.time.get_ticks() / 400) - blade["rotate_info"][0])
+                    * blade["rotate_info"][1],
+                )
+                img_to_blit.set_colorkey((0, 0, 0))
+
+                screen.blit(
+                    img_to_blit,
+                    self.camera.apply(
+                        (
+                            tile_grass.tile_x * TILE_WIDTH  # Location
+                            + blade["x"]  # X rel to location
+                            - img_to_blit.get_width() // 2,  # Centering mechanism
+                            tile_grass.tile_y * TILE_HEIGHT + 31 - img_to_blit.get_height() // 2
+                        )
+                    ),
+                )
+
     def animate_trees(self):
         for entity, (tile, tile_deco) in self.world.get_components(
             tile_component.Tile, tile_component.Decoration
         ):
             adj_rect = tile_deco.img.get_rect(midbottom=tile.rect.midbottom)
+            if not self.camera.visible(adj_rect):
+                continue
 
             self._draw_tree_layer(tile_deco.layers[-1], adj_rect, tile_deco.anim_offset)
             screen.blit(tile_deco.img, self.camera.apply(adj_rect))
@@ -301,6 +331,7 @@ class GraphicsSystem(System):
         self.handle_post_interactable_widgets(event_list, dts)
 
         self.animate_trees()
+        self.animate_grass()
 
         self.draw_mobs(dts)
 
