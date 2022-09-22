@@ -261,6 +261,23 @@ class GraphicsSystem(System):
                 self.wind_gusts,
             )
 
+    def handle_blade_rotation(self, tile_grass: tile_component.GrassBlades, blade):
+        player_rect = self.world.component_for_entity(self.player, Position).rect
+        player_grass_pos = (player_rect.centerx, player_rect.bottom)
+        blade_pos = (tile_grass.tile_x * TILE_WIDTH + blade.x, tile_grass.tile_y * TILE_HEIGHT)
+
+        if math.dist(blade_pos, player_grass_pos) < 45:
+            h_dis = player_grass_pos[0] - blade_pos[0]
+            angle_apply = math.copysign(30, -h_dis) + h_dis * 3.5
+            blade.target_angle = max(min(blade.target_angle + angle_apply, 90), -90)
+        else:
+            blade.target_angle = (
+                -(math.sin(pygame.time.get_ticks() / 400) - blade.rotate_weight)
+                * blade.rotate_angle
+            )
+
+        blade.angle += (blade.target_angle - blade.angle) / 6
+
     def animate_grass(self):
         for entity, (tile, tile_grass) in self.world.get_components(
             tile_component.Tile, tile_component.GrassBlades
@@ -269,11 +286,9 @@ class GraphicsSystem(System):
                 continue
 
             for blade in tile_grass.blades:
-                img_to_blit = pygame.transform.rotate(
-                    blade["img"],
-                    -(math.sin(pygame.time.get_ticks() / 400) - blade["rotate_info"][0])
-                    * blade["rotate_info"][1],
-                )
+                self.handle_blade_rotation(tile_grass, blade)
+
+                img_to_blit = pygame.transform.rotate(blade.img, blade.angle)
                 img_to_blit.set_colorkey((0, 0, 0))
 
                 screen.blit(
@@ -281,9 +296,9 @@ class GraphicsSystem(System):
                     self.camera.apply(
                         (
                             tile_grass.tile_x * TILE_WIDTH  # Location
-                            + blade["x"]  # X rel to location
+                            + blade.x  # X rel to location
                             - img_to_blit.get_width() // 2,  # Centering mechanism
-                            tile_grass.tile_y * TILE_HEIGHT + 31 - img_to_blit.get_height() // 2
+                            tile_grass.tile_y * TILE_HEIGHT + 31 - img_to_blit.get_height() // 2,
                         )
                     ),
                 )

@@ -119,14 +119,10 @@ class TileMap:
                             )
                         )
 
-                self.ecs_world.create_entity(
-                    tile, tile_component.Decoration(img, layers)
-                )
+                self.ecs_world.create_entity(tile, tile_component.Decoration(img, layers))
 
             if obj.name == "grass":
-                self.ecs_world.create_entity(
-                    tile, tile_component.GrassBlades(*obj_pos, obj.width)
-                )
+                self.ecs_world.create_entity(tile, tile_component.GrassBlades(*obj_pos, obj.width))
 
         return normal_surf, interactable_surf
 

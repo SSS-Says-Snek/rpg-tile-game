@@ -6,6 +6,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 from __future__ import annotations
 
 import random
+from dataclasses import dataclass
 
 from src import pygame, utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
@@ -67,14 +68,21 @@ class GrassBlades:
 
         for _ in range(int(self.num_blades * self.tile_grass_section_width)):
             self.blades.append(
-                {
-                    "x": random.randint(0, self.grass_section_width),
-                    "angle": 0,
-                    "rotate_info": (
-                        random.uniform(0.6, 1.2),
-                        random.uniform(10, 24),
-                    ),  # wind "weight" (blowing to one side) and det max angle
-                    "img": random.choice(self.GRASS_BLADES),
-                }
+                Blade(
+                    random.randint(0, self.grass_section_width),
+                    random.uniform(0.6, 1.2),
+                    random.uniform(10, 24),
+                    random.choice(self.GRASS_BLADES),
+                )
             )
-        self.blades.sort(key=lambda blade: blade["x"])
+        self.blades.sort(key=lambda blade: blade.x)
+
+
+@dataclass
+class Blade:
+    x: int
+    rotate_weight: float
+    rotate_angle: float
+    img: pygame.Surface
+    angle: int = 0
+    target_angle: int = 0

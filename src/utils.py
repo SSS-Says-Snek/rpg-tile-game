@@ -141,7 +141,9 @@ def load_img(path: pathlib.Path) -> pygame.Surface:
 
 
 @lru_cache(maxsize=64)
-def load_imgs(path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None) -> list[pygame.Surface]:
+def load_imgs(
+    path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
+) -> list[pygame.Surface]:
     imgs = [pygame.image.load(file) for file in path.iterdir()]
 
     if convert_mode == "alpha":
