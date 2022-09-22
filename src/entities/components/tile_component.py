@@ -58,31 +58,29 @@ class Decoration:
 class GrassBlades:
     GRASS_BLADES = utils.load_imgs(IMG_DIR / "misc" / "grass", colorkey=(0, 0, 0))
 
+    @dataclass
+    class Blade:
+        x: int
+        rotate_weight: float
+        rotate_angle: float
+        img: pygame.Surface
+        angle: int = 0
+        target_angle: int = 0
+
     def __init__(self, tile_x: int, tile_y: int, grass_section_width: int):
         self.tile_x = tile_x
         self.tile_y = tile_y
         self.tile_grass_section_width = grass_section_width // TILE_WIDTH
         self.grass_section_width = grass_section_width
         self.num_blades = random.randint(4, 10)  # Blades per tile
-        self.blades = []
 
-        for _ in range(int(self.num_blades * self.tile_grass_section_width)):
-            self.blades.append(
-                Blade(
-                    random.randint(0, self.grass_section_width),
-                    random.uniform(0.6, 1.2),
-                    random.uniform(10, 24),
-                    random.choice(self.GRASS_BLADES),
-                )
+        self.blades = [
+            self.Blade(
+                random.randint(0, self.grass_section_width),
+                random.uniform(0.6, 1.2),
+                random.uniform(10, 24),
+                random.choice(self.GRASS_BLADES),
             )
+            for _ in range(int(self.num_blades * self.tile_grass_section_width))
+        ]
         self.blades.sort(key=lambda blade: blade.x)
-
-
-@dataclass
-class Blade:
-    x: int
-    rotate_weight: float
-    rotate_angle: float
-    img: pygame.Surface
-    angle: int = 0
-    target_angle: int = 0

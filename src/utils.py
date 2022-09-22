@@ -79,7 +79,7 @@ def tile_to_pixel(
 
 def get_neighboring_tile_entities(
     tilemap: "TileMap", radius: int, pos, interacting_tiles=False
-) -> list:
+) -> list[int]:
     neighboring_tile_entities = []
 
     for layer_id in range(len(tilemap.get_visible_tile_layers())):
@@ -136,26 +136,38 @@ def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float
 
 
 @lru_cache(maxsize=256)
-def load_img(path: pathlib.Path) -> pygame.Surface:
-    return pygame.image.load(path)
+def load_img(
+    path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
+) -> pygame.Surface:
+    img = pygame.image.load(path)
+
+    if convert_mode == "alpha":
+        img = img.convert_alpha()
+    elif convert_mode == "convert":
+        img = img.convert()
+
+    if colorkey is not None:
+        img.set_colorkey(colorkey)
+
+    return img
 
 
 @lru_cache(maxsize=64)
 def load_imgs(
     path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
 ) -> list[pygame.Surface]:
-    imgs = [pygame.image.load(file) for file in path.iterdir()]
+    imgs = (pygame.image.load(file) for file in path.iterdir())
 
     if convert_mode == "alpha":
-        imgs = list(map(lambda img: img.convert_alpha(), imgs))
+        imgs = map(lambda img: img.convert_alpha(), imgs)
     elif convert_mode == "convert":
-        imgs = list(map(lambda img: img.convert(), imgs))
+        imgs = map(lambda img: img.convert(), imgs)
 
     if colorkey is not None:
         for img in imgs:
             img.set_colorkey(colorkey)
 
-    return imgs
+    return list(imgs)
 
 
 @lru_cache(maxsize=512)
