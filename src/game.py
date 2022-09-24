@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 
 from src import common, pygame, screen
+from src.display.widgets.button import DefaultButton
 
 pygame.init()
 
@@ -25,6 +26,17 @@ class Game:
 
         # UI DRAWING MUST BE HANDLED IN THE STATE CODE DUE TO CONFLICTS FROM LEVEL_STATE
         self.ui = UI(None)
+
+        self.ui.add_widget(
+            DefaultButton(
+                self.ui,
+                (100, 100),
+                (100, 50),
+                border_width=3,
+                border_roundness=5,
+                hover_color=(80, 80, 80),
+            )
+        )
 
         with open(common.DATA_DIR / "settings.json") as f:
             self.settings: dict = json.load(f)

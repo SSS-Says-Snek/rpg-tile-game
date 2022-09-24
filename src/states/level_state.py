@@ -131,9 +131,7 @@ class LevelState(State):
                     item_component.SlashingSword(),
                 )
 
-                self.ui.add_widget(
-                    PlayerHealthBar(common.screen, self.ui, self.player, (700, 10), 230, 20)
-                )
+                self.ui.add_widget(PlayerHealthBar(self.ui, self.player, (700, 10), 230, 20))
                 self.ui.add_widget(
                     Hotbar(self.ui, self.player, (common.WIDTH // 2, 40), (64, 64)),
                     hud=True,

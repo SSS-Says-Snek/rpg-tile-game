@@ -156,18 +156,18 @@ def load_img(
 def load_imgs(
     path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
 ) -> list[pygame.Surface]:
-    imgs = (pygame.image.load(file) for file in path.iterdir())
+    imgs = [pygame.image.load(file) for file in path.iterdir()]
 
     if convert_mode == "alpha":
-        imgs = map(lambda img: img.convert_alpha(), imgs)
+        imgs = [img.convert_alpha() for img in imgs]
     elif convert_mode == "convert":
-        imgs = map(lambda img: img.convert(), imgs)
+        imgs = [img.convert() for img in imgs]
 
     if colorkey is not None:
         for img in imgs:
             img.set_colorkey(colorkey)
 
-    return list(imgs)
+    return imgs
 
 
 @lru_cache(maxsize=512)

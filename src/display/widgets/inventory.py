@@ -62,7 +62,6 @@ class Hotbar(Widget):
                 continue
 
             durability_bar = ItemDurabilityBar(
-                screen=self.frame,
                 ui=self.ui,
                 entity=item_entity,
                 pos=(self.idx_to_pixelx(i) + 32, 55),
@@ -98,7 +97,6 @@ class Hotbar(Widget):
                     and self.hotbar_durability_bars[hotbar_idx] is None
                 ):
                     durability_bar = ItemDurabilityBar(
-                        screen=frame,
                         ui=self.ui,
                         entity=item_entity,
                         pos=(self.idx_to_pixelx(hotbar_idx) + 32, 55),

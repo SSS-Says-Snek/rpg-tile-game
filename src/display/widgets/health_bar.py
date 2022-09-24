@@ -23,7 +23,6 @@ class HealthBar(Widget):
     def __init__(
         self,
         health_component,
-        screen,
         ui: UI,
         entity: int,
         pos: Pos,
@@ -33,7 +32,6 @@ class HealthBar(Widget):
         center=False,
     ):
         self.uuid = None
-        self.screen = screen
         self.ui = ui
         self.entity = entity
 
@@ -114,8 +112,8 @@ class HealthBar(Widget):
                 self.flash_size *= 0.985
                 self.flash_size = max(0.0, self.flash_size)
 
-        pygame.draw.rect(self.screen, (0, 0, 0), rects[0], width=self.border_width)
-        pygame.draw.rect(self.screen, hp_color, rects[1])
+        pygame.draw.rect(screen, (0, 0, 0), rects[0], width=self.border_width)
+        pygame.draw.rect(screen, hp_color, rects[1])
 
         self.flash_width = self.flash_size * self.width / self.health_component.max_hp
 
@@ -125,7 +123,7 @@ class HealthBar(Widget):
             if self.flash_hp_diff == -1:
                 flash_rect.right = self.rect.right
 
-            pygame.draw.rect(self.screen, (255, 255, 255), flash_rect)
+            pygame.draw.rect(screen, (255, 255, 255), flash_rect)
         else:
             self.flash_hp_diff = 0
 
@@ -135,7 +133,6 @@ class HealthBar(Widget):
 class PlayerHealthBar(HealthBar):
     def __init__(
         self,
-        screen,
         ui: UI,
         entity: int,
         pos: Pos,
@@ -147,7 +144,6 @@ class PlayerHealthBar(HealthBar):
     ):
         super().__init__(
             health_component=health_component,
-            screen=screen,
             ui=ui,
             entity=entity,
             pos=pos,
@@ -184,7 +180,6 @@ class MobHealthBar(HealthBar):
     ):
         super().__init__(
             health_component=Health,
-            screen=screen,
             ui=ui,
             entity=entity,
             pos=ui.world.component_for_entity(entity, Position),
@@ -237,7 +232,6 @@ class MobHealthBar(HealthBar):
 class ItemDurabilityBar(PlayerHealthBar):
     def __init__(
         self,
-        screen,
         ui: UI,
         entity: int,
         pos: Pos,
@@ -248,7 +242,6 @@ class ItemDurabilityBar(PlayerHealthBar):
     ):
         super().__init__(
             health_component=item_component.Consumable,
-            screen=screen,
             ui=ui,
             entity=entity,
             pos=pos,

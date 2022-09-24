@@ -34,6 +34,7 @@ class System(esper.Processor):
         self.effect_system = self.level_state.effect_system
 
         self.world: esper.World = self.world
+        self.ui = self.level_state.ui
 
     def send_to_graphics(self, *widgets: Widget, when: str = "post_ui"):
         self._send_to_graphics_widgets.extend(zip(widgets, [when] * len(widgets)))
