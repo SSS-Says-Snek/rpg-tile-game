@@ -41,6 +41,7 @@ class EaseTransition:
         duration: int,
         ease_func: Callable[[float], float],
         default_end: Optional[float] = None,
+        callback: Optional[Callable[[], None]] = None,
     ):
         self.begin = begin
         self.end = end
@@ -48,6 +49,7 @@ class EaseTransition:
         self.duration = duration
         self.ease_func = ease_func
         self.default_end = default_end
+        self.callback = callback
 
         self.transitioning = False
         self.time_started = 0
@@ -62,6 +64,16 @@ class EaseTransition:
     @staticmethod
     def ease_out_quad(x: float):
         return 1 - (1 - x) ** 2
+
+    @staticmethod
+    def ease_out_cub(x: float):
+        return 1 - (1 - x) ** 3
+
+    @staticmethod
+    def ease_out_pow(power: int):
+        def inner(x: float):
+            return 1 - (1 - x) ** power
+        return inner
 
     @staticmethod
     def ease_out_exp(x: float):
@@ -87,3 +99,5 @@ class EaseTransition:
         if pygame.time.get_ticks() - self.time_started > self.duration:
             self.transitioning = False
             self.value = self.default_end
+            if self.callback is not None:
+                self.callback()

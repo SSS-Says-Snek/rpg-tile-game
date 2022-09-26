@@ -25,6 +25,15 @@ class InputSystem(System):
 
         for event in event_list:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left button
+                cont = False
+                for widget_dict in self.ui.widgets.copy().values():
+                    interact_rect = widget_dict["widget"].interact_rect
+                    if interact_rect is not None and interact_rect.collidepoint(event.pos):
+                        cont = True
+                        break
+                if cont:
+                    continue
+
                 hotbar_ui = self.ui.hud_widgets["hotbar"]["widget"]
 
                 if hotbar_ui.frame_rect.collidepoint(event.pos):

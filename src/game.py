@@ -25,6 +25,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # UI DRAWING MUST BE HANDLED IN THE STATE CODE DUE TO CONFLICTS FROM LEVEL_STATE
+        # No camera at start of game
         self.ui = UI(None)
 
         self.ui.add_widget(

@@ -215,7 +215,7 @@ class GraphicsSystem(System):
             )
 
     def draw_clouds(self):
-        if random.random() < 0.022:
+        if random.random() < 0.015:
             self.particle_system.add(
                 ImageParticle()
                 .builder()
@@ -279,6 +279,8 @@ class GraphicsSystem(System):
         blade.angle += (blade.target_angle - blade.angle) / 6
 
     def animate_grass(self):
+        screen_proxy = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+
         for entity, (tile, tile_grass) in self.world.get_components(
             tile_component.Tile, tile_component.GrassBlades
         ):
@@ -291,7 +293,7 @@ class GraphicsSystem(System):
                 img_to_blit = pygame.transform.rotate(blade.img, blade.angle)
                 img_to_blit.set_colorkey((0, 0, 0))
 
-                screen.blit(
+                screen_proxy.blit(
                     img_to_blit,
                     self.camera.apply(
                         (
@@ -302,6 +304,8 @@ class GraphicsSystem(System):
                         )
                     ),
                 )
+
+        screen.blit(screen_proxy, (0, 0))
 
     def animate_trees(self):
         for entity, (tile, tile_deco) in self.world.get_components(
@@ -320,7 +324,7 @@ class GraphicsSystem(System):
                 else:
                     self._draw_tree_layer(layer, adj_rect, tile_deco.anim_offset)
 
-            if random.random() < 0.07:
+            if random.random() < 0.045:
                 self.particle_system.create_wind_particle(
                     pygame.Vector2(
                         random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
@@ -360,7 +364,8 @@ class GraphicsSystem(System):
 
         self.particle_system.draw_pre_ui()
         self.handle_pre_ui_widgets(event_list, dts)
-        self.level_state.ui.draw()
+        self.ui.draw()
+        self.ui.update(event_list, dts)
         self.particle_system.draw_post_ui()
         self.handle_post_ui_widgets(event_list, dts)
 

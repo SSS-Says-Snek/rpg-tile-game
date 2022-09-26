@@ -12,6 +12,9 @@ from src.types import Dts, Events
 
 
 class Widget:
+    def __init__(self):
+        self.interact_rect = None
+
     def draw(self, camera: Camera):
         pass
 

@@ -14,6 +14,7 @@ import esper
 from src.display.camera import Camera
 from src.display.particle import ParticleSystem
 from src.display.widgets.widget import Widget
+from src.types import Dts, Events
 
 
 class UI:
@@ -36,6 +37,14 @@ class UI:
                 widget.draw(self.camera)
             else:
                 widget.draw()
+
+    def update(self, event_list: Events, dts: Dts):
+        for widget_dict in self.widgets.copy().values():
+            widget = widget_dict["widget"]
+            if not widget_dict["visible"]:
+                continue
+
+            widget.update(event_list, dts)
 
     def add_widget(
         self,

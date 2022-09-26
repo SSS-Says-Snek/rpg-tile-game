@@ -49,6 +49,7 @@ class TileHover(Widget):
     SURF = create_tile_hover_surf(FONT)
 
     def __init__(self, tile: "Tile", outline: pygame.Surface):
+        super().__init__()
         self.x = tile.x * tile.width
         self.y = tile.y * tile.height
         self.hover_y = self.y - 2 * tile.height
@@ -71,6 +72,7 @@ class SignDialogue(Widget):
     ).convert_alpha()
 
     def __init__(self, text: str):
+        super().__init__()
         self.text = text
         self.width, self.height = self.DIALOGUE_BACKGROUND.get_size()
         self.x_offset = 80

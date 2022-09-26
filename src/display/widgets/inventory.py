@@ -21,6 +21,8 @@ from src.types import Pos, Size
 
 class Hotbar(Widget):
     def __init__(self, ui: UI, entity: int, center_pos: Pos, frame_size: Size):
+        super().__init__()
+
         self.uuid = None
         self.ui = ui
         self.entity = entity
