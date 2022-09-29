@@ -73,6 +73,7 @@ class EaseTransition:
     def ease_out_pow(power: int):
         def inner(x: float):
             return 1 - (1 - x) ** power
+
         return inner
 
     @staticmethod

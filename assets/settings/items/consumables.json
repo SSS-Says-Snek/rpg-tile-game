@@ -1,0 +1,8 @@
+{
+    "health_potion": {
+            "sprite": "health_potion.png",
+            "heal_power": 45,
+            "uses": 2,
+            "cooldown": 0.5
+    }
+}

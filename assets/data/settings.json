@@ -33,6 +33,8 @@
             "animation_speed": {
                 "move": 5
             },
+
+
             "hp": 80,
             "max_hp": 80,
             "speed": 3.5,

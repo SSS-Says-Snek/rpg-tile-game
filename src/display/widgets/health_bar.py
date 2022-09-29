@@ -20,7 +20,17 @@ from src.types import Pos
 
 
 class HealthBar(Widget):
-    def __init__(self, health_component, ui: UI, entity: int, pos: Pos, width: int, height: int, border_width: int = 2, center=False):
+    def __init__(
+        self,
+        health_component,
+        ui: UI,
+        entity: int,
+        pos: Pos,
+        width: int,
+        height: int,
+        border_width: int = 2,
+        center=False,
+    ):
         super().__init__()
         self.uuid = None
         self.ui = ui

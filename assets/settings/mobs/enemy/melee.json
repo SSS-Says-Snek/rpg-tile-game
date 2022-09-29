@@ -1,0 +1,28 @@
+{
+    "walker": {
+            "animation_dir": "walker_enemy",
+            "animation_types": ["move_left", "move_right"],
+            "animation_speed": {
+                "move": 5
+            },
+
+
+            "hp": 80,
+            "max_hp": 80,
+            "speed": 3.5,
+            "attack_cooldown": 1.3,
+            "attack_damage": 15,
+            "attack_collision": true
+        },
+    "simple": {
+        "sprite": null,
+        "hp": 100,
+        "max_hp": 100,
+        "speed": 3,
+        "follow_range": 20,
+        "attack_cooldown": 2,
+        "attack_damage": 15,
+        "attack_range": 2,
+        "collide_with_player": true
+    }
+}

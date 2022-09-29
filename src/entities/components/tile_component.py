@@ -56,7 +56,7 @@ class Decoration:
 
 
 class GrassBlades:
-    GRASS_BLADES = utils.load_imgs(IMG_DIR / "misc" / "grass", colorkey=(0, 0, 0))
+    GRASS_BLADES = utils.load_img_dir(IMG_DIR / "misc" / "grass", colorkey=(0, 0, 0))
 
     @dataclass
     class Blade:

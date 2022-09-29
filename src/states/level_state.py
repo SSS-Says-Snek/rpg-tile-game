@@ -87,9 +87,9 @@ class LevelState(State):
         # Sorts in a way that guarentees player be defined first
         for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
             if obj.name == "player_spawn":
-                player_settings = self.settings["mobs"]["player"]
-                sword_settings = self.settings["items"]["weapons"]["slashing_sword"]
-
+                player_settings, sword_settings = self.settings[
+                    "mobs/player", "items/weapons/slashing_sword"
+                ]
                 player_animations, player_animation_speeds = utils.load_mob_animations(
                     player_settings
                 )
@@ -143,8 +143,7 @@ class LevelState(State):
                 )
 
             elif obj.name == "walker_enemy_spawn":
-                walker_settings = self.settings["mobs"]["walker_enemy"]
-
+                walker_settings = self.settings["mobs/enemy/melee/walker"]
                 walker_animations, walker_animation_speeds = utils.load_mob_animations(
                     walker_settings
                 )
@@ -167,8 +166,7 @@ class LevelState(State):
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
             elif obj.name == "simple_melee_enemy_spawn":
-                simple_melee_settings = self.settings["mobs"]["simple_melee_enemy"]
-
+                simple_melee_settings = self.settings["mobs/enemy/melee/simple"]
                 temp_sprite = pygame.Surface((32, 32))
                 temp_sprite.fill((255, 40, 30))
 
@@ -213,8 +211,7 @@ class LevelState(State):
                 self.ui.add_widget(MobHealthBar(self.ui, simple_melee_enemy, 40, 10))
 
             elif obj.name == "health_potion_item":
-                health_potion_settings = self.settings["items"]["health_potion"]
-
+                health_potion_settings = self.settings["items/consumables/health_potion"]
                 health_potion_surf = utils.load_img(
                     common.IMG_DIR / "items" / health_potion_settings["sprite"]
                 ).convert_alpha()
@@ -235,8 +232,7 @@ class LevelState(State):
                 )
 
             elif obj.name == "gravity_bow_item":
-                gravity_bow_settings = self.settings["items"]["weapons"]["gravity_bow"]
-
+                gravity_bow_settings = self.settings["items/weapons/gravity_bow"]
                 gravity_bow_surf, gravity_bow_icon = [
                     pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
                     for img_file in ["gravity_bow_hold.png", "gravity_bow_icon.png"]

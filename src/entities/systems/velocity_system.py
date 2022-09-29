@@ -23,7 +23,7 @@ class VelocitySystem(System):
         super().__init__(level_state)
 
         self.settings = self.level_state.settings
-        self.player_settings = self.settings["mobs"]["player"]
+        self.player_settings = self.settings["mobs/player"]
 
     def handle_player_keys(self, event_list: Events):
         keys = pygame.key.get_pressed()

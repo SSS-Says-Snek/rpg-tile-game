@@ -12,16 +12,27 @@ from src import pygame, screen
 from src.display.transition import EaseTransition
 from src.display.ui import UI
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events, TupPos, TupSize, TupColor, VoidFunc
+from src.types import Dts, Events, TupColor, TupPos, TupSize, VoidFunc
 
 
 class DefaultButton(Widget):
     """A static button, used for UIs and Menus"""
 
-    def __init__(self, ui: UI, pos: TupPos, size: TupSize, color: TupColor = (128, 128, 128),
-                 text: Optional[str] = None, text_size: int = 20, text_color: TupColor = (0, 0, 0),
-                 border_width: Optional[int] = None, border_color: TupColor = (60, 60, 60), border_roundness: int = 0,
-                 hover_color: Optional[TupColor] = None, click_callback: Optional[VoidFunc] = None):
+    def __init__(
+        self,
+        ui: UI,
+        pos: TupPos,
+        size: TupSize,
+        color: TupColor = (128, 128, 128),
+        text: Optional[str] = None,
+        text_size: int = 20,
+        text_color: TupColor = (0, 0, 0),
+        border_width: Optional[int] = None,
+        border_color: TupColor = (60, 60, 60),
+        border_roundness: int = 0,
+        hover_color: Optional[TupColor] = None,
+        click_callback: Optional[VoidFunc] = None,
+    ):
         super().__init__()
 
         self.ui = ui

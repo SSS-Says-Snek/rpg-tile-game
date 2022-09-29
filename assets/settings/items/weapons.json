@@ -1,0 +1,18 @@
+{
+    "slashing_sword": {
+        "sprites": {
+            "hold": "sword_hold.png",
+            "icon": "sword_icon.png"
+        },
+        "damage": 20,
+        "cooldown": 1
+    },
+    "gravity_bow": {
+        "sprites": {
+            "hold": "gravity_bow_hold.png"
+        },
+        "damage": 50,
+        "cooldown": 3,
+        "launch_vel": [100, 0]
+    }
+}

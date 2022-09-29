@@ -11,6 +11,7 @@ import json
 
 from src import common, pygame, screen
 from src.display.widgets.button import DefaultButton
+from src.settings_loader import SettingsLoader
 
 pygame.init()
 
@@ -39,14 +40,14 @@ class Game:
             )
         )
 
-        with open(common.DATA_DIR / "settings.json") as f:
-            self.settings: dict = json.load(f)
+        self.settings = SettingsLoader()
+        self.game_name = self.settings["game/name"]
 
         self.state: State = LevelState(self)
         self.loaded_states: dict[type(State), State] = {LevelState: self.state}
         self.running: bool = True
 
-        pygame.display.set_caption(self.settings["game"]["name"])
+        pygame.display.set_caption(self.game_name)
 
     def run(self):
         while self.running:
@@ -56,7 +57,7 @@ class Game:
             dts["dt"] = dts["raw_dt"] * common.FPS
 
             pygame.display.set_caption(
-                f"{self.settings['game']['name']} - {self.clock.get_fps():.3} FPS"
+                f"{self.game_name} - {self.clock.get_fps():.3} FPS"
             )
 
             # Event loop

@@ -1,0 +1,17 @@
+{
+    "animation_dir": "player",
+    "animation_types": [
+        "idle_left", "idle_right",
+        "move_left", "move_right"
+    ],
+    "animation_speed": {
+        "move": 10,
+        "idle": 7
+    },
+    "hotbar_size": 5,
+    "inventory_size": 14,
+    "hp": 100,
+    "max_hp": 100,
+    "speed": 5,
+    "jump_vel": -25
+}
