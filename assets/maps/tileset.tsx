@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.9" tiledversion="1.9.0" name="tileset" tilewidth="32" tileheight="32" tilecount="16" columns="4">
- <image source="../imgs/tileset2.png" width="128" height="128"/>
+ <image source="../imgs/tileset.png" width="128" height="128"/>
  <tile id="0">
   <properties>
    <property name="interactable" type="bool" value="true"/>

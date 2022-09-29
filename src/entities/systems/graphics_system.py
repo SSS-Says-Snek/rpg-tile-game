@@ -30,7 +30,7 @@ class GraphicsSystem(System):
         self.wind_gusts = [-15, -15, -15]
         self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
         self.cloud_parallax = 0.3
-        self.cloud_paths = list((common.IMG_DIR / "misc" / "clouds").iterdir())
+        self.cloud_paths = list((common.IMG_DIR / "deco" / "clouds").iterdir())
 
     #####################################################################
     # DRAWING FUNCTIONS: Very similar to ParticleSystem's draw handling #

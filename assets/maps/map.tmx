@@ -122,7 +122,7 @@
   <object id="5" name="walker_enemy_spawn" x="640" y="1344" width="32" height="32"/>
   <object id="6" name="walker_enemy_spawn" x="704" y="1088" width="32" height="32"/>
   <object id="7" name="walker_enemy_spawn" x="480" y="1088" width="32" height="32"/>
-  <object id="8" name="simple_melee_enemy_spawn" x="1056" y="1280" width="32" height="32"/>
+  <object id="8" name="simple_melee_enemy_spawn" x="928" y="1280" width="32" height="32"/>
   <object id="9" name="player_spawn" x="96" y="1248" width="32" height="32"/>
   <object id="16" name="simple_melee_eneemy_spawn" x="704" y="1472" width="32" height="32"/>
   <object id="17" name="simple_melee_enemy_spawn" x="768" y="864" width="32" height="32"/>

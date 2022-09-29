@@ -60,7 +60,7 @@ class LevelState(State):
         self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
 
         self.placeholder_background = pygame.transform.scale(
-            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background2.png").convert(),
+            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png").convert(),
             (common.WIDTH, common.HEIGHT),
         )
 
