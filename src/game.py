@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 
 from src import common, pygame, screen
-from src.common import SETTINGS_DIR, IMG_DIR
+from src.common import IMG_DIR, SETTINGS_DIR
 from src.display.widgets.button import DefaultButton
 from src.loader import Loader
 

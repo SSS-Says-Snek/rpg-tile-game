@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 import pathlib
-from typing import Callable, Iterable, Any, IO
+from typing import IO, Any, Callable, Iterable
 
 from src.utils import removesuffix
 
