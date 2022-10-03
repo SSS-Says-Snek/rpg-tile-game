@@ -81,7 +81,6 @@ class LevelState(State):
         self.ecs_world.add_processor(CombatSystem(self), priority=3)
         self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
-        # self.ecs_world.add_processor(TileInteractionSystem(self), priority=3)
 
     def load_spawns(self):
         # Sorts in a way that guarentees player be defined first

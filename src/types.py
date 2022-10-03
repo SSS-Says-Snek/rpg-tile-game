@@ -6,7 +6,7 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Sequence, Union
+from typing import TYPE_CHECKING, Callable, Union
 
 from src import pygame
 

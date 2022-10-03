@@ -43,6 +43,20 @@ class Task:
         return False
 
 
+def removeprefix(string, prefix: str) -> str:
+    """Backwards compatibility"""
+    if string.startswith(prefix):
+        return string[len(prefix) :]
+    return string
+
+
+def removesuffix(string: str, suffix: str) -> str:
+    """Backwards compatibility"""
+    if string.endswith(suffix):
+        return string[: -len(suffix)]
+    return string
+
+
 def pixel_to_tile(
     pixel_pos: pygame.Vector2,
     tile_width: int = TILE_WIDTH,

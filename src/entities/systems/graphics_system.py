@@ -272,7 +272,7 @@ class GraphicsSystem(System):
             blade.target_angle = max(min(blade.target_angle + angle_apply, 90), -90)
         else:
             blade.target_angle = (
-                -(math.sin(pygame.time.get_ticks() / 400) - blade.rotate_weight)
+                -(math.sin(pygame.time.get_ticks() / 600) - blade.rotate_weight)
                 * blade.rotate_angle
             )
 

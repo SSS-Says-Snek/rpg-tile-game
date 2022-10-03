@@ -102,7 +102,7 @@ class ItemUsages(types.SimpleNamespace):
             nested_health,
         ) in interactable_entities:
             if slashing_sword.rect.colliderect(nested_pos.rect) and not melee_weapon.hit:
-                colors = self.level_state.settings["particle_colors"]["death"]
+                colors = self.settings["particles/death"]
                 melee_weapon.hit = True
                 nested_health.hp -= melee_weapon.attack_damage
 

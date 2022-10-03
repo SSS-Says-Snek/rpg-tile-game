@@ -10,8 +10,9 @@ from __future__ import annotations
 import json
 
 from src import common, pygame, screen
+from src.common import SETTINGS_DIR, IMG_DIR
 from src.display.widgets.button import DefaultButton
-from src.settings_loader import SettingsLoader
+from src.loader import Loader
 
 pygame.init()
 
@@ -40,7 +41,8 @@ class Game:
             )
         )
 
-        self.settings = SettingsLoader()
+        self.settings = Loader(SETTINGS_DIR, ".json", json.load)
+        self.imgs = Loader(IMG_DIR, "", pygame.image.load)
         self.game_name = self.settings["game/name"]
 
         self.state: State = LevelState(self)
@@ -56,9 +58,7 @@ class Game:
             dts = {"raw_dt": self.clock.tick(common.FPS) / 1000}
             dts["dt"] = dts["raw_dt"] * common.FPS
 
-            pygame.display.set_caption(
-                f"{self.game_name} - {self.clock.get_fps():.3} FPS"
-            )
+            pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3} FPS")
 
             # Event loop
             for event in events:

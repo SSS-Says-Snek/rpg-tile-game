@@ -28,6 +28,7 @@ class System(esper.Processor):
         self.level_state: "LevelState" = level_state
         self.player = self.level_state.player
 
+        self.settings = self.level_state.settings
         self.camera = self.level_state.camera
         self.tilemap = self.level_state.tilemap
         self.particle_system = self.level_state.particle_system

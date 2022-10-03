@@ -8,6 +8,20 @@
   <img src="https://img.shields.io/tokei/lines/github/SSS-Says-Snek/rpg-tile-game?style=fla&label=Lines of Code">
 </div>
 
+## Screenshots
+
+---
+## Requirements
+
+This game requires:
+- Python 3.7+
+- Pygame 2.0+
+
+---
 ## Installation
 
-N/A
+1. Download the repo with your favorite method (GitHub Desktop, Git, etc.)
+2. CD into the repo
+3. Install the required packages with `python -m pip install -r requirements.txt`
+4. Run the game with `python main.py`
+5. Enjoy!

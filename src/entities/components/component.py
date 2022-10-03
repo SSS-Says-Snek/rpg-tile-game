@@ -19,7 +19,6 @@ __all__ = [
     "Inventory",
 ]
 
-import collections
 from typing import Optional
 
 from src import pygame, utils
