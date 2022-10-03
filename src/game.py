@@ -42,7 +42,7 @@ class Game:
         )
 
         self.settings = Loader(SETTINGS_DIR, ".json", json.load)
-        self.imgs = Loader(IMG_DIR, "", pygame.image.load)
+        self.imgs = Loader(IMG_DIR, ".png", pygame.image.load)
         self.game_name = self.settings["game/name"]
 
         self.state: State = LevelState(self)

@@ -58,7 +58,7 @@ class ProjectileSystem(System):
                     nested_health.hp -= projectile.damage
 
                     if nested_health.hp == 0:
-                        colors = self.level_state.settings["particle_colors"]["death"]
+                        colors = self.level_state.settings["particles"]["death"]
                         self.particle_system.create_hit_particles(30, nested_pos, colors)
                     else:
                         self.particle_system.create_hit_particles(15, nested_pos, [(255, 0, 0)])

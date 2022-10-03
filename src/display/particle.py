@@ -133,7 +133,7 @@ class ParticleSystem(set):
             )
             .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
             .lifespan(500)
-            .size(random.randint(5, 8))
+            .size(random.randint(4, 7))
             .build()
         )
 
