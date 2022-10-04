@@ -199,15 +199,15 @@ class ItemUsages(types.SimpleNamespace):
         item, pos, equipped_item = item_data.item, item_data.pos, item_data.equipped_item
 
         owner_health = self.world.component_for_entity(item.owner, Health)
-        medkit = self.world.component_for_entity(equipped_item, item_component.HealthPotion)
+        health_potion = self.world.component_for_entity(equipped_item, item_component.HealthPotion)
 
         # Actual HP addition
-        owner_health.hp += medkit.heal_power
+        owner_health.hp += health_potion.heal_power
 
         # Particles
         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
         self.effect_system.add_effect(
-            item.owner, RegenEffect(self.level_state).builder().heal(10).duration(9, 3).build()
+            item.owner, RegenEffect(self.level_state).builder().heal(10).duration(8, 2).build()
         )
 
         item.used = False

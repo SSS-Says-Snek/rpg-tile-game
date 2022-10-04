@@ -11,12 +11,14 @@ import colorsys
 import math
 from typing import Any
 
-from src import pygame, screen
+from src import pygame, screen, utils
+from src.common import IMG_DIR
+from src.display.camera import Camera
 from src.display.ui import UI
 from src.display.widgets.widget import Widget
 from src.entities.components import item_component
 from src.entities.components.component import Health, Position
-from src.types import Pos
+from src.types import Pos, TupColor
 
 
 class HealthBar(Widget):
@@ -35,6 +37,7 @@ class HealthBar(Widget):
         self.uuid = None
         self.ui = ui
         self.entity = entity
+        self.screen = screen
 
         self.pos = pos
         self.width = width
@@ -79,7 +82,29 @@ class HealthBar(Widget):
                 self.rect.topleft[1] - border_width,
             )
 
-    def _draw(self, rects, *_):
+    def draw_border(self, _):
+        pygame.draw.rect(self.screen, (0, 0, 0), self.border_rect, width=self.border_width)
+
+    def draw_body(self, _, hp_color):
+        pygame.draw.rect(self.screen, hp_color, self.rect)
+
+    def draw_flash(self, _):
+        if self.flash_width > 0:
+            flash_rect = pygame.Rect(
+                self.rect.x + self.rect.width,
+                self.rect.y,
+                self.flash_width,
+                self.height,
+            )
+
+            if self.flash_hp_diff == -1:
+                flash_rect.right = self.rect.right
+
+            pygame.draw.rect(self.screen, (255, 255, 255), flash_rect)
+        else:
+            self.flash_hp_diff = 0
+
+    def draw(self, camera):
         self.flash_duration -= 1
         self.rect.width = self.health_component.hp / self.health_component.max_hp * self.width
 
@@ -113,25 +138,19 @@ class HealthBar(Widget):
                 self.flash_size *= 0.985
                 self.flash_size = max(0.0, self.flash_size)
 
-        pygame.draw.rect(screen, (0, 0, 0), rects[0], width=self.border_width)
-        pygame.draw.rect(screen, hp_color, rects[1])
+        self.draw_body(camera, hp_color)
+        self.draw_border(camera)
 
         self.flash_width = self.flash_size * self.width / self.health_component.max_hp
 
-        if self.flash_width > 0:
-            flash_rect = rects[2]
-
-            if self.flash_hp_diff == -1:
-                flash_rect.right = self.rect.right
-
-            pygame.draw.rect(screen, (255, 255, 255), flash_rect)
-        else:
-            self.flash_hp_diff = 0
+        self.draw_flash(camera)
 
         self.previous_health = self.health_component.hp
 
 
 class PlayerHealthBar(HealthBar):
+    HEALTHBAR_BORDER = utils.load_img(IMG_DIR / "ui" / "player_healthbar.png")
+
     def __init__(
         self,
         ui: UI,
@@ -154,19 +173,8 @@ class PlayerHealthBar(HealthBar):
             center=center,
         )
 
-    def draw(self, *_):  # Both camera and UI not used
-        super()._draw(
-            rects=(
-                self.border_rect,
-                self.rect,
-                pygame.Rect(
-                    self.rect.x + self.rect.width,
-                    self.rect.y,
-                    self.flash_width,
-                    self.height,
-                ),
-            )
-        )
+    def draw_border(self, _):
+        self.screen.blit(self.HEALTHBAR_BORDER, self.border_rect.topleft)
 
 
 class MobHealthBar(HealthBar):
@@ -192,7 +200,31 @@ class MobHealthBar(HealthBar):
 
         self.y_offset = 20
 
-    def draw(self, camera, *_):
+    def draw_border(self, camera: Camera):
+        pygame.draw.rect(
+            self.screen, (0, 0, 0), camera.apply(self.border_rect), width=self.border_width
+        )
+
+    def draw_body(self, camera: Camera, hp_color: TupColor):
+        pygame.draw.rect(self.screen, hp_color, camera.apply(self.rect))
+
+    def draw_flash(self, camera: Camera):
+        if self.flash_width > 0:
+            flash_rect = pygame.Rect(
+                self.rect.x + self.rect.width,
+                self.rect.y,
+                self.flash_width,
+                self.height,
+            )
+
+            if self.flash_hp_diff == -1:
+                flash_rect.right = self.rect.right
+
+            pygame.draw.rect(self.screen, (255, 255, 255), camera.apply(flash_rect))
+        else:
+            self.flash_hp_diff = 0
+
+    def draw(self, camera):
         if self.health_component.hp == self.health_component.max_hp:
             # No health bar if max hp
             return
@@ -207,20 +239,7 @@ class MobHealthBar(HealthBar):
             self.border_rect.y + self.border_width,
         )
 
-        super()._draw(
-            rects=(
-                camera.apply(self.border_rect),
-                camera.apply(self.rect),
-                camera.apply(
-                    pygame.Rect(
-                        self.rect.x + self.rect.width,
-                        self.rect.y,
-                        self.flash_width,
-                        self.height,
-                    )
-                ),
-            ),
-        )
+        super().draw(camera)
 
         if self.health_component.hp <= 0:  # and self.flash_size <= 0:
             self.ui.remove_widget(self.uuid)
@@ -251,10 +270,11 @@ class ItemDurabilityBar(PlayerHealthBar):
             border_width=border_width,
             center=center,
         )
+        self.draw_border = super(PlayerHealthBar, self).draw_border
 
-    def draw(self, *_):
+    def draw(self, camera):
         if self.health_component.hp == self.health_component.max_hp:
             # No durability bar if max hp
             return
 
-        super().draw()
+        super().draw(camera)

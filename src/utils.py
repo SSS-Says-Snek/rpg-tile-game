@@ -151,13 +151,13 @@ def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float
 
 @lru_cache(maxsize=256)
 def load_img(
-    path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
+    path: pathlib.Path, mode: str = "alpha", colorkey: Optional[Color] = None
 ) -> pygame.Surface:
     img = pygame.image.load(path)
 
-    if convert_mode == "alpha":
+    if mode == "alpha":
         img = img.convert_alpha()
-    elif convert_mode == "convert":
+    elif mode == "convert":
         img = img.convert()
 
     if colorkey is not None:

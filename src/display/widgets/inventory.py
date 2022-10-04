@@ -11,6 +11,7 @@ from __future__ import annotations
 import pygame.gfxdraw
 
 from src import pygame, screen
+from src.display.camera import Camera
 from src.display.ui import UI
 from src.display.widgets.health_bar import ItemDurabilityBar
 from src.display.widgets.widget import Widget
@@ -77,7 +78,7 @@ class Hotbar(Widget):
     def idx_to_pixelx(self, idx: int):
         return idx * self.frame_size[0] + idx * self.spacing
 
-    def draw(self, _):  # Camera not used
+    def draw(self, camera: Camera):  # Camera not used
         frame = self.original_frame.copy()
 
         # Draw icons and durability
@@ -107,6 +108,7 @@ class Hotbar(Widget):
                         border_width=1,
                         center=True,
                     )
+                    print((self.idx_to_pixelx(hotbar_idx) + 32, 55))
 
                     self.hotbar_durability_bars[hotbar_idx] = durability_bar
 
@@ -114,7 +116,7 @@ class Hotbar(Widget):
                 if hotbar_durability_bar is not None:
                     # Monke patch
                     hotbar_durability_bar.screen = frame
-                    hotbar_durability_bar.draw()
+                    hotbar_durability_bar.draw(camera)
 
             # If durability bar entity died, durability bar dies
             hotbar_durability_bar = self.hotbar_durability_bars[hotbar_idx]

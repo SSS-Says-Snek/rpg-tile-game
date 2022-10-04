@@ -60,12 +60,13 @@ class LevelState(State):
         self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
 
         self.placeholder_background = pygame.transform.scale(
-            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png").convert(),
+            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"),
             (common.WIDTH, common.HEIGHT),
         )
 
         # Other stuff
         self.settings = self.game_class.settings
+        self.imgs = self.game_class.imgs
 
         self.player = None
         self.load_spawns()
@@ -89,14 +90,13 @@ class LevelState(State):
                 player_settings, sword_settings = self.settings[
                     "mobs/player", "items/weapons/slashing_sword"
                 ]
+                weapon_surf, weapon_icon = self.imgs[
+                    "items/sword_hold", "items/sword_icon"
+                ]
+
                 player_animations, player_animation_speeds = utils.load_mob_animations(
                     player_settings
                 )
-
-                weapon_surf, weapon_icon = [
-                    pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
-                    for img_file in ["sword_hold.png", "sword_icon.png"]
-                ]
 
                 # Inventory outside self.player to add sword
                 inventory_component = Inventory(
@@ -166,13 +166,12 @@ class LevelState(State):
 
             elif obj.name == "simple_melee_enemy_spawn":
                 simple_melee_settings = self.settings["mobs/enemy/melee/simple"]
+                weapon_surf, weapon_icon = self.imgs[
+                    "items/sword_hold", "items/sword_icon"
+                ]
+
                 temp_sprite = pygame.Surface((32, 32))
                 temp_sprite.fill((255, 40, 30))
-
-                weapon_surf, weapon_icon = [
-                    pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
-                    for img_file in ["sword_hold.png", "sword_icon.png"]
-                ]
 
                 inventory_component = Inventory(size=1, hotbar_size=1)
 
@@ -211,9 +210,7 @@ class LevelState(State):
 
             elif obj.name == "health_potion_item":
                 health_potion_settings = self.settings["items/consumables/health_potion"]
-                health_potion_surf = utils.load_img(
-                    common.IMG_DIR / "items" / health_potion_settings["sprite"]
-                ).convert_alpha()
+                health_potion_surf = self.imgs["items/health_potion"]
                 health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 
                 self.ecs_world.create_entity(
@@ -232,9 +229,8 @@ class LevelState(State):
 
             elif obj.name == "gravity_bow_item":
                 gravity_bow_settings = self.settings["items/weapons/gravity_bow"]
-                gravity_bow_surf, gravity_bow_icon = [
-                    pygame.image.load(common.ASSETS_DIR / "imgs" / "items" / img_file)
-                    for img_file in ["gravity_bow_hold.png", "gravity_bow_icon.png"]
+                gravity_bow_surf, gravity_bow_icon = self.imgs[
+                    "items/gravity_bow_hold", "items/gravity_bow_icon"
                 ]
 
                 self.ecs_world.create_entity(

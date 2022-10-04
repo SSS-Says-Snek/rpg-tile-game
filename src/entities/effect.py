@@ -52,6 +52,8 @@ class Effect:
         self.apply_effect = utils.Task(0)
         self.time_created = pygame.time.get_ticks()
 
+        self.time_waiting = 0
+
     class Builder:
         def __init__(self, effect):
             self.effect = effect
@@ -82,7 +84,9 @@ class Effect:
         return self.Builder(self)
 
     def update(self, entity: int):
-        if self.apply_effect.update():
+        if self.time_waiting == 0:
+            self.time_waiting = pygame.time.get_ticks()
+        if self.apply_effect.update() and pygame.time.get_ticks() - self.time_waiting > self.interval:
             health_component = self.world.component_for_entity(entity, Health)
             health_component.hp += self.heal_power
             health_component.hp -= self.damage
