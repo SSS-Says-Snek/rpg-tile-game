@@ -76,16 +76,43 @@ class VelocitySystem(System):
                 # 1. The entity's tile y coordinate is the same as the enemy's
                 # 2. The distance from entity to enemy is less than 10, in tile space
                 if (
-                    entity_followed_pos.tile_pos.y == pos.tile_pos.y
-                    and pos.tile_pos.distance_to(entity_followed_pos.tile_pos)
+                    pos.tile_pos.distance_to(entity_followed_pos.tile_pos)
                     < follows_entity_close.follow_range
                 ):
-                    if entity_followed_pos.pos.x > pos.pos.x:
-                        movement.vel.x = movement.speed
-                        pos.direction = 1
-                    elif entity_followed_pos.pos.x < pos.pos.x:
-                        movement.vel.x = -movement.speed
-                        pos.direction = -1
+                    if entity_followed_pos.tile_pos.y == pos.tile_pos.y:
+                        mob_tile = utils.pixel_to_tile(pos.pos)
+                        tile_next_beneath = self.tilemap.tiles.get(
+                            (0, (mob_tile.x + math.copysign(1, movement.vel.x), mob_tile.y + 1))
+                        )
+                        tile_prev_beneath = self.tilemap.tiles.get(
+                            (0, (mob_tile.x - math.copysign(1, movement.vel.x), mob_tile.y + 1))
+                        )
+
+                        if entity_followed_pos.pos.x > pos.pos.x and tile_next_beneath is not None:
+                            movement.vel.x = movement.speed
+                            pos.direction = 1
+                        elif (
+                            entity_followed_pos.pos.x < pos.pos.x and tile_prev_beneath is not None
+                        ):
+                            movement.vel.x = -movement.speed
+                            pos.direction = -1
+                    else:  # Check if about to fall from platform
+                        mob_tile = utils.pixel_to_tile(pos.pos)
+                        tile_next_beneath = self.tilemap.tiles.get(
+                            (0, (mob_tile.x + 1, mob_tile.y + 1))
+                        )
+                        tile_prev_beneath = self.tilemap.tiles.get(
+                            (0, (mob_tile.x - 1, mob_tile.y + 1))
+                        )
+
+                        if (
+                            pos.direction == 1
+                            and tile_next_beneath is None
+                            or pos.direction == -1
+                            and tile_prev_beneath is None
+                        ):
+                            movement.vel.x *= -1
+                            pos.direction *= -1
 
             if flags.mob_type == "walker_enemy":
                 movement.vel.x = movement.speed * pos.direction

@@ -60,7 +60,9 @@ class LevelState(State):
         self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
 
         self.placeholder_background = pygame.transform.scale(
-            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"),
+            utils.load_img(
+                common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"
+            ),
             (common.WIDTH, common.HEIGHT),
         )
 
@@ -90,9 +92,7 @@ class LevelState(State):
                 player_settings, sword_settings = self.settings[
                     "mobs/player", "items/weapons/slashing_sword"
                 ]
-                weapon_surf, weapon_icon = self.imgs[
-                    "items/sword_hold", "items/sword_icon"
-                ]
+                weapon_surf, weapon_icon = self.imgs["items/sword_hold", "items/sword_icon"]
 
                 player_animations, player_animation_speeds = utils.load_mob_animations(
                     player_settings
@@ -166,9 +166,7 @@ class LevelState(State):
 
             elif obj.name == "simple_melee_enemy_spawn":
                 simple_melee_settings = self.settings["mobs/enemy/melee/simple"]
-                weapon_surf, weapon_icon = self.imgs[
-                    "items/sword_hold", "items/sword_icon"
-                ]
+                weapon_surf, weapon_icon = self.imgs["items/sword_hold", "items/sword_icon"]
 
                 temp_sprite = pygame.Surface((32, 32))
                 temp_sprite.fill((255, 40, 30))
