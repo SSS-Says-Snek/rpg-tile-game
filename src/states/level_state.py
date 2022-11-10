@@ -60,9 +60,7 @@ class LevelState(State):
         self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
 
         self.placeholder_background = pygame.transform.scale(
-            utils.load_img(
-                common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"
-            ),
+            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"),
             (common.WIDTH, common.HEIGHT),
         )
 
@@ -89,14 +87,10 @@ class LevelState(State):
         # Sorts in a way that guarentees player be defined first
         for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
             if obj.name == "player_spawn":
-                player_settings, sword_settings = self.settings[
-                    "mobs/player", "items/weapons/slashing_sword"
-                ]
+                player_settings, sword_settings = self.settings["mobs/player", "items/weapons/slashing_sword"]
                 weapon_surf, weapon_icon = self.imgs["items/sword_hold", "items/sword_icon"]
 
-                player_animations, player_animation_speeds = utils.load_mob_animations(
-                    player_settings
-                )
+                player_animations, player_animation_speeds = utils.load_mob_animations(player_settings)
 
                 # Inventory outside self.player to add sword
                 inventory_component = Inventory(
@@ -107,9 +101,7 @@ class LevelState(State):
                 self.player = self.ecs_world.create_entity(
                     Movement(speed=player_settings["speed"]),
                     Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
-                    Graphics(
-                        animations=player_animations, animation_speeds=player_animation_speeds
-                    ),
+                    Graphics(animations=player_animations, animation_speeds=player_animation_speeds),
                     Flags(collidable=True, mob_type="player", damageable=True),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     inventory_component,
@@ -123,9 +115,7 @@ class LevelState(State):
                         owner=self.player,
                     ),
                     item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
-                    item_component.ItemPosition(
-                        pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
-                    ),
+                    item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), in_inventory=True),
                     item_component.MeleeWeapon(attack_damage=sword_settings["damage"]),
                     item_component.SlashingSword(),
                 )
@@ -143,17 +133,13 @@ class LevelState(State):
 
             elif obj.name == "walker_enemy_spawn":
                 walker_settings = self.settings["mobs/enemy/melee/walker"]
-                walker_animations, walker_animation_speeds = utils.load_mob_animations(
-                    walker_settings
-                )
+                walker_animations, walker_animation_speeds = utils.load_mob_animations(walker_settings)
 
                 walker_enemy = self.ecs_world.create_entity(
                     Flags(collidable=True, mob_type="walker_enemy", damageable=True),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
-                    Graphics(
-                        animations=walker_animations, animation_speeds=walker_animation_speeds
-                    ),
+                    Graphics(animations=walker_animations, animation_speeds=walker_animation_speeds),
                     MeleeAttack(
                         attack_range=0,
                         attack_cooldown=walker_settings["attack_cooldown"],
@@ -182,9 +168,8 @@ class LevelState(State):
                     ai_component.FollowsEntityClose(
                         entity=self.player, follow_range=simple_melee_settings["follow_range"]
                     ),
-                    ai_component.MeleeWeaponAttack(
-                        attack_range=simple_melee_settings["attack_range"]
-                    ),
+                    ai_component.MeleeWeaponAttack(attack_range=simple_melee_settings["attack_range"]),
+                    ai_component.EntityState(ai_component.EntityState.PATROL),
                     inventory_component,
                 )
 
@@ -195,12 +180,8 @@ class LevelState(State):
                         owner=simple_melee_enemy,
                     ),
                     item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
-                    item_component.ItemPosition(
-                        pos=pygame.Vector2(obj.x, obj.y), in_inventory=True
-                    ),
-                    item_component.MeleeWeapon(
-                        attack_damage=simple_melee_settings["attack_damage"]
-                    ),
+                    item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), in_inventory=True),
+                    item_component.MeleeWeapon(attack_damage=simple_melee_settings["attack_damage"]),
                     item_component.SlashingSword(),
                 )
 
@@ -212,9 +193,7 @@ class LevelState(State):
                 health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 
                 self.ecs_world.create_entity(
-                    item_component.Item(
-                        name="Health Potion", cooldown=health_potion_settings["cooldown"]
-                    ),
+                    item_component.Item(name="Health Potion", cooldown=health_potion_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=health_potion_holding,
@@ -227,14 +206,10 @@ class LevelState(State):
 
             elif obj.name == "gravity_bow_item":
                 gravity_bow_settings = self.settings["items/weapons/gravity_bow"]
-                gravity_bow_surf, gravity_bow_icon = self.imgs[
-                    "items/gravity_bow_hold", "items/gravity_bow_icon"
-                ]
+                gravity_bow_surf, gravity_bow_icon = self.imgs["items/gravity_bow_hold", "items/gravity_bow_icon"]
 
                 self.ecs_world.create_entity(
-                    item_component.Item(
-                        name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]
-                    ),
+                    item_component.Item(name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                     item_component.ItemGraphics(
                         sprite=gravity_bow_surf,
@@ -243,9 +218,7 @@ class LevelState(State):
                         flip_on_dir=True,
                     ),
                     item_component.RangedWeapon(projectile_damage=gravity_bow_settings["damage"]),
-                    item_component.GravityBow(
-                        launch_vel=pygame.Vector2(gravity_bow_settings["launch_vel"])
-                    ),
+                    item_component.GravityBow(launch_vel=pygame.Vector2(gravity_bow_settings["launch_vel"])),
                 )
             elif obj.name == "jetpack_item":
                 pass

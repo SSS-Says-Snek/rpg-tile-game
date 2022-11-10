@@ -57,9 +57,7 @@ class CollisionSystem(System):
         # super().process(event_list)
 
         # Mob
-        for entity, (flags, pos, movement, graphics) in self.world.get_components(
-            Flags, Position, Movement, Graphics
-        ):
+        for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
             neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
                 utils.get_neighboring_tile_entities(self.tilemap, 3, pos)
@@ -67,9 +65,7 @@ class CollisionSystem(System):
 
             # Obvs, if it's gonna collide with player, player should be in it
             if flags.collide_with_player:
-                neighboring_tile_rects.append(
-                    self.world.component_for_entity(self.player, Position).rect
-                )
+                neighboring_tile_rects.append(self.world.component_for_entity(self.player, Position).rect)
 
             # Player collides with collide_with_player entities
             if entity == self.player:
@@ -87,9 +83,7 @@ class CollisionSystem(System):
                 movement.vel.y = 170
             pos.pos.y += movement.vel.y
 
-            collisions = self.collide_with_tiles(
-                pos.rect, movement, neighboring_tile_rects, dts["dt"]
-            )
+            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, dts["dt"])
             if collisions["bottom"]:
                 pos.on_ground = True
                 movement.vel.y = 0
@@ -119,10 +113,6 @@ class CollisionSystem(System):
 
                     player_inventory.inventory[available_inventory_idx] = entity
 
-                    self.particle_system.create_text_particle(
-                        owner_pos.pos, f"Acquired: {item.name}"
-                    )
+                    self.particle_system.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
                 else:
-                    self.particle_system.create_text_particle(
-                        owner_pos.pos, "No more room in inventory!"
-                    )
+                    self.particle_system.create_text_particle(owner_pos.pos, "No more room in inventory!")

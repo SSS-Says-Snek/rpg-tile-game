@@ -9,10 +9,11 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
+    from src.entities.components.component import Position
 
 import pygame
 import pytmx
@@ -59,9 +60,7 @@ class TileMap:
                     tile_img = self.tilemap.get_tile_image_by_gid(gid).convert_alpha()
                     self.tiles[(layer_id, (x, y))] = tile_props
                     blit_surf = normal_surf
-                    components = [
-                        tile_component.Tile(x, y, tile_props["width"], tile_props["height"])
-                    ]
+                    components = [tile_component.Tile(x, y, tile_props["width"], tile_props["height"])]
                     flag_kwargs = {}
 
                     if tile_props.get("unwalkable"):
@@ -127,11 +126,7 @@ class TileMap:
         return normal_surf, interactable_surf
 
     def get_visible_tile_layers(self) -> list[pytmx.TiledTileLayer]:
-        return [
-            layer
-            for layer in self.tilemap.visible_layers
-            if isinstance(layer, pytmx.TiledTileLayer)
-        ]
+        return [layer for layer in self.tilemap.visible_layers if isinstance(layer, pytmx.TiledTileLayer)]
 
     def get_unwalkable_rects(self, neighboring_tiles: list[int]) -> list[pygame.Rect]:
         unwalkable_tile_rects = []
@@ -149,3 +144,6 @@ class TileMap:
                 unwalkable_tile_rects.append(unwalkable_tile_rect)
 
         return unwalkable_tile_rects
+
+    def get_tile(self, tile_x: int, tile_y: int) -> Union[dict, None]:
+        return self.tiles.get((0, (tile_x, tile_y)))

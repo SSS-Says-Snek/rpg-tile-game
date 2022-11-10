@@ -65,9 +65,7 @@ class HealthBar(Widget):
                 width + 2 * border_width,
                 height + 2 * border_width,
             )
-            self.rect = pygame.Rect(
-                *self.pos, self.health_component.hp / self.health_component.max_hp * width, height
-            )
+            self.rect = pygame.Rect(*self.pos, self.health_component.hp / self.health_component.max_hp * width, height)
 
         self.previous_health = self.health_component.hp
         self.flash_size = 0
@@ -201,9 +199,7 @@ class MobHealthBar(HealthBar):
         self.y_offset = 20
 
     def draw_border(self, camera: Camera):
-        pygame.draw.rect(
-            self.screen, (0, 0, 0), camera.apply(self.border_rect), width=self.border_width
-        )
+        pygame.draw.rect(self.screen, (0, 0, 0), camera.apply(self.border_rect), width=self.border_width)
 
     def draw_body(self, camera: Camera, hp_color: TupColor):
         pygame.draw.rect(self.screen, hp_color, camera.apply(self.rect))

@@ -78,6 +78,9 @@ class Position:
         self.on_ground: bool = False
         self.rect: Optional[pygame.Rect] = None
 
+    def in_range(self, other_tile_pos: pygame.Vector2, radius: int) -> bool:
+        return self.tile_pos.distance_to(other_tile_pos) < radius
+
 
 class Movement:
     def __init__(
@@ -104,7 +107,7 @@ class Health:
         self.max_hp = max_hp
 
     @property
-    def hp(self):
+    def hp(self) -> float:
         return self._hp
 
     @hp.setter

@@ -48,9 +48,7 @@ class TileInteractionSystem(System):
             for tile_entity in tile_entities:
                 tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
                 tile_rect = tile.rect
-                interactable = self.world.component_for_entity(
-                    tile_entity, tile_component.Interactable
-                )
+                interactable = self.world.component_for_entity(tile_entity, tile_component.Interactable)
 
                 # No interaction? Skip
                 if not player_rect.colliderect(tile_rect):

@@ -54,10 +54,7 @@ class InputSystem(System):
                 else:
                     if equipped_item is not None:
                         item = self.world.component_for_entity(equipped_item, item_component.Item)
-                        if (
-                            pygame.time.get_ticks() - inventory.last_used
-                            > inventory.cooldown * 1000
-                        ):
+                        if pygame.time.get_ticks() - inventory.last_used > inventory.cooldown * 1000:
                             item.use(inventory)
                             inventory.on_cooldown = True
 

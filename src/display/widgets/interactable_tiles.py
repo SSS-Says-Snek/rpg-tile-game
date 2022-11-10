@@ -67,9 +67,7 @@ class TileHover(Widget):
 
 
 class SignDialogue(Widget):
-    DIALOGUE_BACKGROUND = utils.load_img(
-        IMG_DIR / "misc" / "dialogue_background.png"
-    ).convert_alpha()
+    DIALOGUE_BACKGROUND = utils.load_img(IMG_DIR / "misc" / "dialogue_background.png").convert_alpha()
 
     def __init__(self, text: str):
         super().__init__()
@@ -93,9 +91,7 @@ class SignDialogue(Widget):
         self.transition_up = EaseTransition(
             800, self.rect.y, 1000, EaseTransition.ease_out_exp, default_end=self.rect.y
         )
-        self.transition_down = EaseTransition(
-            self.rect.y, 800, 1000, EaseTransition.ease_out_exp, default_end=800
-        )
+        self.transition_down = EaseTransition(self.rect.y, 800, 1000, EaseTransition.ease_out_exp, default_end=800)
 
     def wrap_text(self, text: str):
         wrapped_text = []
@@ -108,10 +104,7 @@ class SignDialogue(Widget):
 
             # Checks word by word to see the longest possible line that doesn't exceed the width
             while i < len(words):
-                if (
-                    self.font.size(" ".join(words[start : i + 1]))[0]
-                    > self.width - 2 * self.x_offset
-                ):
+                if self.font.size(" ".join(words[start : i + 1]))[0] > self.width - 2 * self.x_offset:
                     wrapped_text.append(" ".join(words[start:i]))
                     start = i
                 i += 1
@@ -187,9 +180,7 @@ class SignDialogue(Widget):
                     self.state = SignState.DONE
             elif self.state == SignState.DONE and self.cursor_blink.update():
                 self.show_cursor = not self.show_cursor
-            elif (
-                self.state == SignState.TRANSITION_DOWN and not self.transition_down.transitioning
-            ):
+            elif self.state == SignState.TRANSITION_DOWN and not self.transition_down.transitioning:
                 self.state = SignState.INACTIVE
                 self.text_idxs = {"total": 0, "line": 0, "char": 0}
 

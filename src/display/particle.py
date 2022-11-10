@@ -94,18 +94,12 @@ class ParticleSystem(set):
         )
 
     def create_fire_particle(self, pos: pygame.Vector2, offset: tuple[float, float] = (0, 0)):
-        self.create_effect_particle(
-            lambda: (random.gauss(20, 20), random.gauss(1, 0.1)), pos, offset=offset
-        )
+        self.create_effect_particle(lambda: (random.gauss(20, 20), random.gauss(1, 0.1)), pos, offset=offset)
 
     def create_regen_particle(self, pos: pygame.Vector2, offset: tuple[float, float] = (0, 0)):
-        self.create_effect_particle(
-            lambda: (random.gauss(120, 20), random.gauss(1, 0.08)), pos, offset=offset
-        )
+        self.create_effect_particle(lambda: (random.gauss(120, 20), random.gauss(1, 0.08)), pos, offset=offset)
 
-    def create_text_particle(
-        self, pos: pygame.Vector2, txt: str, color: tuple[int, int, int] = (0, 0, 0)
-    ):
+    def create_text_particle(self, pos: pygame.Vector2, txt: str, color: tuple[int, int, int] = (0, 0, 0)):
         self.add(
             TextParticle()
             .builder()
@@ -120,17 +114,12 @@ class ParticleSystem(set):
             .build()
         )
 
-    def create_wind_particle(
-        self, pos: pygame.Vector2, wind_gusts: list[float], movement_factor: float = 1
-    ):
+    def create_wind_particle(self, pos: pygame.Vector2, wind_gusts: list[float], movement_factor: float = 1):
         self.add(
             WindParticle()
             .builder()
             .at(pos)
-            .starting_vel(
-                pygame.Vector2(random.choice(wind_gusts), random.uniform(0.3, 1.8))
-                / movement_factor
-            )
+            .starting_vel(pygame.Vector2(random.choice(wind_gusts), random.uniform(0.3, 1.8)) / movement_factor)
             .hsv(random.gauss(120, 20), random.gauss(1, 0.2))
             .lifespan(500)
             .size(random.randint(4, 7))
@@ -305,9 +294,7 @@ class ImageParticle(Particle):
             elif convert_mode == "alpha":
                 image = image.convert_alpha()
             if scale:
-                image = pygame.transform.smoothscale(
-                    image, (image.get_width() * scale, image.get_height() * scale)
-                )
+                image = pygame.transform.smoothscale(image, (image.get_width() * scale, image.get_height() * scale))
             if colorkey is not None:
                 image.set_colorkey(colorkey)
 
@@ -366,9 +353,7 @@ class TextParticle(Particle):
 
     def draw(self, camera: Camera):
         self.text_surf.set_alpha(self.color.a)
-        screen.blit(
-            self.text_surf, camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size))
-        )
+        screen.blit(self.text_surf, camera.apply(pygame.Rect(*self.draw_pos, self.size, self.size)))
 
 
 class WindParticle(Particle):
@@ -378,6 +363,4 @@ class WindParticle(Particle):
         # Makes transitions smooth
         self.vel.x += (self.starting_vel.x - self.vel.x) / 20
         self.vel.x += (-2 / 50 + self.starting_vel.x - self.vel.x) / 7
-        self.per_frame_vel.x = (
-            math.sin(pygame.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2
-        )
+        self.per_frame_vel.x = math.sin(pygame.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2

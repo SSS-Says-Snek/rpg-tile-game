@@ -77,9 +77,7 @@ class ItemUsages(types.SimpleNamespace):
         if not item.used:
             return
 
-        slashing_sword = self.world.component_for_entity(
-            equipped_item, item_component.SlashingSword
-        )
+        slashing_sword = self.world.component_for_entity(equipped_item, item_component.SlashingSword)
 
         # Handle angle and positions
         slashing_sword.angle -= 14 * pos.direction
@@ -133,9 +131,7 @@ class ItemUsages(types.SimpleNamespace):
                 item_pos.pos.x = pos.rect.right
             else:
                 # Facing left
-                item_pos.pos.x = (
-                    pos.rect.left - item_graphics.original_img.get_bounding_rect().width
-                )
+                item_pos.pos.x = pos.rect.left - item_graphics.original_img.get_bounding_rect().width
             item_pos.pos.y = pos.rect.y - 16
 
             slashing_sword.rect.x = item_pos.pos.x
@@ -159,9 +155,7 @@ class ItemUsages(types.SimpleNamespace):
         if not item.used:
             return
 
-        arrow_sprite = utils.load_img(
-            common.IMG_DIR / "items" / "arrows_sprite.png"
-        ).convert_alpha()
+        arrow_sprite = utils.load_img(common.IMG_DIR / "items" / "arrows_sprite.png").convert_alpha()
 
         ranged_weapon = self.world.component_for_entity(equipped_item, item_component.RangedWeapon)
         mouse_pos = pygame.mouse.get_pos()
@@ -231,9 +225,7 @@ class CombatSystem(System):
         inventory: Inventory,
         entity: int,
     ):
-        item_data = ItemData(
-            equipped_item, pos, pivot_pos, item, item_graphics, item_pos, interactable_entities
-        )
+        item_data = ItemData(equipped_item, pos, pivot_pos, item, item_graphics, item_pos, interactable_entities)
 
         # Melee weapons (will refactor into small functions)
         # Must be "used" (player interacted with it)
@@ -294,18 +286,14 @@ class CombatSystem(System):
             # Core components needed
             item = self.world.component_for_entity(equipped_item, item_component.Item)
             item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
-            item_graphics = self.world.component_for_entity(
-                equipped_item, item_component.ItemGraphics
-            )
+            item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
 
             # Handle equipped item position blitting
             if pos.direction == 1:  # Facing right
                 item_pos.pos.x = pos.rect.right
                 pivot_pos = (0, item_graphics.size[1])
             else:  # Facing left
-                item_pos.pos.x = (
-                    pos.rect.left - item_graphics.original_img.get_bounding_rect().width
-                )
+                item_pos.pos.x = pos.rect.left - item_graphics.original_img.get_bounding_rect().width
                 pivot_pos = (
                     item_graphics.original_img.get_bounding_rect().width,
                     item_graphics.size[1],

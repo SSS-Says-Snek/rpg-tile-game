@@ -15,6 +15,7 @@ from src.types import Color
 
 if TYPE_CHECKING:
     from src.tilemap import TileMap
+    from src.entities.components.component import Position
 
 from src import common, pygame
 from src.common import ANIM_DIR, TILE_HEIGHT, TILE_WIDTH
@@ -92,8 +93,16 @@ def tile_to_pixel(
 
 
 def get_neighboring_tile_entities(
-    tilemap: "TileMap", radius: int, pos, interacting_tiles=False
+    tilemap: "TileMap", radius: int, pos: "Position", interacting_tiles=False
 ) -> list[int]:
+    """
+    Get
+    :param tilemap:
+    :param radius:
+    :param pos:
+    :param interacting_tiles:
+    :return:
+    """
     neighboring_tile_entities = []
 
     for layer_id in range(len(tilemap.get_visible_tile_layers())):
@@ -113,9 +122,7 @@ def get_neighboring_tile_entities(
     return neighboring_tile_entities
 
 
-def extract_color(
-    img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None
-):
+def extract_color(img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None):
     img = img.copy()
     img.set_colorkey(color)
     mask = pygame.mask.from_surface(img)
@@ -150,9 +157,7 @@ def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float
 
 
 @lru_cache(maxsize=256)
-def load_img(
-    path: pathlib.Path, mode: str = "alpha", colorkey: Optional[Color] = None
-) -> pygame.Surface:
+def load_img(path: pathlib.Path, mode: str = "alpha", colorkey: Optional[Color] = None) -> pygame.Surface:
     img = pygame.image.load(path)
 
     if mode == "alpha":
@@ -214,9 +219,7 @@ def outline(surf: pygame.Surface):
 
 def load_mob_animations(mob_settings: dict, size: tuple[int, int] = (32, 32)):
     animations = {
-        animation_type: animation.Animation(
-            ANIM_DIR / mob_settings["animation_dir"] / f"{animation_type}.png", size
-        )
+        animation_type: animation.Animation(ANIM_DIR / mob_settings["animation_dir"] / f"{animation_type}.png", size)
         for animation_type in mob_settings["animation_types"]
     }
 

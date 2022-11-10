@@ -5,7 +5,6 @@ Copyright (c) 2022-present SSS-Says-Snek
 
 This file defines item components, similar to the components in component.py
 """
-
 from __future__ import annotations
 
 from typing import Optional
@@ -17,10 +16,10 @@ from src.entities.components.component import Inventory
 class Item:
     def __init__(self, name: str, cooldown: float, owner: Optional[int] = None):
         self.name = name
-        self.owner = owner
-        self.used = False
-
         self.cooldown = cooldown
+        self.owner = owner
+
+        self.used = False
 
     def use(self, inventory_component: Inventory):
         self.used = True
@@ -66,6 +65,7 @@ class Consumable:
     def __init__(self, num_uses: int = 1):
         self.total_uses = num_uses
         self.uses_left = num_uses
+
         self.consumed = False
 
     @property
@@ -80,9 +80,9 @@ class Consumable:
 class MeleeWeapon:
     def __init__(self, attack_damage: int, effects=None):
         self.attack_damage = attack_damage
+        self.effects = effects
 
         self.hit = False
-        self.effects = effects
 
 
 class RangedWeapon:
@@ -96,7 +96,7 @@ class SlashingSword:
     def __init__(self, angle: float = 0):
         self.angle = angle
 
-        self.rect = None  # Reassign position after interaction with ItemPosition
+        self.rect = pygame.Rect(0, 0, 0, 0)  # Reassign position after interaction with ItemPosition
 
 
 class GravityBow:

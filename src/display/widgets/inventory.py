@@ -58,9 +58,7 @@ class Hotbar(Widget):
             self.hotbar_rects.append(hotbar_rect)
 
             item_entity = self.inventory_component.inventory[i]
-            if item_entity is None or not self.ui.world.has_component(
-                item_entity, item_component.Consumable
-            ):
+            if item_entity is None or not self.ui.world.has_component(item_entity, item_component.Consumable):
                 self.hotbar_durability_bars.append(None)
                 continue
 
@@ -87,9 +85,7 @@ class Hotbar(Widget):
             item_entity = self.inventory_component.inventory[hotbar_idx]
 
             if item_entity is not None:
-                item_graphics = self.ui.world.component_for_entity(
-                    item_entity, item_component.ItemGraphics
-                )
+                item_graphics = self.ui.world.component_for_entity(item_entity, item_component.ItemGraphics)
 
                 blit_pos = item_graphics.icon.get_rect(center=hotbar_rect.center)
                 frame.blit(item_graphics.icon, blit_pos)
@@ -108,7 +104,6 @@ class Hotbar(Widget):
                         border_width=1,
                         center=True,
                     )
-                    print((self.idx_to_pixelx(hotbar_idx) + 32, 55))
 
                     self.hotbar_durability_bars[hotbar_idx] = durability_bar
 
@@ -120,9 +115,7 @@ class Hotbar(Widget):
 
             # If durability bar entity died, durability bar dies
             hotbar_durability_bar = self.hotbar_durability_bars[hotbar_idx]
-            if hotbar_durability_bar is not None and not self.ui.world.entity_exists(
-                hotbar_durability_bar.entity
-            ):
+            if hotbar_durability_bar is not None and not self.ui.world.entity_exists(hotbar_durability_bar.entity):
                 self.hotbar_durability_bars[hotbar_idx] = None
 
         # Blit white rect for equipped item

@@ -8,6 +8,16 @@ Copyright (c) 2022-present SSS-Says-Snek
 from __future__ import annotations
 
 
+class EntityState:
+    """Contains states for actions for entities that have >1 state"""
+
+    PATROL = 1
+    FOLLOW = 2
+
+    def __init__(self, default_state):
+        self.state = default_state
+
+
 class FollowsEntityClose:
     def __init__(self, entity: int, follow_range: int):
         self.entity_followed = entity

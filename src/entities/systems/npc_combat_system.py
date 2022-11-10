@@ -24,9 +24,7 @@ class NPCCombatSystem(System):
         for entity, (pos, movement) in self.world.get_components(Position, Movement):
             # Non-player to entity (including player) damage interaction
             # FOR NOW! SUPER INEFFICIENT
-            for nested_entity, (nested_pos, nested_health) in self.world.get_components(
-                Position, Health
-            ):
+            for nested_entity, (nested_pos, nested_health) in self.world.get_components(Position, Health):
                 if nested_entity == entity:
                     continue
 
@@ -38,10 +36,7 @@ class NPCCombatSystem(System):
                         if melee_attack.collision:
                             conditional = pos.rect.colliderect(nested_pos.rect)
                         else:
-                            conditional = (
-                                pos.tile_pos.distance_to(nested_pos.tile_pos)
-                                <= melee_attack.attack_range
-                            )
+                            conditional = pos.in_range(nested_pos.tile_pos, melee_attack.attack_range)
 
                         if (
                             conditional
@@ -56,18 +51,14 @@ class NPCCombatSystem(System):
                             melee_attack.last_attacked = pygame.time.get_ticks()
 
                     elif self.world.has_component(entity, ai_component.MeleeWeaponAttack):
-                        melee_weapon_attack = self.world.component_for_entity(
-                            entity, ai_component.MeleeWeaponAttack
-                        )
+                        melee_weapon_attack = self.world.component_for_entity(entity, ai_component.MeleeWeaponAttack)
                         inventory = self.world.component_for_entity(entity, Inventory)
                         equipped_item = self.world.component_for_entity(
                             inventory.inventory[inventory.equipped_item_idx], item_component.Item
                         )
 
                         if (
-                            pos.tile_pos.distance_to(nested_pos.tile_pos)
-                            <= melee_weapon_attack.attack_range
-                            and pygame.time.get_ticks() - inventory.last_used
-                            > equipped_item.cooldown * 1000
+                            pos.in_range(nested_pos.tile_pos, melee_weapon_attack.attack_range)
+                            and pygame.time.get_ticks() - inventory.last_used > equipped_item.cooldown * 1000
                         ):
                             equipped_item.use(inventory)

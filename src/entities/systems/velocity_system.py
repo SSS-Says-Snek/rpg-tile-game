@@ -12,7 +12,7 @@ import math
 
 from src import pygame, utils
 from src.entities.components import ai_component, component
-from src.entities.components.component import (Flags, Graphics, Movement,
+from src.entities.components.component import (Flags, Movement,
                                                Position)
 from src.entities.systems.system import System
 from src.types import Dts, Events
@@ -29,7 +29,6 @@ class VelocitySystem(System):
         keys = pygame.key.get_pressed()
         player_movement = self.world.component_for_entity(self.player, Movement)
         player_pos = self.world.component_for_entity(self.player, Position)
-        player_graphics = self.world.component_for_entity(self.player, Graphics)
 
         player_movement.vx, player_movement.vy = 0, 0
         player_movement.vel.x = 0
@@ -37,17 +36,13 @@ class VelocitySystem(System):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player_movement.vel.x = -player_movement.speed
             player_pos.direction = -1
-            player_graphics.sprites_state = "left"
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player_movement.vel.x = player_movement.speed
             player_pos.direction = 1
-            player_graphics.sprites_state = "right"
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:
-                if (
-                    event.key == pygame.K_SPACE or event.key == pygame.K_w
-                ) and player_pos.on_ground:
+                if (event.key == pygame.K_SPACE or event.key == pygame.K_w) and player_pos.on_ground:
                     player_pos.on_ground = False
                     player_movement.vel.y = self.player_settings["jump_vel"]
 
@@ -58,52 +53,43 @@ class VelocitySystem(System):
 
         for entity, (flags, pos, movement) in self.world.get_components(Flags, Position, Movement):
             if flags.rotatable:
-                movement.rot = (
-                    self.world.component_for_entity(self.player, Position).pos - pos.pos
-                ).angle_to(pygame.Vector2(1, 0))
+                movement.rot = (self.world.component_for_entity(self.player, Position).pos - pos.pos).angle_to(
+                    pygame.Vector2(1, 0)
+                )
 
             # AI: Follow entity closely
             if self.world.has_component(entity, ai_component.FollowsEntityClose):
-                follows_entity_close = self.world.component_for_entity(
-                    entity, ai_component.FollowsEntityClose
-                )
+                follows_entity_close = self.world.component_for_entity(entity, ai_component.FollowsEntityClose)
+                entity_state = self.world.component_for_entity(entity, ai_component.EntityState)
                 entity_followed = follows_entity_close.entity_followed
-                entity_followed_pos = self.world.component_for_entity(
-                    entity_followed, component.Position
-                )
+                entity_followed_pos = self.world.component_for_entity(entity_followed, component.Position)
+
+                if entity_state.state == entity_state.PATROL:
+                    pass
+
+                    if pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range):
+                        entity_state.state = entity_state.FOLLOW
+                elif entity_state.state == entity_state.FOLLOW:
+                    pass
+
+                    if not pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range):
+                        entity_state.state = entity_state.PATROL
 
                 # Follow entity if and ONLY if:
                 # 1. The entity's tile y coordinate is the same as the enemy's
                 # 2. The distance from entity to enemy is less than 10, in tile space
-                if (
-                    pos.tile_pos.distance_to(entity_followed_pos.tile_pos)
-                    < follows_entity_close.follow_range
-                ):
+                if pos.tile_pos.distance_to(entity_followed_pos.tile_pos) < follows_entity_close.follow_range:
                     if entity_followed_pos.tile_pos.y == pos.tile_pos.y:
-                        mob_tile = utils.pixel_to_tile(pos.pos)
-                        tile_next_beneath = self.tilemap.tiles.get(
-                            (0, (mob_tile.x + math.copysign(1, movement.vel.x), mob_tile.y + 1))
-                        )
-                        tile_prev_beneath = self.tilemap.tiles.get(
-                            (0, (mob_tile.x - math.copysign(1, movement.vel.x), mob_tile.y + 1))
-                        )
-
-                        if entity_followed_pos.pos.x > pos.pos.x and tile_next_beneath is not None:
+                        if entity_followed_pos.pos.x > pos.pos.x:
                             movement.vel.x = movement.speed
                             pos.direction = 1
-                        elif (
-                            entity_followed_pos.pos.x < pos.pos.x and tile_prev_beneath is not None
-                        ):
+                        elif entity_followed_pos.pos.x < pos.pos.x:
                             movement.vel.x = -movement.speed
                             pos.direction = -1
                     else:  # Check if about to fall from platform
                         mob_tile = utils.pixel_to_tile(pos.pos)
-                        tile_next_beneath = self.tilemap.tiles.get(
-                            (0, (mob_tile.x + 1, mob_tile.y + 1))
-                        )
-                        tile_prev_beneath = self.tilemap.tiles.get(
-                            (0, (mob_tile.x - 1, mob_tile.y + 1))
-                        )
+                        tile_next_beneath = self.tilemap.get_tile(mob_tile.x + 1, mob_tile.y + 1)
+                        tile_prev_beneath = self.tilemap.get_tile(mob_tile.x - 1, mob_tile.y + 1)
 
                         if (
                             pos.direction == 1
@@ -124,8 +110,8 @@ class VelocitySystem(System):
                 )
                 tile_next = (tile_next_beneath[0], mob_tile.y)
 
-                actual_tile_next = self.tilemap.tiles.get((0, tile_next))
-                if actual_tile_next or not self.tilemap.tiles.get((0, tile_next_beneath)):
-                    if actual_tile_next and not actual_tile_next.get("unwalkable"):
+                actual_tile_next = self.tilemap.get_tile(0, tile_next)
+                if actual_tile_next or not self.tilemap.get_tile(0, tile_next_beneath):
+                    if actual_tile_next is not None and not actual_tile_next.get("unwalkable"):
                         continue
                     pos.direction *= -1

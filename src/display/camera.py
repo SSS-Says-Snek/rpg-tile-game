@@ -26,9 +26,7 @@ class Camera:
         self.shake_frames = 0
         self.shake_pixels = 5
 
-    def apply(
-        self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list], parallax: float = None
-    ):
+    def apply(self, target_pos: Union[pygame.Rect, pygame.Vector2, tuple, list], parallax: float = None):
         if isinstance(target_pos, tuple) or isinstance(target_pos, list):
             target_pos = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
         elif isinstance(target_pos, pygame.Vector2):

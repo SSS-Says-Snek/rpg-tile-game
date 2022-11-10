@@ -29,15 +29,9 @@ class Projectile:
         self.gravity = gravity
 
         # Calculate velocity direction
-        if (
-            -180 <= math.degrees(self.initial_angle) < -90
-            or 90 <= math.degrees(self.initial_angle) <= 180
-        ):
+        if -180 <= math.degrees(self.initial_angle) < -90 or 90 <= math.degrees(self.initial_angle) <= 180:
             self.vel_dir = 1
-        elif (
-            -90 <= math.degrees(self.initial_angle) < 0
-            or 0 <= math.degrees(self.initial_angle) < 90
-        ):
+        elif -90 <= math.degrees(self.initial_angle) < 0 or 0 <= math.degrees(self.initial_angle) < 90:
             self.vel_dir = -1
 
 

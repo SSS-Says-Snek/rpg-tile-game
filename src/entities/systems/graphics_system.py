@@ -157,12 +157,8 @@ class GraphicsSystem(System):
             equipped_item = inventory.inventory[inventory.equipped_item_idx]
 
             if equipped_item is not None:
-                item_graphics = self.world.component_for_entity(
-                    equipped_item, item_component.ItemGraphics
-                )
-                item_pos = self.world.component_for_entity(
-                    equipped_item, item_component.ItemPosition
-                )
+                item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
+                item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
 
                 x_offset = 0
                 if item_graphics.flip_on_dir:
@@ -235,9 +231,7 @@ class GraphicsSystem(System):
                 )
                 .starting_vel(
                     # - 0.3 is for semi-guarentee no lagging
-                    pygame.Vector2(
-                        random.choice(self.wind_gusts) / random.uniform(13, 17) - 0.3, 0
-                    )
+                    pygame.Vector2(random.choice(self.wind_gusts) / random.uniform(13, 17) - 0.3, 0)
                 )
                 .lifespan(frames=2000)
                 .draw_when(when="pre_interactables")
@@ -271,19 +265,14 @@ class GraphicsSystem(System):
             angle_apply = math.copysign(30, -h_dis) + h_dis * 3.5
             blade.target_angle = max(min(blade.target_angle + angle_apply, 90), -90)
         else:
-            blade.target_angle = (
-                -(math.sin(pygame.time.get_ticks() / 600) - blade.rotate_weight)
-                * blade.rotate_angle
-            )
+            blade.target_angle = -(math.sin(pygame.time.get_ticks() / 600) - blade.rotate_weight) * blade.rotate_angle
 
         blade.angle += (blade.target_angle - blade.angle) / 6
 
     def animate_grass(self):
         screen_proxy = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
 
-        for entity, (tile, tile_grass) in self.world.get_components(
-            tile_component.Tile, tile_component.GrassBlades
-        ):
+        for entity, (tile, tile_grass) in self.world.get_components(tile_component.Tile, tile_component.GrassBlades):
             if not self.camera.visible(tile.rect):
                 continue
 
@@ -308,9 +297,7 @@ class GraphicsSystem(System):
         screen.blit(screen_proxy, (0, 0))
 
     def animate_trees(self):
-        for entity, (tile, tile_deco) in self.world.get_components(
-            tile_component.Tile, tile_component.Decoration
-        ):
+        for entity, (tile, tile_deco) in self.world.get_components(tile_component.Tile, tile_component.Decoration):
             adj_rect = tile_deco.img.get_rect(midbottom=tile.rect.midbottom)
             if not self.camera.visible(adj_rect):
                 continue

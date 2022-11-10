@@ -56,9 +56,7 @@ class DefaultButton(Widget):
         self.border_fade = EaseTransition(
             255, 0, 500, EaseTransition.ease_out_quad, default_end=0, callback=self._fade_callback
         )
-        self.border_expand = EaseTransition(
-            0, 40, 800, EaseTransition.ease_out_cub, default_end=40
-        )
+        self.border_expand = EaseTransition(0, 40, 800, EaseTransition.ease_out_cub, default_end=40)
 
     def _fade_callback(self):
         self.border_clicked = False
@@ -103,11 +101,7 @@ class DefaultButton(Widget):
 
     def update(self, event_list: Events, dts: Dts):
         for event in event_list:
-            if (
-                event.type == pygame.MOUSEBUTTONDOWN
-                and self.rect.collidepoint(event.pos)
-                and not self.border_clicked
-            ):
+            if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos) and not self.border_clicked:
                 self.border_clicked = True
                 self.border_fade.start()
                 self.border_expand.start()

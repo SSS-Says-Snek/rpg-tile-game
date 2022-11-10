@@ -2,14 +2,16 @@ RANKED FROM HIGHEST TO LOWEST PRIORITY (SUBCATEGORIES INCLUDED)
 Use ✔ … ❌
 
 1. Polish the game …
-    - Add wind (ALMOST DONE, NEEDS LEAF SPRITE) …
+    - Add wind (PRETTY MUCH DONE, NEEDS LEAF SPRITE) ✔
     - Add clouds ✔
     - Add foliage/trees ✔
     - Add feedback to most actions (E.g jump particles) ❌
     - Add animations ❌
-2. Add more enemies/create better enemy AI ❌
+2. Add more enemies/create better enemy AI …
+    - Work on state enum for enemy.num_states > 1 …
 3. Add more items ❌
 4. Add combat skills ❌
-5. Add logic puzzles and create a better game framework …
-6. Add NPCs ❌
-7. Add cutscenes ❌
+5. Add logic puzzles ❌
+6. Create a better game framework …
+7. Add NPCs ❌
+8. Add cutscenes ❌

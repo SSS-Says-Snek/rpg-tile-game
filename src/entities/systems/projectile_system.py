@@ -23,11 +23,7 @@ class ProjectileSystem(System):
     def process(self, event_list: Events, dts: Dts):
         # HEAVILY BUGGY IMPLEMENTATION: WILL WORK ON IT MORE
 
-        for entity, (
-            projectile,
-            projectile_pos,
-            projectile_graphics,
-        ) in self.world.get_components(
+        for entity, (projectile, projectile_pos, projectile_graphics,) in self.world.get_components(
             projectile_component.Projectile,
             projectile_component.ProjectilePosition,
             projectile_component.ProjectileGraphics,
