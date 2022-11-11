@@ -12,8 +12,7 @@ import math
 
 from src import pygame, utils
 from src.entities.components import ai_component, component
-from src.entities.components.component import (Flags, Movement,
-                                               Position)
+from src.entities.components.component import Flags, Movement, Position
 from src.entities.systems.system import System
 from src.types import Dts, Events
 
@@ -25,12 +24,14 @@ class VelocitySystem(System):
         self.settings = self.level_state.settings
         self.player_settings = self.settings["mobs/player"]
 
+    def about_to_fall(self, pos: Position):
+        return self.tilemap.get_tile(pos.tile_pos.x + math.copysign(1, pos.direction), pos.tile_pos.y + 1) is None
+
     def handle_player_keys(self, event_list: Events):
         keys = pygame.key.get_pressed()
         player_movement = self.world.component_for_entity(self.player, Movement)
         player_pos = self.world.component_for_entity(self.player, Position)
 
-        player_movement.vx, player_movement.vy = 0, 0
         player_movement.vel.x = 0
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -52,10 +53,8 @@ class VelocitySystem(System):
         self.handle_player_keys(event_list)
 
         for entity, (flags, pos, movement) in self.world.get_components(Flags, Position, Movement):
-            if flags.rotatable:
-                movement.rot = (self.world.component_for_entity(self.player, Position).pos - pos.pos).angle_to(
-                    pygame.Vector2(1, 0)
-                )
+            if entity == self.player:
+                continue
 
             # AI: Follow entity closely
             if self.world.has_component(entity, ai_component.FollowsEntityClose):
@@ -64,54 +63,67 @@ class VelocitySystem(System):
                 entity_followed = follows_entity_close.entity_followed
                 entity_followed_pos = self.world.component_for_entity(entity_followed, component.Position)
 
-                if entity_state.state == entity_state.PATROL:
-                    pass
+                if entity_state.state == entity_state.Patrol:
+                    # Patrol if and ONLY if:
+                    # 1. The entity following is out of range of it OR
+                    # 2. The entity following is on a different y coordinate than itself
 
-                    if pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range):
-                        entity_state.state = entity_state.FOLLOW
-                elif entity_state.state == entity_state.FOLLOW:
-                    pass
+                    entity_state.state.patrol(self.tilemap, pos, movement)
 
-                    if not pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range):
-                        entity_state.state = entity_state.PATROL
+                    if (
+                        pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range)
+                        and entity_followed_pos.tile_pos.y == pos.tile_pos.y
+                    ):
+                        print(f"Entity {entity} switched to follow")
+                        entity_state.state = entity_state.Follow
 
-                # Follow entity if and ONLY if:
-                # 1. The entity's tile y coordinate is the same as the enemy's
-                # 2. The distance from entity to enemy is less than 10, in tile space
-                if pos.tile_pos.distance_to(entity_followed_pos.tile_pos) < follows_entity_close.follow_range:
-                    if entity_followed_pos.tile_pos.y == pos.tile_pos.y:
-                        if entity_followed_pos.pos.x > pos.pos.x:
-                            movement.vel.x = movement.speed
-                            pos.direction = 1
-                        elif entity_followed_pos.pos.x < pos.pos.x:
-                            movement.vel.x = -movement.speed
-                            pos.direction = -1
-                    else:  # Check if about to fall from platform
-                        mob_tile = utils.pixel_to_tile(pos.pos)
-                        tile_next_beneath = self.tilemap.get_tile(mob_tile.x + 1, mob_tile.y + 1)
-                        tile_prev_beneath = self.tilemap.get_tile(mob_tile.x - 1, mob_tile.y + 1)
+                elif entity_state.state == entity_state.Follow:
+                    # Follow entity if and ONLY if:
+                    # 1. The entity's tile y coordinate is the same as itself's AND
+                    # 2. The distance from entity to itself is less than 10, in tile space
 
-                        if (
-                            pos.direction == 1
-                            and tile_next_beneath is None
-                            or pos.direction == -1
-                            and tile_prev_beneath is None
-                        ):
-                            movement.vel.x *= -1
-                            pos.direction *= -1
+                    pos.direction = math.copysign(1, entity_followed_pos.pos.x - pos.pos.x)
+                    movement.vel.x = movement.speed * pos.direction
 
+                    if (
+                        not pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range)
+                        or entity_followed_pos.tile_pos.y != pos.tile_pos.y
+                    ):
+                        print(f"Entity {entity} switched to patrol")
+                        entity_state.state = entity_state.Patrol
+                    elif self.about_to_fall(pos):
+                        print(f"Entity {entity} switched to flee")
+                        entity_state.state = entity_state.Flee
+                        entity_state.state.flee_start_time = pygame.time.get_ticks()
+                        pos.direction *= -1
+
+                elif entity_state.state == entity_state.Flee:
+                    # Flee if and ONLY if:
+                    # 1. Its chances of falling of a platform is very high
+
+                    movement.vel.x = entity_state.state.flee_speed * pos.direction
+
+                    if (
+                        pygame.time.get_ticks() - entity_state.state.flee_start_time
+                        > entity_state.state.flee_time * 1000
+                    ):
+                        entity_state.state = entity_state.Patrol
+                    if self.about_to_fall(pos):
+                        # Just go back and forth until timer expires
+                        pos.direction *= -1
+
+            # TODO: ABANDON flags.mob_type
             if flags.mob_type == "walker_enemy":
                 movement.vel.x = movement.speed * pos.direction
 
                 mob_tile = utils.pixel_to_tile(pos.pos)
-                tile_next_beneath = (
+                tile_next_beneath = self.tilemap.get_tile(
                     mob_tile.x + math.copysign(1, movement.vel.x),
                     mob_tile.y + 1,
                 )
-                tile_next = (tile_next_beneath[0], mob_tile.y)
+                tile_next = self.tilemap.get_tile(mob_tile.x + math.copysign(1, movement.vel.x), mob_tile.y)
 
-                actual_tile_next = self.tilemap.get_tile(0, tile_next)
-                if actual_tile_next or not self.tilemap.get_tile(0, tile_next_beneath):
-                    if actual_tile_next is not None and not actual_tile_next.get("unwalkable"):
+                if tile_next or not tile_next_beneath:
+                    if tile_next is not None and not tile_next.get("unwalkable"):
                         continue
                     pos.direction *= -1

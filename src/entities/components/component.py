@@ -37,14 +37,12 @@ class Flags:
         self,
         has_dialogue: bool = False,
         collidable: bool = False,
-        rotatable: bool = False,
         mob_type: Optional[str] = None,
         damageable: bool = False,
         collide_with_player: bool = False,
     ):
         self.has_dialogue = has_dialogue
         self.collidable = collidable
-        self.rotatable = rotatable
         self.damageable = damageable
         self.collide_with_player = collide_with_player
 

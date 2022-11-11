@@ -1,0 +1,5 @@
+{
+    "flee_speed_factor": 1.5,
+    "patrol_speed_factor": 0.6,
+    "flee_time": 1.5
+}

@@ -152,11 +152,12 @@ class LevelState(State):
 
             elif obj.name == "simple_melee_enemy_spawn":
                 simple_melee_settings = self.settings["mobs/enemy/melee/simple"]
+                mob_confs = self.settings["mobs/conf"]
                 weapon_surf, weapon_icon = self.imgs["items/sword_hold", "items/sword_icon"]
+                speed = simple_melee_settings["speed"]
 
                 temp_sprite = pygame.Surface((32, 32))
                 temp_sprite.fill((255, 40, 30))
-
                 inventory_component = Inventory(size=1, hotbar_size=1)
 
                 simple_melee_enemy = self.ecs_world.create_entity(
@@ -169,7 +170,17 @@ class LevelState(State):
                         entity=self.player, follow_range=simple_melee_settings["follow_range"]
                     ),
                     ai_component.MeleeWeaponAttack(attack_range=simple_melee_settings["attack_range"]),
-                    ai_component.EntityState(ai_component.EntityState.PATROL),
+                    ai_component.EntityState(
+                        available_states=[
+                            ai_component.EntityState.Patrol(patrol_speed=speed * mob_confs["patrol_speed_factor"]),
+                            ai_component.EntityState.Flee(
+                                flee_speed=speed * mob_confs["flee_speed_factor"],
+                                flee_time=self.settings["mobs/conf/flee_time"],
+                            ),
+                            ai_component.EntityState.Follow(),
+                        ],
+                        starting_state=ai_component.EntityState.Patrol,
+                    ),
                     inventory_component,
                 )
 
@@ -232,7 +243,7 @@ class LevelState(State):
     def handle_event(self, event: pygame.event.Event):
         # self.change_state("level_state.TestState")
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_F3:
+            if event.key == pygame.K_F1:
                 self.debug = not self.debug
 
     def update(self, events: Events, dts: Dts):

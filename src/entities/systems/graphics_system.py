@@ -9,14 +9,12 @@ from __future__ import annotations
 import math
 import random
 
-import pytmx
-
 from src import common, pygame, screen, utils
 from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.display.particle import ImageParticle
 from src.entities.components import (item_component, projectile_component,
-                                     tile_component)
-from src.entities.components.component import (Flags, Graphics, Inventory,
+                                     tile_component, ai_component)
+from src.entities.components.component import (Graphics, Inventory,
                                                Movement, Position)
 from src.entities.systems.system import System
 from src.types import Dts, Events
@@ -74,81 +72,75 @@ class GraphicsSystem(System):
             ),
         )
 
-    def _draw_mob_debug(self):
+    def _draw_mob_debug(self, entity: int, pos: Position, movement: Movement):
         """Draws debug rects of the mobs"""
-        tilemap = self.tilemap.tilemap
+        info = pygame.Surface((180, 100), pygame.SRCALPHA)
+        info.set_alpha(150)
 
-        for layer in tilemap.visible_layers:
-            if isinstance(layer, pytmx.TiledTileLayer):
-                for x, y, gid in layer:
-                    # Adds tile props to dict
-                    tile_props = tilemap.get_tile_properties_by_gid(gid)
-                    if tile_props is None:
-                        continue
+        adj_pos = self.camera.apply(pos.rect)
+        info_pos = adj_pos.copy()
+        info_pos.width, info_pos.height = info.get_size()
+        info_pos.bottom = adj_pos.top - 5
+        info_pos.centerx = adj_pos.centerx
 
-                    # Draws entity rects
-                    pygame.draw.rect(
-                        screen,
-                        (0, 255, 0),
-                        self.camera.apply(
-                            pygame.Rect(
-                                x * tilemap.tilewidth,
-                                y * tilemap.tileheight,
-                                tilemap.tilewidth,
-                                tilemap.tileheight,
-                            )
-                        ),
-                        width=1,
-                    )
+        pygame.draw.rect(info, (249, 204, 127), (0, 0, *info.get_size()), border_radius=5)
+        pygame.draw.rect(info, (80, 46, 23), (0, 0, *info.get_size()), width=2, border_radius=5)
+        pygame.draw.rect(
+            screen,
+            (255, 0, 0),
+            adj_pos,
+            width=1,
+        )
+
+        font = utils.load_font(15)
+        lines = (
+            f"Entity ID: {entity}",
+            f"Coord pos: {pos.pos.xy}", f"Tile pos: {pos.tile_pos.xy}",
+        )
+
+        for i, line in enumerate(lines):
+            info.blit(font.render(line, True, (0, 0, 0)), (10, i * 20 + 10))
+
+        if self.world.has_component(entity, ai_component.EntityState):
+            entity_state = self.world.component_for_entity(entity, ai_component.EntityState)
+            info.blit(font.render(f"State: {entity_state.state.__class__.__name__}", True, (0, 0, 0)), (10, 70))
+
+        screen.blit(info, info_pos)
+
 
     def _draw_mob(self, dts: Dts, entity: int, graphics: Graphics, pos: Position):
         """Draws the actual mob sprite and animations"""
-        if not self.world.component_for_entity(entity, Flags).rotatable:
-            if self.level_state.debug:
-                pygame.draw.rect(
-                    screen,
-                    (255, 0, 0),
-                    self.camera.apply(pos.rect),
-                    width=1,
-                )
 
-            if graphics.sprite is not None:
-                screen.blit(graphics.sprite, self.camera.apply(pos.pos))
-            else:
-                movement = self.world.component_for_entity(entity, Movement)
-
-                if movement.vel.x > 0 and graphics.animations.get("move_right"):
-                    graphics.animations["move_right"].play_anim(
-                        self.camera.apply(pos.pos),
-                        dts["raw_dt"],
-                        graphics.animation_speeds["move"],
-                    )
-                elif movement.vel.x < 0 and graphics.animations.get("move_left"):
-                    graphics.animations["move_left"].play_anim(
-                        self.camera.apply(pos.pos),
-                        dts["raw_dt"],
-                        graphics.animation_speeds["move"],
-                    )
-
-                elif pos.direction == 1 and graphics.animations.get("idle_right"):
-                    graphics.animations["idle_right"].play_anim(
-                        self.camera.apply(pos.pos),
-                        dts["raw_dt"],
-                        graphics.animation_speeds["idle"],
-                    )
-                elif pos.direction == -1 and graphics.animations.get("idle_left"):
-                    graphics.animations["idle_left"].play_anim(
-                        self.camera.apply(pos.pos),
-                        dts["raw_dt"],
-                        graphics.animation_speeds["idle"],
-                    )
-
+        if graphics.sprite is not None:
+            screen.blit(graphics.sprite, self.camera.apply(pos.pos))
         else:
             movement = self.world.component_for_entity(entity, Movement)
-            rotated_sprite, new_pos = utils.rot_center(
-                graphics.sprite, movement.rot, *pygame.Rect(*pos.pos, *graphics.size).center
-            )
-            screen.blit(rotated_sprite, self.camera.apply(new_pos))
+
+            if movement.vel.x > 0 and graphics.animations.get("move_right"):
+                graphics.animations["move_right"].play_anim(
+                    self.camera.apply(pos.pos),
+                    dts["raw_dt"],
+                    graphics.animation_speeds["move"],
+                )
+            elif movement.vel.x < 0 and graphics.animations.get("move_left"):
+                graphics.animations["move_left"].play_anim(
+                    self.camera.apply(pos.pos),
+                    dts["raw_dt"],
+                    graphics.animation_speeds["move"],
+                )
+
+            elif pos.direction == 1 and graphics.animations.get("idle_right"):
+                graphics.animations["idle_right"].play_anim(
+                    self.camera.apply(pos.pos),
+                    dts["raw_dt"],
+                    graphics.animation_speeds["idle"],
+                )
+            elif pos.direction == -1 and graphics.animations.get("idle_left"):
+                graphics.animations["idle_left"].play_anim(
+                    self.camera.apply(pos.pos),
+                    dts["raw_dt"],
+                    graphics.animation_speeds["idle"],
+                )
 
     def _draw_mob_item(self, entity: int, pos: Position):
         """Draws the mob's equipped item (if any)"""
@@ -178,12 +170,13 @@ class GraphicsSystem(System):
     def draw_mobs(self, dts: Dts):
         """Draws all mobs appropriately"""
         for entity, (graphics, pos) in self.world.get_components(Graphics, Position):
-            if self.level_state.debug:
-                self._draw_mob_debug()
-
             self._draw_mob(dts, entity, graphics, pos)
-
             self._draw_mob_item(entity, pos)
+
+    def draw_mobs_debug(self):
+        for entity, (pos, movement) in self.world.get_components(Position, Movement):
+            if self.level_state.debug:
+                self._draw_mob_debug(entity, pos, movement)
 
     def draw_world_items(self):
         for entity, (item_graphics, item_pos) in self.world.get_components(
@@ -355,6 +348,8 @@ class GraphicsSystem(System):
         self.ui.update(event_list, dts)
         self.particle_system.draw_post_ui()
         self.handle_post_ui_widgets(event_list, dts)
+
+        self.draw_mobs_debug()
 
         self.draw_wind_particles()
 

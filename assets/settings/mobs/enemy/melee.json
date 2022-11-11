@@ -17,7 +17,6 @@
         "hp": 100,
         "max_hp": 100,
         "speed": 3,
-        "patrol_speed": 2,
         "follow_range": 20,
         "attack_cooldown": 2,
         "attack_damage": 15,

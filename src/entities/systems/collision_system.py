@@ -35,7 +35,6 @@ class CollisionSystem(System):
                     rect.right = neighboring_tile_rect.left
                     collision_types["right"] = True
                 elif movement.vel.x < 0:
-                    # print('OMAGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
                     rect.left = neighboring_tile_rect.right
                     collision_types["left"] = True
 
@@ -54,8 +53,6 @@ class CollisionSystem(System):
         return collision_types
 
     def process(self, event_list: Events, dts: Dts):
-        # super().process(event_list)
-
         # Mob
         for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)

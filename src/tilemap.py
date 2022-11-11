@@ -9,7 +9,7 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
@@ -145,5 +145,5 @@ class TileMap:
 
         return unwalkable_tile_rects
 
-    def get_tile(self, tile_x: int, tile_y: int) -> Union[dict, None]:
+    def get_tile(self, tile_x: int, tile_y: int) -> Optional[dict]:
         return self.tiles.get((0, (tile_x, tile_y)))
