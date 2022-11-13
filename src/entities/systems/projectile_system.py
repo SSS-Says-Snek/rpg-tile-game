@@ -9,8 +9,10 @@ This file defines the projectile system, used to move and handle projectiles
 from __future__ import annotations
 
 import math
+import random
 
 from src import pygame, utils
+from src.display.particle import Particle
 from src.entities.components import component, projectile_component
 from src.entities.systems.system import System
 from src.types import Dts, Events
@@ -43,6 +45,25 @@ class ProjectileSystem(System):
                 *projectile_pos.pos,
             )
 
+            if random.random() < 0.2:
+                for i in range(-1, 2):
+                    self.particle_system.add(
+                        Particle()
+                        .builder()
+                        .size(4)
+                        .color((255, 255, 255))
+                        .at(
+                            pygame.Vector2(projectile_pos.rect.bottomright)
+                            if projectile.vel_dir
+                            else projectile_pos.pos,
+                            angle=(90 - i * 5),
+                        )
+                        .angular_speed(1)
+                        .lifespan(20)
+                        .effect_fade(0.6)
+                        .build()
+                    )
+
             # Handle projectile to entity collision
             for nested_entity, (nested_pos, nested_health) in self.world.get_components(
                 component.Position, component.Health
@@ -66,11 +87,9 @@ class ProjectileSystem(System):
             if projectile_pos.pos.y > self.tilemap.height:
                 self.world.delete_entity(entity)
 
-            neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
+            for neighboring_tile_rect in self.tilemap.get_unwalkable_rects(
                 utils.get_neighboring_tile_entities(self.tilemap, 1, projectile_pos)
-            )
-
-            for neighboring_tile_rect in neighboring_tile_rects:
+            ):
                 if neighboring_tile_rect.colliderect(projectile_pos.rect):
                     self.world.delete_entity(entity)
                     break

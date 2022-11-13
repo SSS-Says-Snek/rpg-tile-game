@@ -23,7 +23,6 @@ class State(abc.ABC):
     def __init__(self, game_class: "Game"):
         self.game_class = game_class
         self.next_state: type(State) = self.__class__
-        self.screen = screen
 
     @abc.abstractmethod
     def draw(self):

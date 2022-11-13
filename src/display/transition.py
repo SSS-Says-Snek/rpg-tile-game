@@ -2,6 +2,9 @@
 This file is a part of the source code for rpg-tile-game
 This project has been licensed under the MIT license.
 Copyright (c) 2022-present SSS-Says-Snek
+
+This file contains utilities to transition from one value to another.
+The transition values can then be used in a variety of things (position, opacity, etc.)
 """
 from __future__ import annotations
 

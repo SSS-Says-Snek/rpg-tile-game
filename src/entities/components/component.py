@@ -35,18 +35,16 @@ class References:  # Thinking about it
 class Flags:
     def __init__(
         self,
-        has_dialogue: bool = False,
         collidable: bool = False,
         mob_type: Optional[str] = None,
         damageable: bool = False,
         collide_with_player: bool = False,
     ):
-        self.has_dialogue = has_dialogue
         self.collidable = collidable
         self.damageable = damageable
         self.collide_with_player = collide_with_player
 
-        self.alive = True
+        # TODO: Remove in favor of components
         self.mob_type = mob_type
 
 
@@ -74,7 +72,7 @@ class Position:
         self.direction: int = 1  # 1 for right, -1 for left
 
         self.on_ground: bool = False
-        self.rect: Optional[pygame.Rect] = None
+        self.rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
 
     def in_range(self, other_tile_pos: pygame.Vector2, radius: int) -> bool:
         return self.tile_pos.distance_to(other_tile_pos) < radius
@@ -84,19 +82,14 @@ class Movement:
     def __init__(
         self,
         speed: float,
-        acc: Optional[pygame.Vector2] = None,
+        acc: pygame.Vector2 = pygame.Vector2(0, 0),
         gravity_acc: float = 1.3,
-        rot: float = 0,
     ):
         self.speed = speed
         self.vel = pygame.Vector2(0, 0)
 
-        if acc is None:
-            self.acc = pygame.Vector2(0, 0)
-        else:
-            self.acc = acc
+        self.acc = acc
         self.gravity_acc = pygame.Vector2(0, gravity_acc)
-        self.rot = rot
 
 
 class Health:

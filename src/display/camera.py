@@ -17,9 +17,14 @@ from src.types import Pos
 
 
 class Camera:
-    def __init__(self, camera_width: int, camera_height: int):
+    def __init__(self, camera_width: int, camera_height: int, map_width: int, map_height: int):
         self.camera_width = camera_width
         self.camera_height = camera_height
+
+        # TODO: Stop scrolling on boundaries
+        self.map_width = map_width
+        self.map_height = map_height
+
         self.camera = pygame.Rect(0, 0, self.camera_width, self.camera_height)
 
         self.shake_offset = pygame.Vector2()
@@ -53,7 +58,8 @@ class Camera:
     def adjust_to(self, dt: float, target_pos: pygame.Vector2):
         self.camera.x += dt * (target_pos.x - self.camera.x - self.camera_width // 2) // 20
 
-        self.camera.y += dt * (target_pos.y - self.camera.y - self.camera_height // 2) // 20
+        # 0.65 makes the player slightly off center on the y axis, which shows less ground
+        self.camera.y += dt * (target_pos.y - self.camera.y - self.camera_height * 0.65) // 20
 
     def hard_adjust_to(self, target_pos: pygame.Vector2):
         x = self.camera_width // 2 - target_pos.x + self.shake_offset.x

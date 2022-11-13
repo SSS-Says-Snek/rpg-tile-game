@@ -11,7 +11,7 @@ from __future__ import annotations
 import esper
 
 # Important modules
-from src import common, pygame, utils
+from src import common, pygame, screen, utils
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
@@ -44,9 +44,10 @@ class LevelState(State):
 
         # esper and tilemap stuff
         self.ecs_world = esper.World()
+        self.tilemap = TileMap(common.MAP_DIR / "map2.tmx", self)
 
         # Stuff
-        self.camera = Camera(common.WIDTH, common.HEIGHT)
+        self.camera = Camera(common.WIDTH, common.HEIGHT, self.tilemap.width, self.tilemap.height)
         self.particle_system = particle.ParticleSystem(self.camera)
         self.effect_system = effect.EffectSystem(self)
 
@@ -56,8 +57,6 @@ class LevelState(State):
         self.ui.camera = self.camera
         self.ui.world = self.ecs_world
         self.ui.particle_system = self.particle_system
-
-        self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
 
         self.placeholder_background = pygame.transform.scale(
             utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"),
@@ -153,7 +152,7 @@ class LevelState(State):
             elif obj.name == "simple_melee_enemy_spawn":
                 simple_melee_settings = self.settings["mobs/enemy/melee/simple"]
                 mob_confs = self.settings["mobs/conf"]
-                weapon_surf, weapon_icon = self.imgs["items/sword_hold", "items/sword_icon"]
+                weapon_surf, weapon_icon = self.imgs["items/bronze_sword", "items/sword_icon"]
                 speed = simple_melee_settings["speed"]
 
                 temp_sprite = pygame.Surface((32, 32))
@@ -165,7 +164,7 @@ class LevelState(State):
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Health(hp=simple_melee_settings["hp"], max_hp=simple_melee_settings["max_hp"]),
                     Movement(speed=simple_melee_settings["speed"]),
-                    Graphics(sprite=temp_sprite),
+                    Graphics(sprite=self.imgs["mobs/simple_melee_enemy"]),
                     ai_component.FollowsEntityClose(
                         entity=self.player, follow_range=simple_melee_settings["follow_range"]
                     ),
@@ -256,7 +255,7 @@ class LevelState(State):
 
 class TestState(State):
     def draw(self):
-        self.screen.fill((128, 128, 128))
+        screen.fill((128, 128, 128))
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:

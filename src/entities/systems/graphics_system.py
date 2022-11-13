@@ -12,10 +12,10 @@ import random
 from src import common, pygame, screen, utils
 from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.display.particle import ImageParticle
-from src.entities.components import (item_component, projectile_component,
-                                     tile_component, ai_component)
-from src.entities.components.component import (Graphics, Inventory,
-                                               Movement, Position)
+from src.entities.components import (ai_component, item_component,
+                                     projectile_component, tile_component)
+from src.entities.components.component import (Graphics, Inventory, Movement,
+                                               Position)
 from src.entities.systems.system import System
 from src.types import Dts, Events
 
@@ -95,7 +95,8 @@ class GraphicsSystem(System):
         font = utils.load_font(15)
         lines = (
             f"Entity ID: {entity}",
-            f"Coord pos: {pos.pos.xy}", f"Tile pos: {pos.tile_pos.xy}",
+            f"Coord pos: {pos.pos.xy}",
+            f"Tile pos: {pos.tile_pos.xy}",
         )
 
         for i, line in enumerate(lines):
@@ -106,7 +107,6 @@ class GraphicsSystem(System):
             info.blit(font.render(f"State: {entity_state.state.__class__.__name__}", True, (0, 0, 0)), (10, 70))
 
         screen.blit(info, info_pos)
-
 
     def _draw_mob(self, dts: Dts, entity: int, graphics: Graphics, pos: Position):
         """Draws the actual mob sprite and animations"""
@@ -152,17 +152,17 @@ class GraphicsSystem(System):
                 item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
                 item_pos = self.world.component_for_entity(equipped_item, item_component.ItemPosition)
 
-                x_offset = 0
+                x_offset = math.copysign(2, -pos.direction)
                 if item_graphics.flip_on_dir:
                     if pos.direction == -1:
                         item_graphics.current_img = pygame.transform.flip(
                             item_graphics.current_img, flip_x=True, flip_y=False
                         )
-                        x_offset = item_graphics.bound_size[0] + 6
+                        x_offset = item_graphics.bound_size[0] + 8
 
                 screen.blit(
                     item_graphics.current_img,
-                    self.camera.apply((item_pos.pos[0] - x_offset, item_pos.pos[1])),
+                    self.camera.apply((item_pos.pos[0] - x_offset, item_pos.pos[1] + 5)),
                 )
 
                 item_graphics.current_img = item_graphics.original_img

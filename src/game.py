@@ -30,16 +30,16 @@ class Game:
         # No camera at start of game
         self.ui = UI(None)
 
-        self.ui.add_widget(
-            DefaultButton(
-                self.ui,
-                (100, 100),
-                (100, 50),
-                border_width=3,
-                border_roundness=5,
-                hover_color=(80, 80, 80),
-            )
-        )
+        # self.ui.add_widget(
+        #     DefaultButton(
+        #         self.ui,
+        #         (100, 100),
+        #         (100, 50),
+        #         border_width=3,
+        #         border_roundness=5,
+        #         hover_color=(80, 80, 80),
+        #     )
+        # )
 
         self.settings = Loader(SETTINGS_DIR, ".json", json.load)
         self.imgs = Loader(IMG_DIR, ".png", pygame.image.load)
@@ -58,7 +58,7 @@ class Game:
             dts = {"raw_dt": self.clock.tick(common.FPS) / 1000}
             dts["dt"] = dts["raw_dt"] * common.FPS
 
-            pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3} FPS")
+            pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3f} FPS")
 
             # Event loop
             for event in events:

@@ -30,7 +30,7 @@ class CollisionSystem(System):
         rect.x += round(movement.vel.x * dt)
 
         for neighboring_tile_rect in neighboring_tile_rects:
-            if neighboring_tile_rect is not None and neighboring_tile_rect.colliderect(rect):
+            if neighboring_tile_rect.colliderect(rect):
                 if movement.vel.x > 0:
                     rect.right = neighboring_tile_rect.left
                     collision_types["right"] = True
@@ -41,7 +41,7 @@ class CollisionSystem(System):
         rect.y += round(movement.vel.y)
 
         for neighboring_tile_rect in neighboring_tile_rects:
-            if neighboring_tile_rect is not None and neighboring_tile_rect.colliderect(rect):
+            if neighboring_tile_rect.colliderect(rect):
                 if movement.vel.y > 0:
                     movement.vel.y = 0
                     rect.bottom = neighboring_tile_rect.top
@@ -70,7 +70,7 @@ class CollisionSystem(System):
                 for nested_entity, (nested_flags, nested_pos, *_) in self.world.get_components(
                     Flags, Position, Movement, Graphics
                 ):
-                    if nested_flags.collide_with_player and nested_pos.rect is not None:
+                    if nested_flags.collide_with_player:
                         neighboring_tile_rects.append(nested_pos.rect)
 
             # Apply gravity

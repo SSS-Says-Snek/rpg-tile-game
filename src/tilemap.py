@@ -32,7 +32,6 @@ class TileMap:
 
         self.level_state = level_state
         self.ecs_world = self.level_state.ecs_world
-        self.ui = self.level_state.ui
 
         self.tilename_to_img = {}
 
