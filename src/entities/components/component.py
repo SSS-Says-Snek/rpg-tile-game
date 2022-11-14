@@ -55,13 +55,18 @@ class Graphics:
         animations: Optional[dict] = None,
         animation_speeds: Optional[dict] = None,
     ):
-        self.sprite = sprite
-        self.animations = animations if animations is not None else {}
-        self.animation_speeds = animation_speeds if animation_speeds is not None else {}
+        # Assume that sprite is the sprite facing right
+        self.sprites = {
+            "right": sprite,
+            "left": pygame.transform.flip(sprite, True, False),
+        } if sprite is not None else None
 
-        if self.sprite is not None:
-            self.size = self.sprite.get_size()
-        elif self.animations is not None:
+        self.animations = animations if animations is not None else None
+        self.animation_speeds = animation_speeds if animation_speeds is not None else None
+
+        if sprite is not None:
+            self.size = sprite.get_size()
+        else:
             self.size = list(self.animations.values())[0].frames[0].get_size()
 
 

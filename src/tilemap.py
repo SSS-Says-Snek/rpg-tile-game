@@ -33,6 +33,7 @@ class TileMap:
         self.level_state = level_state
         self.ecs_world = self.level_state.ecs_world
 
+        # Map tile name to image for other usages (such as tile outlines)
         self.tilename_to_img = {}
 
         # Tiles will be filled in on render_map
@@ -51,15 +52,19 @@ class TileMap:
         for layer_id, layer in enumerate(self.tilemap.visible_layers):
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
+                    tile_img = self.tilemap.get_tile_image_by_gid(gid)
+                    if tile_img is None:
+                        continue
+                    tile_img = tile_img.convert_alpha()
+
                     # Adds tile props to dict
                     tile_props = self.tilemap.get_tile_properties_by_gid(gid)
                     if tile_props is None:
-                        continue
+                        tile_props = {}
 
-                    tile_img = self.tilemap.get_tile_image_by_gid(gid).convert_alpha()
                     self.tiles[(layer_id, (x, y))] = tile_props
                     blit_surf = normal_surf
-                    components = [tile_component.Tile(x, y, tile_props["width"], tile_props["height"])]
+                    components = [tile_component.Tile(x, y, self.tilemap.tilewidth, self.tilemap.tileheight)]
                     flag_kwargs = {}
 
                     if tile_props.get("unwalkable"):

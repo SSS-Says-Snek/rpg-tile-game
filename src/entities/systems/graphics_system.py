@@ -111,8 +111,11 @@ class GraphicsSystem(System):
     def _draw_mob(self, dts: Dts, entity: int, graphics: Graphics, pos: Position):
         """Draws the actual mob sprite and animations"""
 
-        if graphics.sprite is not None:
-            screen.blit(graphics.sprite, self.camera.apply(pos.pos))
+        if graphics.sprites is not None:
+            if pos.direction == 1:
+                screen.blit(graphics.sprites["right"], self.camera.apply(pos.pos))
+            else:
+                screen.blit(graphics.sprites["left"], self.camera.apply(pos.pos))
         else:
             movement = self.world.component_for_entity(entity, Movement)
 

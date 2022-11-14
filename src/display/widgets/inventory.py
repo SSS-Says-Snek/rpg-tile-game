@@ -11,6 +11,7 @@ from __future__ import annotations
 import pygame.gfxdraw
 
 from src import pygame, screen
+from src.common import TILE_WIDTH
 from src.display.camera import Camera
 from src.display.ui import UI
 from src.display.widgets.health_bar import ItemDurabilityBar
@@ -65,7 +66,7 @@ class Hotbar(Widget):
             durability_bar = ItemDurabilityBar(
                 ui=self.ui,
                 entity=item_entity,
-                pos=(self.idx_to_pixelx(i) + 32, 55),
+                pos=(self.idx_to_pixelx(i) + TILE_WIDTH, 55),
                 width=45,
                 height=5,
                 border_width=1,
