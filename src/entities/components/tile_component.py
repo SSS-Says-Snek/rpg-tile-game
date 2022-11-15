@@ -8,15 +8,25 @@ This file defines tile components, similar to the components in component.py
 from __future__ import annotations
 
 import random
+from enum import IntFlag, auto
 from dataclasses import dataclass
 
 from src import pygame, utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.display.widgets.interactable_tiles import SignDialogue, TileHover
 
+class Type(IntFlag):
+    DEFAULT = auto()
+    COLLIDABLE = auto()
+    RAMP_UP = auto()
+    RAMP_DOWN = auto()
+
 
 class Tile:
-    def __init__(self, x: int, y: int, width: int, height: int):
+    def __init__(
+            self, x: int, y: int, width: int, height: int,
+            tile_type: Type = Type.DEFAULT
+    ):
         self.x = x
         self.y = y
 
@@ -24,6 +34,8 @@ class Tile:
         self.height: int = height
 
         self.rect = pygame.Rect(x * TILE_WIDTH, y * TILE_HEIGHT, width, height)
+
+        self.type = tile_type
 
 
 class Interactable:

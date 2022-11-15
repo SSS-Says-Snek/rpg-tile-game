@@ -101,7 +101,7 @@ class LevelState(State):
                     Movement(speed=player_settings["speed"]),
                     Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
                     Graphics(animations=player_animations, animation_speeds=player_animation_speeds),
-                    Flags(collidable=True, mob_type="player", damageable=True),
+                    Flags(mob_type="player"),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     inventory_component,
                 )
@@ -135,7 +135,7 @@ class LevelState(State):
                 walker_animations, walker_animation_speeds = utils.load_mob_animations(walker_settings)
 
                 walker_enemy = self.ecs_world.create_entity(
-                    Flags(collidable=True, mob_type="walker_enemy", damageable=True),
+                    Flags(mob_type="walker_enemy"),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
                     Graphics(animations=walker_animations, animation_speeds=walker_animation_speeds),

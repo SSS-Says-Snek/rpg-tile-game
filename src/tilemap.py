@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
-    from src.entities.components.component import Position
 
 import pygame
 import pytmx
@@ -21,7 +20,6 @@ import pytmx
 from src import utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.entities.components import tile_component
-from src.entities.components.component import *
 
 
 class TileMap:
@@ -64,11 +62,16 @@ class TileMap:
 
                     self.tiles[(layer_id, (x, y))] = tile_props
                     blit_surf = normal_surf
-                    components = [tile_component.Tile(x, y, self.tilemap.tilewidth, self.tilemap.tileheight)]
-                    flag_kwargs = {}
+
+                    tile_type = tile_component.Type.DEFAULT
 
                     if tile_props.get("unwalkable"):
-                        flag_kwargs["collidable"] = True
+                        tile_type |= tile_component.Type.COLLIDABLE
+                    if tile_props.get("ramp"):
+                        if tile_props["ramp"] == "up":
+                            tile_type |= tile_component.Type.RAMP_UP
+                        elif tile_props["ramp"] == "down":
+                            tile_type |= tile_component.Type.RAMP_DOWN
                     if tile_props.get("interactable"):
                         blit_surf = interactable_surf
                     if tile_props.get("tile_img"):
@@ -76,7 +79,8 @@ class TileMap:
                         if tile_img_name not in self.tilename_to_img:
                             self.tilename_to_img[tile_img_name] = tile_img
 
-                    entity_id = self.ecs_world.create_entity(*components, Flags(**flag_kwargs))
+                    tile = tile_component.Tile(x, y, self.tilemap.tilewidth, self.tilemap.tileheight, tile_type)
+                    entity_id = self.ecs_world.create_entity(tile)
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
                     blit_surf.blit(
@@ -138,7 +142,7 @@ class TileMap:
         for tile_entity in neighboring_tiles:
             tile = self.ecs_world.component_for_entity(tile_entity, tile_component.Tile)
 
-            if self.ecs_world.component_for_entity(tile_entity, Flags).collidable:
+            if tile_component.Type.COLLIDABLE in tile.type:
                 unwalkable_tile_rect = pygame.Rect(
                     tile.x * tile.width,
                     tile.y * tile.height,

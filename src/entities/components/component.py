@@ -32,16 +32,13 @@ class References:  # Thinking about it
             self.references = reference_dict
 
 
+# TODO: Separate tile and entity flags
 class Flags:
     def __init__(
         self,
-        collidable: bool = False,
         mob_type: Optional[str] = None,
-        damageable: bool = False,
         collide_with_player: bool = False,
     ):
-        self.collidable = collidable
-        self.damageable = damageable
         self.collide_with_player = collide_with_player
 
         # TODO: Remove in favor of components
