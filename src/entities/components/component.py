@@ -32,7 +32,6 @@ class References:  # Thinking about it
             self.references = reference_dict
 
 
-# TODO: Separate tile and entity flags
 class Flags:
     def __init__(
         self,
@@ -53,10 +52,14 @@ class Graphics:
         animation_speeds: Optional[dict] = None,
     ):
         # Assume that sprite is the sprite facing right
-        self.sprites = {
-            "right": sprite,
-            "left": pygame.transform.flip(sprite, True, False),
-        } if sprite is not None else None
+        self.sprites = (
+            {
+                "right": sprite,
+                "left": pygame.transform.flip(sprite, True, False),
+            }
+            if sprite is not None
+            else None
+        )
 
         self.animations = animations if animations is not None else None
         self.animation_speeds = animation_speeds if animation_speeds is not None else None
@@ -69,6 +72,7 @@ class Graphics:
 
 class Position:
     def __init__(self, pos: pygame.Vector2):
+        self.original_pos = pos.copy()
         self.pos: pygame.Vector2 = pos
         self.tile_pos: pygame.Vector2 = utils.pixel_to_tile(pos)
         self.direction: int = 1  # 1 for right, -1 for left

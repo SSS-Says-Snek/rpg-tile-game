@@ -55,20 +55,12 @@
  <tile id="14">
   <properties>
    <property name="ramp" value="up"/>
+   <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="15">
   <properties>
    <property name="ramp" value="down"/>
-  </properties>
- </tile>
- <tile id="16">
-  <properties>
-   <property name="unwalkable" type="bool" value="true"/>
-  </properties>
- </tile>
- <tile id="17">
-  <properties>
    <property name="unwalkable" type="bool" value="true"/>
   </properties>
  </tile>

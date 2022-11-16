@@ -72,10 +72,10 @@ class GraphicsSystem(System):
             ),
         )
 
-    def _draw_mob_debug(self, entity: int, pos: Position, movement: Movement):
+    def _draw_mob_debug(self, entity: int, pos: Position):
         """Draws debug rects of the mobs"""
         info = pygame.Surface((180, 100), pygame.SRCALPHA)
-        info.set_alpha(150)
+        info.set_alpha(180)
 
         adj_pos = self.camera.apply(pos.rect)
         info_pos = adj_pos.copy()
@@ -177,9 +177,9 @@ class GraphicsSystem(System):
             self._draw_mob_item(entity, pos)
 
     def draw_mobs_debug(self):
-        for entity, (pos, movement) in self.world.get_components(Position, Movement):
+        for entity, (pos, _) in self.world.get_components(Position, Movement):
             if self.level_state.debug:
-                self._draw_mob_debug(entity, pos, movement)
+                self._draw_mob_debug(entity, pos)
 
     def draw_world_items(self):
         for entity, (item_graphics, item_pos) in self.world.get_components(

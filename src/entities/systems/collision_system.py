@@ -11,7 +11,7 @@ from __future__ import annotations
 import pygame
 
 from src import utils
-from src.entities.components import item_component
+from src.entities.components import item_component, tile_component
 from src.entities.components.component import (Flags, Graphics, Inventory,
                                                Movement, Position)
 from src.entities.systems.system import System
@@ -25,18 +25,16 @@ class CollisionSystem(System):
     @staticmethod
     def collide_with_tiles(
         rect: pygame.Rect, movement: Movement, neighboring_tile_rects: list[pygame.Rect], dt: float
-    ):
-        collision_types = {"top": False, "bottom": False, "right": False, "left": False}
+    ) -> bool:
+        collide_bottom = False
         rect.x += round(movement.vel.x * dt)
 
         for neighboring_tile_rect in neighboring_tile_rects:
             if neighboring_tile_rect.colliderect(rect):
                 if movement.vel.x > 0:
                     rect.right = neighboring_tile_rect.left
-                    collision_types["right"] = True
                 elif movement.vel.x < 0:
                     rect.left = neighboring_tile_rect.right
-                    collision_types["left"] = True
 
         rect.y += round(movement.vel.y)
 
@@ -45,18 +43,38 @@ class CollisionSystem(System):
                 if movement.vel.y > 0:
                     movement.vel.y = 0
                     rect.bottom = neighboring_tile_rect.top
-                    collision_types["bottom"] = True
+                    collide_bottom = True
                 elif movement.vel.y < 0:
                     movement.vel.y = 0
                     rect.top = neighboring_tile_rect.bottom
-                    collision_types["top"] = True
-        return collision_types
+        return collide_bottom
+
+    @staticmethod
+    def collide_with_ramps(pos: Position, ramps: list[tuple[pygame.Rect, tile_component.Type]]):
+        collide_bottom = False
+
+        for ramp_rect, ramp_type in ramps:
+            if ramp_rect.colliderect(pos.rect):
+                rel_x = pos.pos.x - ramp_rect.x
+
+                if ramp_type == tile_component.Type.RAMP_UP:
+                    pos_height = rel_x + pos.rect.width
+                else:
+                    pos_height = ramp_rect.height - rel_x
+                pos_height = min(max(pos_height, 0), ramp_rect.height)
+
+                actual_y = ramp_rect.y + ramp_rect.height - pos_height
+                if pos.rect.bottom > actual_y:
+                    pos.rect.bottom = actual_y
+                    collide_bottom = True
+
+        return collide_bottom
 
     def process(self, event_list: Events, dts: Dts):
         # Mob
         for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
-            neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
+            neighboring_tile_rects, ramps = self.tilemap.get_unwalkable_rects(
                 utils.get_neighboring_tile_entities(self.tilemap, 3, pos)
             )
 
@@ -81,8 +99,9 @@ class CollisionSystem(System):
                 movement.vel.y = 170
             pos.pos.y += movement.vel.y
 
-            collisions = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, dts["dt"])
-            if collisions["bottom"]:
+            collide_bottom_tiles = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, dts["dt"])
+            collide_bottom_ramps = self.collide_with_ramps(pos, ramps)
+            if collide_bottom_tiles or collide_bottom_ramps:
                 pos.on_ground = True
                 movement.vel.y = 0
 

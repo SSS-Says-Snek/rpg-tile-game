@@ -9,7 +9,7 @@ This file contains utilities for the drawing of interactable signs
 from __future__ import annotations
 
 import math
-from enum import IntFlag, auto
+from enum import Flag, auto
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ def create_tile_hover_surf(font: pygame.font.Font) -> pygame.Surface:
     return surf
 
 
-class SignState(IntFlag):
+class SignState(Flag):
     INACTIVE = auto()
     TRANSITION_UP = auto()
     TYPING = auto()

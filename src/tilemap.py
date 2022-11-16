@@ -93,11 +93,12 @@ class TileMap:
 
             tile = tile_component.Tile(*obj_pos, obj.width, obj.height)
             if obj.name == "sign":
-                obj.text = (
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
-                    "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-                    "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                )
+                if obj.text == "":
+                    obj.text = (
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+                        "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+                        "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                    )
                 self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
                     tile,
                     tile_component.Interactable(tile, self.tilename_to_img["sign"]),
@@ -136,22 +137,28 @@ class TileMap:
     def get_visible_tile_layers(self) -> list[pytmx.TiledTileLayer]:
         return [layer for layer in self.tilemap.visible_layers if isinstance(layer, pytmx.TiledTileLayer)]
 
-    def get_unwalkable_rects(self, neighboring_tiles: list[int]) -> list[pygame.Rect]:
+    def get_unwalkable_rects(
+        self, neighboring_tiles: list[int]
+    ) -> tuple[list[pygame.Rect], list[tuple[pygame.Rect, tile_component.Type]]]:
         unwalkable_tile_rects = []
+        ramps = []
 
         for tile_entity in neighboring_tiles:
             tile = self.ecs_world.component_for_entity(tile_entity, tile_component.Tile)
-
-            if tile_component.Type.COLLIDABLE in tile.type:
-                unwalkable_tile_rect = pygame.Rect(
-                    tile.x * tile.width,
-                    tile.y * tile.height,
-                    tile.width,
-                    tile.height,
-                )
+            unwalkable_tile_rect = pygame.Rect(
+                tile.x * tile.width,
+                tile.y * tile.height,
+                tile.width,
+                tile.height,
+            )
+            if tile_component.Type.RAMP_UP in tile.type:
+                ramps.append((unwalkable_tile_rect, tile_component.Type.RAMP_UP))
+            elif tile_component.Type.RAMP_DOWN in tile.type:
+                ramps.append((unwalkable_tile_rect, tile_component.Type.RAMP_DOWN))
+            elif tile_component.Type.COLLIDABLE in tile.type:
                 unwalkable_tile_rects.append(unwalkable_tile_rect)
 
-        return unwalkable_tile_rects
+        return unwalkable_tile_rects, ramps
 
     def get_tile(self, tile_x: int, tile_y: int) -> Optional[dict]:
         return self.tiles.get((0, (tile_x, tile_y)))

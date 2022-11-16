@@ -16,6 +16,7 @@ from src import pygame, screen
 class FadeTransition:
     FADE_IN = 0
     FADE_OUT = 1
+    FADE_OUT_IN = 2
 
     def __init__(self, mode: int, fade_rate: float, screen_to_fade: pygame.Surface = screen):
         self.mode = mode

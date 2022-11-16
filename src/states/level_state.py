@@ -82,6 +82,8 @@ class LevelState(State):
         self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
+        self.orig_world = esper.World()
+
     def load_spawns(self):
         # Sorts in a way that guarentees player be defined first
         for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
@@ -101,8 +103,8 @@ class LevelState(State):
                     Movement(speed=player_settings["speed"]),
                     Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
                     Graphics(animations=player_animations, animation_speeds=player_animation_speeds),
-                    Flags(mob_type="player"),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
+                    Flags(),
                     inventory_component,
                 )
 
@@ -150,13 +152,11 @@ class LevelState(State):
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
             elif obj.name == "simple_melee_enemy_spawn":
-                simple_melee_settings = self.settings["mobs/enemy/melee/simple"]
-                mob_confs = self.settings["mobs/conf"]
-                weapon_surf, weapon_icon = self.imgs["items/bronze_sword", "items/sword_icon"]
+                mob_confs, simple_melee_settings = self.settings["mobs/conf", "mobs/enemy/melee/simple"]
+                weapon_surf = self.imgs["items/bronze_sword"]
                 speed = simple_melee_settings["speed"]
 
-                temp_sprite = pygame.Surface((32, 32))
-                temp_sprite.fill((255, 40, 30))
+                # temporary
                 inventory_component = Inventory(size=1, hotbar_size=1)
 
                 simple_melee_enemy = self.ecs_world.create_entity(
@@ -189,7 +189,7 @@ class LevelState(State):
                         cooldown=simple_melee_settings["attack_cooldown"],
                         owner=simple_melee_enemy,
                     ),
-                    item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
+                    item_component.ItemGraphics(sprite=weapon_surf),
                     item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), in_inventory=True),
                     item_component.MeleeWeapon(attack_damage=simple_melee_settings["attack_damage"]),
                     item_component.SlashingSword(),

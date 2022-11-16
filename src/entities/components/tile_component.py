@@ -8,14 +8,15 @@ This file defines tile components, similar to the components in component.py
 from __future__ import annotations
 
 import random
-from enum import IntFlag, auto
 from dataclasses import dataclass
+from enum import Flag, auto
 
 from src import pygame, utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH
 from src.display.widgets.interactable_tiles import SignDialogue, TileHover
 
-class Type(IntFlag):
+
+class Type(Flag):
     DEFAULT = auto()
     COLLIDABLE = auto()
     RAMP_UP = auto()
@@ -23,18 +24,13 @@ class Type(IntFlag):
 
 
 class Tile:
-    def __init__(
-            self, x: int, y: int, width: int, height: int,
-            tile_type: Type = Type.DEFAULT
-    ):
+    def __init__(self, x: int, y: int, width: int, height: int, tile_type: Type = Type.DEFAULT):
         self.x = x
         self.y = y
-
         self.width: int = width
         self.height: int = height
 
         self.rect = pygame.Rect(x * TILE_WIDTH, y * TILE_HEIGHT, width, height)
-
         self.type = tile_type
 
 
@@ -90,10 +86,10 @@ class GrassBlades:
 
         self.blades = [
             self.Blade(
-                random.randint(0, self.grass_section_width),
-                random.uniform(0.6, 1.2),
-                random.uniform(10, 24),
-                random.choice(self.GRASS_BLADES),
+                x=random.randint(0, self.grass_section_width),
+                rotate_weight=random.uniform(0.6, 1.2),
+                rotate_angle=random.uniform(10, 24),
+                img=random.choice(self.GRASS_BLADES),
             )
             for _ in range(int(self.num_blades * self.tile_grass_section_width))
         ]

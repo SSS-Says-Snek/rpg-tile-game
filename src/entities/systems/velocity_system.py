@@ -12,7 +12,7 @@ import math
 
 from src import pygame, utils
 from src.entities.components import ai_component, component
-from src.entities.components.component import Flags, Movement, Position
+from src.entities.components.component import Flags, Health, Movement, Position
 from src.entities.systems.system import System
 from src.types import Dts, Events
 
@@ -48,6 +48,9 @@ class VelocitySystem(System):
                     player_movement.vel.y = self.player_settings["jump_vel"]
 
                     # TODO: Add jump particles
+
+        if player_pos.pos.y > 960:
+            print("A")
 
     def process(self, event_list: Events, dts: Dts):
         self.handle_player_keys(event_list)

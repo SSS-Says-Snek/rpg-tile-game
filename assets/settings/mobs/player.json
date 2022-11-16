@@ -12,6 +12,6 @@
     "inventory_size": 14,
     "hp": 100,
     "max_hp": 100,
-    "speed": 5,
+    "speed": 4.5,
     "jump_vel": -25
 }

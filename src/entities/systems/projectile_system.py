@@ -87,9 +87,10 @@ class ProjectileSystem(System):
             if projectile_pos.pos.y > self.tilemap.height:
                 self.world.delete_entity(entity)
 
-            for neighboring_tile_rect in self.tilemap.get_unwalkable_rects(
-                utils.get_neighboring_tile_entities(self.tilemap, 1, projectile_pos)
-            ):
+            neighboring_tile_rects, _ = self.tilemap.get_unwalkable_rects(
+                utils.get_neighboring_tile_entities(self.tilemap, 2, projectile_pos)
+            )
+            for neighboring_tile_rect in neighboring_tile_rects:
                 if neighboring_tile_rect.colliderect(projectile_pos.rect):
                     self.world.delete_entity(entity)
                     break
