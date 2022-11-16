@@ -113,6 +113,8 @@ class SignDialogue(Widget):
 
             wrapped_text.append(" ".join(words[start:i]))
 
+        self.text = ''.join(wrapped_text)
+
         return wrapped_text
 
     def blit_wrapped_text(self, wrapped_text: list[str]):
@@ -175,7 +177,7 @@ class SignDialogue(Widget):
                 self.text_idxs["char"] += 1
 
                 # If going onto new line
-                if self.text_idxs["char"] - 1 == len(self.wrapped_text[self.text_idxs["line"]]):
+                if self.text_idxs["char"] == len(self.wrapped_text[self.text_idxs["line"]]):
                     self.text_idxs["char"] = 0
                     self.text_idxs["line"] += 1
                 if self.text_idxs["total"] == len(self.text) - 1:

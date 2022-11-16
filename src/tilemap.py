@@ -93,7 +93,7 @@ class TileMap:
 
             tile = tile_component.Tile(*obj_pos, obj.width, obj.height)
             if obj.name == "sign":
-                if obj.text == "":
+                if obj.text is None:
                     obj.text = (
                         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
                         "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
