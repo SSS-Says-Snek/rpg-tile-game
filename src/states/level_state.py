@@ -37,8 +37,6 @@ from .state import State
 
 
 class LevelState(State):
-    PLAYER_SPEED = 300
-
     def __init__(self, game_class):
         super().__init__(game_class)
 
@@ -59,7 +57,7 @@ class LevelState(State):
         self.ui.particle_system = self.particle_system
 
         self.placeholder_background = pygame.transform.scale(
-            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background.png", mode="convert"),
+            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background2.png", mode="convert"),
             (common.WIDTH, common.HEIGHT),
         )
 
@@ -82,8 +80,6 @@ class LevelState(State):
         self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
-        self.orig_world = esper.World()
-
     def load_spawns(self):
         # Sorts in a way that guarentees player be defined first
         for obj in sorted(self.tilemap.tilemap.objects, key=lambda x: x.name != "player_spawn"):
@@ -91,7 +87,7 @@ class LevelState(State):
                 player_settings, sword_settings = self.settings["mobs/player", "items/weapons/slashing_sword"]
                 weapon_surf, weapon_icon = self.imgs["items/sword_hold", "items/sword_icon"]
 
-                player_animations, player_animation_speeds = utils.load_mob_animations(player_settings)
+                player_anims, player_anim_speeds = utils.load_mob_animations(player_settings)
 
                 # Inventory outside self.player to add sword
                 inventory_component = Inventory(
@@ -102,7 +98,7 @@ class LevelState(State):
                 self.player = self.ecs_world.create_entity(
                     Movement(speed=player_settings["speed"]),
                     Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
-                    Graphics(animations=player_animations, animation_speeds=player_animation_speeds),
+                    Graphics(animations=player_anims, animation_speeds=player_anim_speeds),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Flags(),
                     inventory_component,
@@ -134,13 +130,13 @@ class LevelState(State):
 
             elif obj.name == "walker_enemy_spawn":
                 walker_settings = self.settings["mobs/enemy/melee/walker"]
-                walker_animations, walker_animation_speeds = utils.load_mob_animations(walker_settings)
+                walker_anims, walker_anim_speeds = utils.load_mob_animations(walker_settings)
 
                 walker_enemy = self.ecs_world.create_entity(
                     Flags(mob_type="walker_enemy"),
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
-                    Graphics(animations=walker_animations, animation_speeds=walker_animation_speeds),
+                    Graphics(animations=walker_anims, animation_speeds=walker_anim_speeds),
                     MeleeAttack(
                         attack_range=0,
                         attack_cooldown=walker_settings["attack_cooldown"],
@@ -152,7 +148,11 @@ class LevelState(State):
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
             elif obj.name == "simple_melee_enemy_spawn":
-                mob_confs, simple_melee_settings = self.settings["mobs/conf", "mobs/enemy/melee/simple"]
+                simple_melee_settings, mob_confs = self.settings["mobs/enemy/melee/simple", "mobs/conf"]
+                simple_melee_animations, simple_melee_animation_speeds = utils.load_mob_animations(
+                    simple_melee_settings, (32, 37)
+                )
+
                 weapon_surf = self.imgs["items/bronze_sword"]
                 speed = simple_melee_settings["speed"]
 
@@ -164,7 +164,7 @@ class LevelState(State):
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Health(hp=simple_melee_settings["hp"], max_hp=simple_melee_settings["max_hp"]),
                     Movement(speed=simple_melee_settings["speed"]),
-                    Graphics(sprite=self.imgs["mobs/simple_melee_enemy"]),
+                    Graphics(animations=simple_melee_animations, animation_speeds=simple_melee_animation_speeds),
                     ai_component.FollowsEntityClose(
                         entity=self.player, follow_range=simple_melee_settings["follow_range"]
                     ),
@@ -232,6 +232,10 @@ class LevelState(State):
                 )
             elif obj.name == "jetpack_item":
                 pass
+
+    def reset(self):
+        self.ecs_world.clear_database()
+
 
     def draw(self):
         self.effect_system.draw()
