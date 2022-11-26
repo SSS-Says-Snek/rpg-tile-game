@@ -26,7 +26,7 @@ FPS: int = 60
 screen: pygame.Surface = pygame.Surface(RES).convert((255, 65280, 16711680, 0))
 pygame.display.set_mode(RES, pygame.DOUBLEBUF | pygame.OPENGL)
 
-SOURCE_DIR:pathlib.Path = pathlib.Path("src")
+SOURCE_DIR: pathlib.Path = pathlib.Path("src")
 ASSETS_DIR: pathlib.Path = pathlib.Path("assets")
 DATA_DIR: pathlib.Path = ASSETS_DIR / "data"
 MAP_DIR: pathlib.Path = ASSETS_DIR / "maps"
