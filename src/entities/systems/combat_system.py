@@ -10,10 +10,12 @@ from __future__ import annotations
 import math
 import operator
 import types
+import random
 from dataclasses import dataclass
 from typing import Generator
 
 from src import common, pygame, utils
+from src.display.particle import Particle
 from src.entities.components import item_component, projectile_component
 from src.entities.components.component import (Health, Inventory, Movement,
                                                Position)
@@ -113,7 +115,20 @@ class ItemUsages(types.SimpleNamespace):
                     continue
 
                 # "Blood" particles
-                self.particle_system.create_hit_particles(5, nested_pos, [(255, 0, 0)])
+                # TODO: Move this to some sort of lose-HP-detector system (maybe death)
+                for _ in range(25):
+                    self.particle_system.add(
+                        Particle()
+                        .builder()
+                        .at(pos=pos.pos, angle=random.gauss(180, 180))
+                        .color(color=random.choice([(255, 0, 0)]))
+                        .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
+                        .lifespan(frames=40)
+                        .angular_speed(speed=random.gauss(0.9, 0.8))
+                        .size(4)
+                        .effect_fade(start_fade_frac=0.5)
+                        .build()
+                    )
 
         # If slash angle > 150 deg, reset
         if pos.direction == 1:

@@ -11,6 +11,7 @@ import json
 
 from src import common, pygame, screen
 from src.common import IMG_DIR, SETTINGS_DIR
+from src.display.shaders import ShaderManager
 from src.display.widgets.button import DefaultButton
 from src.loader import Loader
 
@@ -23,12 +24,13 @@ from src.states.state import State
 
 class Game:
     def __init__(self):
-        self.screen = screen
         self.clock = pygame.time.Clock()
 
         # UI DRAWING MUST BE HANDLED IN THE STATE CODE DUE TO CONFLICTS FROM LEVEL_STATE
         # No camera at start of game
         self.ui = UI(None)
+
+        self.shader_manager = ShaderManager()
 
         # self.ui.add_widget(
         #     DefaultButton(
@@ -56,6 +58,7 @@ class Game:
             # Set dt and events for other stuff to access via states
             events = pygame.event.get()
             dts = {"raw_dt": self.clock.tick(common.FPS) / 1000}
+            dts["raw_dt"] = min(dts["raw_dt"], 0.02)
             dts["dt"] = dts["raw_dt"] * common.FPS
 
             pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3f} FPS")
@@ -83,5 +86,5 @@ class Game:
 
                 old_state.next_state = old_state.__class__  # Resets next state to self
 
-            pygame.display.update()
+            self.shader_manager.render()
         pygame.quit()

@@ -266,8 +266,6 @@ class GraphicsSystem(System):
         blade.angle += (blade.target_angle - blade.angle) / 6
 
     def animate_grass(self):
-        screen_proxy = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-
         for entity, (tile, tile_grass) in self.world.get_components(tile_component.Tile, tile_component.GrassBlades):
             if not self.camera.visible(tile.rect):
                 continue
@@ -278,7 +276,7 @@ class GraphicsSystem(System):
                 img_to_blit = pygame.transform.rotate(blade.img, blade.angle)
                 img_to_blit.set_colorkey((0, 0, 0))
 
-                screen_proxy.blit(
+                screen.blit(
                     img_to_blit,
                     self.camera.apply(
                         (
@@ -289,8 +287,6 @@ class GraphicsSystem(System):
                         )
                     ),
                 )
-
-        screen.blit(screen_proxy, (0, 0))
 
     def animate_trees(self):
         for entity, (tile, tile_deco) in self.world.get_components(tile_component.Tile, tile_component.Decoration):
