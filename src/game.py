@@ -58,6 +58,7 @@ class Game:
             # Set dt and events for other stuff to access via states
             events = pygame.event.get()
             dts = {"raw_dt": self.clock.tick(common.FPS) / 1000}
+            dts["raw_dt"] = min(dts["raw_dt"], 0.02)
             dts["dt"] = dts["raw_dt"] * common.FPS
 
             pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3f} FPS")
