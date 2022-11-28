@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import math
 import operator
-import types
 import random
+import types
 from dataclasses import dataclass
 from typing import Generator
 

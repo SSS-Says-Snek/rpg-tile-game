@@ -236,7 +236,6 @@ class LevelState(State):
     def reset(self):
         self.ecs_world.clear_database()
 
-
     def draw(self):
         self.effect_system.draw()
 
