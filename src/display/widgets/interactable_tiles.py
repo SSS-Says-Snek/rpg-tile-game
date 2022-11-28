@@ -113,7 +113,7 @@ class SignDialogue(Widget):
 
             wrapped_text.append(" ".join(words[start:i]))
 
-        self.text = ''.join(wrapped_text)
+        self.text = "".join(wrapped_text)
 
         return wrapped_text
 

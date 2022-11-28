@@ -1,17 +1,24 @@
+"""
+This file is a part of the source code for rpg-tile-game
+This project has been licensed under the MIT license.
+Copyright (c) 2022-present SSS-Says-Snek
+"""
+
+from __future__ import annotations
+
 import struct
 
 import moderngl
 import pygame
 
-from src.common import RES, screen, SHADER_DIR
+from src.common import RES, SHADER_DIR, screen
 
 
 class ShaderManager:
     def __init__(self):
         self.ctx = moderngl.create_context()
         self.program = self.ctx.program(
-            vertex_shader=self.load_shader("vertex"),
-            fragment_shader=self.load_shader("fragment")
+            vertex_shader=self.load_shader("vertex"), fragment_shader=self.load_shader("fragment")
         )
 
         # Coordinates to map world coordinates with UV-space
@@ -29,10 +36,7 @@ class ShaderManager:
         uv_map = self.load_buffer(texture_coordinates, "8f")
         ibo = self.load_buffer(render_indices, "6i")
 
-        vao_content = [
-            (vbo, "2f", "vert"),
-            (uv_map, "2f", "in_text")
-        ]
+        vao_content = [(vbo, "2f", "vert"), (uv_map, "2f", "in_text")]
         self.vao = self.ctx.vertex_array(self.program, vao_content, ibo)
 
     @staticmethod
