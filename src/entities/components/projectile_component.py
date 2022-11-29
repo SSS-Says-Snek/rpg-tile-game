@@ -16,10 +16,10 @@ class Projectile:
     def __init__(
         self,
         vel: int,
-        shot_by: int,
-        damage: float,
         angle: float,
-        gravity: float = 0,
+        damage: float,
+        shot_by: int = -1,
+        gravity: float = 0.5,
     ):
         self.vel = vel
         self.shot_by = shot_by

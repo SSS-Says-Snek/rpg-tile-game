@@ -11,6 +11,8 @@ from __future__ import annotations
 import pathlib
 from typing import TYPE_CHECKING, Optional
 
+from src.entities.components.component import Position
+
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
@@ -136,6 +138,29 @@ class TileMap:
 
     def get_visible_tile_layers(self) -> list[pytmx.TiledTileLayer]:
         return [layer for layer in self.tilemap.visible_layers if isinstance(layer, pytmx.TiledTileLayer)]
+
+    def get_neighboring_tile_entities(self, radius: int, pos: Position, interacting_tiles=False) -> list[int]:
+        """
+        Get (static) neighboring tiles within x tiles given position and radius.
+        Setting interacting_tiles to True gives you neighboring interactables
+        """
+        neighboring_tile_entities = []
+
+        for layer_id in range(len(self.get_visible_tile_layers())):
+            for x in range(int(pos.tile_pos.x) - radius, int(pos.tile_pos.x) + radius + 1):
+                for y in range(int(pos.tile_pos.y) - radius, int(pos.tile_pos.y) + radius + 1):
+                    try:
+                        if not interacting_tiles:
+                            tile_entity = self.entity_tiles[(layer_id, (x, y))]
+                        else:
+                            tile_entity = self.interactable_tiles[(x, y)]
+                    except KeyError:
+                        # Outside map boundaries (for some reason)
+                        continue
+
+                    neighboring_tile_entities.append(tile_entity)
+
+        return neighboring_tile_entities
 
     def get_unwalkable_rects(
         self, neighboring_tiles: list[int]

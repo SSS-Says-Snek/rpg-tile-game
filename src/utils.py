@@ -92,37 +92,7 @@ def tile_to_pixel(
     return pygame.Vector2(tile_pos.x * tile_width, tile_pos.y * tile_height)
 
 
-def get_neighboring_tile_entities(
-    tilemap: "TileMap", radius: int, pos: "Position", interacting_tiles=False
-) -> list[int]:
-    """
-    Get
-    :param tilemap:
-    :param radius:
-    :param pos:
-    :param interacting_tiles:
-    :return:
-    """
-    neighboring_tile_entities = []
-
-    for layer_id in range(len(tilemap.get_visible_tile_layers())):
-        for x in range(int(pos.tile_pos.x) - radius, int(pos.tile_pos.x) + radius + 1):
-            for y in range(int(pos.tile_pos.y) - radius, int(pos.tile_pos.y) + radius + 1):
-                try:
-                    if not interacting_tiles:
-                        tile_entity = tilemap.entity_tiles[(layer_id, (x, y))]
-                    else:
-                        tile_entity = tilemap.interactable_tiles[(x, y)]
-                except KeyError:
-                    # Outside map boundaries (for some reason)
-                    continue
-
-                neighboring_tile_entities.append(tile_entity)
-
-    return neighboring_tile_entities
-
-
-def extract_color(img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None):
+def extract_color(img: pygame.Surface, color: Color, add_surf: tuple[pygame.Surface, Color] = None) -> pygame.Surface:
     img = img.copy()
     img.set_colorkey(color)
     mask = pygame.mask.from_surface(img)

@@ -51,6 +51,7 @@ class Graphics:
         animations: Optional[dict] = None,
         animation_speeds: Optional[dict] = None,
     ):
+        # self.sprites usually for prototyping purposes, where I don't have animations yet
         # Assume that sprite is the sprite facing right
         self.sprites = (
             {

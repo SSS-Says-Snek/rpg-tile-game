@@ -75,7 +75,7 @@ class CollisionSystem(System):
         for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
             neighboring_tile_rects, ramps = self.tilemap.get_unwalkable_rects(
-                utils.get_neighboring_tile_entities(self.tilemap, 3, pos)
+                self.tilemap.get_neighboring_tile_entities(3, pos)
             )
 
             # Obvs, if it's gonna collide with player, player should be in it

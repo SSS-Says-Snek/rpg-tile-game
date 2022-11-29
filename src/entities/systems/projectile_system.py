@@ -46,18 +46,18 @@ class ProjectileSystem(System):
             projectile_pos.tile_pos = utils.pixel_to_tile(projectile_pos.pos)
 
             projectile_rotate_angle = math.degrees(
-                    math.atan2(
-                        rel_y - projectile.rel_y(projectile.t - 1),
-                        rel_x - projectile.rel_x(projectile.t - 1),
-                    )
+                math.atan2(
+                    rel_y - projectile.rel_y(projectile.t - 1),
+                    rel_x - projectile.rel_x(projectile.t - 1),
                 )
+            )
 
             # Update image with angle
             projectile_graphics.current_img, _ = utils.rot_center(
                 projectile_graphics.original_img,
-                180 - projectile_rotate_angle if projectile.vel_dir == 1 else
-                projectile_rotate_angle
-                * projectile.vel_dir,
+                180 - projectile_rotate_angle
+                if projectile.vel_dir == 1
+                else projectile_rotate_angle * projectile.vel_dir,
                 *projectile_pos.pos,
             )
 
@@ -97,7 +97,7 @@ class ProjectileSystem(System):
                 self.world.delete_entity(entity)
 
             neighboring_tile_rects, _ = self.tilemap.get_unwalkable_rects(
-                utils.get_neighboring_tile_entities(self.tilemap, 2, projectile_pos)
+                self.tilemap.get_neighboring_tile_entities(2, projectile_pos)
             )
             for neighboring_tile_rect in neighboring_tile_rects:
                 if neighboring_tile_rect.colliderect(projectile_pos.rect):
@@ -107,21 +107,17 @@ class ProjectileSystem(System):
         if random.random() < 0.01:
             for _ in range(1):
                 player_pos = self.world.component_for_entity(self.player, Position)
-                x_target, y_target = random.randint(-500, 500), 100
+                x_target, y_target = random.choice((random.randint(-1000, -700), random.randint(700, 1000))), 100
                 if x_target == 0:
                     x_target = 1
-                v = 20
-                g = 0.5
+                v = 10
+                g = 0.07
                 theta = math.atan(
                     (v**2 + math.sqrt(v**4 - g * (g * x_target**2 + 2 * y_target * v**2))) / (g * x_target)
                 )
                 self.world.create_entity(
                     projectile_component.Projectile(
-                        vel=20,
-                        shot_by=2,
-                        damage=0,
-                        angle=-theta if x_target > 0 else -math.pi - theta,
-                        gravity=0.5,
+                        vel=v, angle=-theta if x_target > 0 else -math.pi - theta, damage=10, gravity=g
                     ),
                     projectile_component.ProjectilePosition(
                         pygame.Vector2(player_pos.pos.x - x_target, player_pos.pos.y + y_target)

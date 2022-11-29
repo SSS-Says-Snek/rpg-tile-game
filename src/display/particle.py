@@ -75,7 +75,7 @@ class ParticleSystem(set):
             .angular_speed(speed=random.gauss(1.4, 0.8))
             .effect_fade(start_fade_frac=0.5)
             .build(),
-            num_particles=num_particles
+            num_particles=num_particles,
         )
 
     def create_effect_particle(
@@ -288,7 +288,8 @@ class RoundParticle(Particle):
 
         pygame.gfxdraw.filled_circle(
             screen,
-            particle_rect.centerx, particle_rect.centery,
+            particle_rect.centerx,
+            particle_rect.centery,
             self.size,
             self.color,
         )

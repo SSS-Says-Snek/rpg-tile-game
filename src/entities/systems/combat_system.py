@@ -150,34 +150,24 @@ class ItemUsages(types.SimpleNamespace):
         mouse_pos = pygame.mouse.get_pos()
         adj_item_pos = self.camera.apply(item_pos.pos)
 
-        adj_y_vel = (
-            math.sin(
-                math.atan2(
-                    mouse_pos[1] - adj_item_pos.y,
-                    mouse_pos[0] - adj_item_pos.x,
-                )
-            )
-            * 14
-        )
-        print(
-            "angle",
-            math.degrees(
-                math.atan2(
-                    mouse_pos[1] - adj_item_pos.y,
-                    mouse_pos[0] - adj_item_pos.x,
-                )
-            ),
-        )
+        # adj_y_vel = (
+        #     math.sin(
+        #         math.atan2(
+        #             mouse_pos[1] - adj_item_pos.y,
+        #             mouse_pos[0] - adj_item_pos.x,
+        #         )
+        #     )
+        #     * 14
+        # )
         self.world.create_entity(
             projectile_component.Projectile(
                 vel=20,
-                shot_by=entity,
-                damage=ranged_weapon.projectile_damage,
                 angle=math.atan2(
                     mouse_pos[1] - adj_item_pos.y,
                     mouse_pos[0] - adj_item_pos.x,
                 ),
-                gravity=0.5,
+                damage=ranged_weapon.projectile_damage,
+                shot_by=entity,
             ),
             projectile_component.ProjectilePosition(item_pos.pos.copy()),
             projectile_component.ProjectileGraphics(arrow_sprite),

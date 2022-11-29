@@ -12,7 +12,7 @@ from __future__ import annotations
 import random
 
 from src.display.particle import Particle
-from src.entities.components.component import Position, Health
+from src.entities.components.component import Health, Position
 from src.entities.systems import System
 from src.types import Dts, Events
 
@@ -36,5 +36,5 @@ class HitSystem(System):
                         .size(size=4)
                         .effect_fade(start_fade_frac=0.5)
                         .build(),
-                        num_particles=25
+                        num_particles=25,
                     )

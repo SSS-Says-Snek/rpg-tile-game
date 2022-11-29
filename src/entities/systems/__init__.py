@@ -9,10 +9,10 @@ from __future__ import annotations
 from .collision_system import CollisionSystem
 from .combat_system import CombatSystem
 from .graphics_system import GraphicsSystem
+from .hit_system import HitSystem
 from .input_system import InputSystem
 from .npc_combat_system import NPCCombatSystem
 from .projectile_system import ProjectileSystem
 from .system import System
 from .tile_interaction_system import TileInteractionSystem
 from .velocity_system import VelocitySystem
-from .hit_system import HitSystem

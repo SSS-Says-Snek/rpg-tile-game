@@ -41,8 +41,8 @@ class TileInteractionSystem(System):
 
     def process(self, event_list: Events, dts: Dts):
         for entity, (pos, *_) in self.world.get_components(Position, Movement):
-            tile_entities = utils.get_neighboring_tile_entities(
-                self.tilemap, 2, pos, interacting_tiles=True
+            tile_entities = self.tilemap.get_neighboring_tile_entities(
+                2, pos, interacting_tiles=True
             )  # Guaranteed to be ONLY interactable tiles
             player_rect = self.world.component_for_entity(self.player, Position).rect
 

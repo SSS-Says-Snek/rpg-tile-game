@@ -26,9 +26,9 @@ from src.entities.components.component import (Flags, Graphics, Health,
                                                Movement, Position)
 # Systems
 from src.entities.systems import (CollisionSystem, CombatSystem,
-                                  GraphicsSystem, InputSystem, NPCCombatSystem,
-                                  ProjectileSystem, TileInteractionSystem,
-                                  VelocitySystem, HitSystem)
+                                  GraphicsSystem, HitSystem, InputSystem,
+                                  NPCCombatSystem, ProjectileSystem,
+                                  TileInteractionSystem, VelocitySystem)
 from src.tilemap import TileMap
 from src.types import Dts, Events
 
