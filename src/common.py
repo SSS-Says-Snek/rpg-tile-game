@@ -23,7 +23,7 @@ HEIGHT: int = TILE_HEIGHT * TILE_COLUMN
 RES: tuple[int, int] = (WIDTH, HEIGHT)
 
 FPS: int = 60
-screen: pygame.Surface = pygame.Surface(RES).convert((255, 65280, 16711680, 0))
+screen: pygame.Surface = pygame.surface.Surface(RES).convert((255, 65280, 16711680, 0))
 pygame.display.set_mode(RES, pygame.DOUBLEBUF | pygame.OPENGL)
 
 SOURCE_DIR: pathlib.Path = pathlib.Path("src")
