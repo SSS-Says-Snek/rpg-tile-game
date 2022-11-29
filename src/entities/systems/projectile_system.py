@@ -11,9 +11,10 @@ from __future__ import annotations
 import math
 import random
 
-from src import pygame, utils
+from src import common, pygame, utils
 from src.display.particle import Particle
 from src.entities.components import component, projectile_component
+from src.entities.components.component import Position
 from src.entities.systems.system import System
 from src.types import Dts, Events
 
@@ -30,18 +31,30 @@ class ProjectileSystem(System):
             projectile_component.ProjectilePosition,
             projectile_component.ProjectileGraphics,
         ):
-            # Update position
-            projectile_pos.pos.x += math.cos(projectile.initial_angle) * projectile.vel.x
+            # Update t
+            projectile.t += 1
 
-            projectile.vel.y += projectile.gravity
-            projectile_pos.pos.y += projectile.vel.y
+            # Update position
+            rel_x, rel_y = projectile.rel_x(projectile.t), projectile.rel_y(projectile.t)
+            projectile_pos.pos.x = projectile_pos.spawn_pos.x + rel_x
+            projectile_pos.pos.y = projectile_pos.spawn_pos.y + rel_y
+
             projectile_pos.rect = pygame.Rect(*projectile_pos.pos, *projectile_graphics.size)
             projectile_pos.tile_pos = utils.pixel_to_tile(projectile_pos.pos)
+
+            projectile_rotate_angle = math.degrees(
+                    math.atan2(
+                        rel_y - projectile.rel_y(projectile.t - 1),
+                        rel_x - projectile.rel_x(projectile.t - 1),
+                    )
+                )
 
             # Update image with angle
             projectile_graphics.current_img, _ = utils.rot_center(
                 projectile_graphics.original_img,
-                math.degrees(math.atan2(projectile.vel.y, projectile.vel.x)) * projectile.vel_dir,
+                180 - projectile_rotate_angle if projectile.vel_dir == 1 else
+                projectile_rotate_angle
+                * projectile.vel_dir,
                 *projectile_pos.pos,
             )
 
@@ -94,3 +107,28 @@ class ProjectileSystem(System):
                 if neighboring_tile_rect.colliderect(projectile_pos.rect):
                     self.world.delete_entity(entity)
                     break
+
+        if random.random() < 1:
+            for _ in range(1):
+                player_pos = self.world.component_for_entity(self.player, Position)
+                x_target, y_target = random.randint(-500, 500), 100
+                if x_target == 0:
+                    x_target = 1
+                v = 20
+                g = 0.5
+                theta = math.atan(
+                    (v**2 + math.sqrt(v**4 - g * (g * x_target**2 + 2 * y_target * v**2))) / (g * x_target)
+                )
+                self.world.create_entity(
+                    projectile_component.Projectile(
+                        vel=20,
+                        shot_by=2,
+                        damage=0,
+                        angle=-theta if x_target > 0 else -math.pi - theta,
+                        gravity=0.5,
+                    ),
+                    projectile_component.ProjectilePosition(
+                        pygame.Vector2(player_pos.pos.x - x_target, player_pos.pos.y + y_target)
+                    ),
+                    projectile_component.ProjectileGraphics(self.imgs["items/arrows_sprite"]),
+                )
