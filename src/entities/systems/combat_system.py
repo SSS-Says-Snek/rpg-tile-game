@@ -185,17 +185,25 @@ class ItemUsages(types.SimpleNamespace):
             )
             * 14
         )
-
+        print(
+            "angle",
+            math.degrees(
+                math.atan2(
+                    mouse_pos[1] - adj_item_pos.y,
+                    mouse_pos[0] - adj_item_pos.x,
+                )
+            ),
+        )
         self.world.create_entity(
             projectile_component.Projectile(
-                vel=pygame.Vector2(10, adj_y_vel),
+                vel=20,
                 shot_by=entity,
                 damage=ranged_weapon.projectile_damage,
                 angle=math.atan2(
                     mouse_pos[1] - adj_item_pos.y,
                     mouse_pos[0] - adj_item_pos.x,
                 ),
-                gravity=0.3,
+                gravity=0.5,
             ),
             projectile_component.ProjectilePosition(item_pos.pos.copy()),
             projectile_component.ProjectileGraphics(arrow_sprite),
