@@ -28,7 +28,7 @@ from src.entities.components.component import (Flags, Graphics, Health,
 from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, InputSystem, NPCCombatSystem,
                                   ProjectileSystem, TileInteractionSystem,
-                                  VelocitySystem)
+                                  VelocitySystem, HitSystem)
 from src.tilemap import TileMap
 from src.types import Dts, Events
 
@@ -71,13 +71,14 @@ class LevelState(State):
         self.debug = False
 
         # Add ECS systems
-        self.ecs_world.add_processor(InputSystem(self), priority=8)
-        self.ecs_world.add_processor(VelocitySystem(self), priority=7)
-        self.ecs_world.add_processor(CollisionSystem(self), priority=6)
-        self.ecs_world.add_processor(TileInteractionSystem(self), priority=5)
-        self.ecs_world.add_processor(NPCCombatSystem(self), priority=4)
-        self.ecs_world.add_processor(CombatSystem(self), priority=3)
-        self.ecs_world.add_processor(ProjectileSystem(self), priority=2)
+        self.ecs_world.add_processor(InputSystem(self), priority=9)
+        self.ecs_world.add_processor(VelocitySystem(self), priority=8)
+        self.ecs_world.add_processor(CollisionSystem(self), priority=7)
+        self.ecs_world.add_processor(TileInteractionSystem(self), priority=6)
+        self.ecs_world.add_processor(NPCCombatSystem(self), priority=5)
+        self.ecs_world.add_processor(CombatSystem(self), priority=4)
+        self.ecs_world.add_processor(ProjectileSystem(self), priority=3)
+        self.ecs_world.add_processor(HitSystem(self), priority=2)
         self.ecs_world.add_processor(GraphicsSystem(self), priority=1)
 
     def load_spawns(self):

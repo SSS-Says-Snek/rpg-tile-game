@@ -31,6 +31,7 @@ class TileInteractionSystem(System):
         for event in event_list:
             if event.type == event_type:
                 return event
+        return None
 
     def check_for_key(self, event_list: Events, key: int, event_type: int = pygame.KEYDOWN):
         event = self.get_event(event_list, event_type)

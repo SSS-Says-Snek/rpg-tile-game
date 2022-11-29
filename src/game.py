@@ -9,10 +9,10 @@ from __future__ import annotations
 
 import json
 
-from src import common, pygame, screen
+from src import common, pygame
 from src.common import IMG_DIR, SETTINGS_DIR
 from src.display.shaders import ShaderManager
-from src.display.widgets.button import DefaultButton
+# from src.display.widgets.button import DefaultButton
 from src.loader import Loader
 
 pygame.init()

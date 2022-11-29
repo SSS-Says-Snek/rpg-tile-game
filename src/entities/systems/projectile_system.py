@@ -11,8 +11,8 @@ from __future__ import annotations
 import math
 import random
 
-from src import common, pygame, utils
-from src.display.particle import Particle
+from src import pygame, utils
+from src.display.particle import RoundParticle
 from src.entities.components import component, projectile_component
 from src.entities.components.component import Position
 from src.entities.systems.system import System
@@ -24,6 +24,9 @@ class ProjectileSystem(System):
         super().__init__(level_state)
 
     def process(self, event_list: Events, dts: Dts):
+        if random.random() < 0.01:
+            target_x, target_y = 100, 100
+
         # HEAVILY BUGGY IMPLEMENTATION: WILL WORK ON IT MORE
 
         for entity, (projectile, projectile_pos, projectile_graphics,) in self.world.get_components(
@@ -61,9 +64,9 @@ class ProjectileSystem(System):
             if random.random() < 0.2:
                 for i in range(-1, 2):
                     self.particle_system.add(
-                        Particle()
+                        RoundParticle()
                         .builder()
-                        .size(4)
+                        .size(2)
                         .color((255, 255, 255))
                         .at(
                             pygame.Vector2(projectile_pos.rect.bottomright)
@@ -86,13 +89,6 @@ class ProjectileSystem(System):
 
                 if nested_pos.rect.colliderect(projectile_pos.rect):
                     nested_health.hp -= projectile.damage
-
-                    if nested_health.hp == 0:
-                        colors = self.level_state.settings["particles"]["death"]
-                        self.particle_system.create_hit_particles(30, nested_pos, colors)
-                    else:
-                        self.particle_system.create_hit_particles(15, nested_pos, [(255, 0, 0)])
-
                     self.world.delete_entity(entity)
                     break
 
@@ -108,7 +104,7 @@ class ProjectileSystem(System):
                     self.world.delete_entity(entity)
                     break
 
-        if random.random() < 1:
+        if random.random() < 0.01:
             for _ in range(1):
                 player_pos = self.world.component_for_entity(self.player, Position)
                 x_target, y_target = random.randint(-500, 500), 100

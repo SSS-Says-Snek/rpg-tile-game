@@ -89,7 +89,7 @@ class Movement:
         self,
         speed: float,
         acc: pygame.Vector2 = pygame.Vector2(0, 0),
-        gravity_acc: float = 1.3,
+        gravity_acc: float = 2.6,
     ):
         self.speed = speed
         self.vel = pygame.Vector2(0, 0)
@@ -102,6 +102,8 @@ class Health:
     def __init__(self, hp: float, max_hp: int):
         self._hp = hp
         self.max_hp = max_hp
+
+        self.prev_hp = hp
 
     @property
     def hp(self) -> float:

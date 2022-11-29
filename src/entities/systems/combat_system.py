@@ -9,13 +9,11 @@ from __future__ import annotations
 
 import math
 import operator
-import random
 import types
 from dataclasses import dataclass
 from typing import Generator
 
 from src import common, pygame, utils
-from src.display.particle import Particle
 from src.entities.components import item_component, projectile_component
 from src.entities.components.component import (Health, Inventory, Movement,
                                                Position)
@@ -97,38 +95,14 @@ class ItemUsages(types.SimpleNamespace):
             item_pos.pos.x += 12
 
         # Loop through all interactable entities
+        # TODO: Actually use a quadtree
         for nested_entity, (
             nested_pos,
             nested_health,
         ) in interactable_entities:
             if slashing_sword.rect.colliderect(nested_pos.rect) and not melee_weapon.hit:
-                colors = self.settings["particles/death"]
                 melee_weapon.hit = True
                 nested_health.hp -= melee_weapon.attack_damage
-
-                if nested_health.hp == 0:
-                    # Create particles
-                    self.particle_system.create_hit_particles(30, nested_pos, colors)
-
-                    # Delete entity and continue looping
-                    # self.world.delete_entity(nested_entity)
-                    continue
-
-                # "Blood" particles
-                # TODO: Move this to some sort of lose-HP-detector system (maybe death)
-                for _ in range(25):
-                    self.particle_system.add(
-                        Particle()
-                        .builder()
-                        .at(pos=pos.pos, angle=random.gauss(180, 180))
-                        .color(color=random.choice([(255, 0, 0)]))
-                        .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
-                        .lifespan(frames=40)
-                        .angular_speed(speed=random.gauss(0.9, 0.8))
-                        .size(4)
-                        .effect_fade(start_fade_frac=0.5)
-                        .build()
-                    )
 
         # If slash angle > 150 deg, reset
         if pos.direction == 1:
@@ -284,6 +258,10 @@ class CombatSystem(System):
 
     # Actual processing
     def process(self, event_list: Events, dts: Dts):
+        # Set prev_hp for HitSystem
+        for entity, (_, health) in self.world.get_components(Position, Health):
+            health.prev_hp = health.hp
+
         for entity, (pos, _) in self.world.get_components(Position, Movement):
             # Player to entity combat
             # For now, only player can wield weapons. Could definitely change

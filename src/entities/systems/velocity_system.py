@@ -12,7 +12,7 @@ import math
 
 from src import pygame, utils
 from src.entities.components import ai_component, component
-from src.entities.components.component import Flags, Health, Movement, Position
+from src.entities.components.component import Flags, Movement, Position
 from src.entities.systems.system import System
 from src.types import Dts, Events
 

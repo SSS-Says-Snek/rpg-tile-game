@@ -15,3 +15,4 @@ from .projectile_system import ProjectileSystem
 from .system import System
 from .tile_interaction_system import TileInteractionSystem
 from .velocity_system import VelocitySystem
+from .hit_system import HitSystem

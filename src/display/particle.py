@@ -28,6 +28,10 @@ class ParticleSystem(set):
         self.camera = camera
         self.draw = self.draw_pre_ui
 
+    def add(self, element, num_particles: int = 1):
+        for _ in range(num_particles):
+            super().add(element)
+
     def update(self):
         dead_particles = set()
 
@@ -61,18 +65,18 @@ class ParticleSystem(set):
         self._draw_base("post_ui")
 
     def create_hit_particles(self, num_particles: int, pos: Position, color_list: list[Color]):
-        for _ in range(num_particles):
-            self.add(
-                Particle()
-                .builder()
-                .at(pos=pos.pos, angle=random.gauss(180, 180))
-                .color(color=random.choice(color_list))
-                .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
-                .lifespan(frames=40)
-                .angular_speed(speed=random.gauss(1.4, 0.8))
-                .effect_fade(start_fade_frac=0.5)
-                .build()
-            )
+        self.add(
+            Particle()
+            .builder()
+            .at(pos=pos.pos, angle=random.gauss(180, 180))
+            .color(color=random.choice(color_list))
+            .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
+            .lifespan(frames=40)
+            .angular_speed(speed=random.gauss(1.4, 0.8))
+            .effect_fade(start_fade_frac=0.5)
+            .build(),
+            num_particles=num_particles
+        )
 
     def create_effect_particle(
         self,
@@ -271,6 +275,21 @@ class Particle:
         pygame.gfxdraw.box(
             screen,
             particle_rect,
+            self.color,
+        )
+
+
+class RoundParticle(Particle):
+    def draw(self, camera: Camera):
+        # For now ONLY SQUARE (ofc I'll add derived particles)
+        particle_rect = pygame.Rect(*self.draw_pos, self.size, self.size)
+        if not self.static:
+            particle_rect = camera.apply(particle_rect)
+
+        pygame.gfxdraw.filled_circle(
+            screen,
+            particle_rect.centerx, particle_rect.centery,
+            self.size,
             self.color,
         )
 

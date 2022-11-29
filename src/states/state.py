@@ -12,7 +12,7 @@ import abc
 import importlib
 from typing import TYPE_CHECKING
 
-from src import pygame, screen
+from src import pygame
 from src.types import Dts, Events
 
 if TYPE_CHECKING:

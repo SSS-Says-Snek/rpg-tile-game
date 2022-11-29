@@ -94,7 +94,7 @@ class CollisionSystem(System):
 
             # Apply gravity
             # Weird bug, can patch it up by capping movement y vel
-            movement.vel.y += movement.gravity_acc.y
+            movement.vel.y += movement.gravity_acc.y / 2
             if movement.vel.y > 170:
                 movement.vel.y = 170
             pos.pos.y += movement.vel.y
