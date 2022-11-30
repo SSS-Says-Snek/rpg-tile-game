@@ -30,6 +30,11 @@ class GraphicsSystem(System):
         self.cloud_parallax = 0.3
         self.cloud_paths = list((common.IMG_DIR / "deco" / "clouds").iterdir())
 
+        self.background = pygame.transform.scale(
+            self.imgs["placeholder_background2"],
+            common.RES
+        ).convert()
+
     #####################################################################
     # DRAWING FUNCTIONS: Very similar to ParticleSystem's draw handling #
     #####################################################################
@@ -303,7 +308,7 @@ class GraphicsSystem(System):
                 else:
                     self._draw_tree_layer(layer, adj_rect, tile_deco.anim_offset)
 
-            if random.random() < 0.045:
+            if random.random() < 0.025:
                 self.particle_system.create_wind_particle(
                     pygame.Vector2(
                         random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
@@ -315,7 +320,7 @@ class GraphicsSystem(System):
 
     def process(self, event_list: Events, dts: Dts):
         # Blits background
-        screen.blit(self.level_state.placeholder_background, (0, 0))
+        screen.blit(self.background, (0, 0))
 
         # No shake :( thinking
         self.camera.adjust_to(

@@ -55,11 +55,6 @@ class LevelState(State):
         self.ui.world = self.ecs_world
         self.ui.particle_system = self.particle_system
 
-        self.placeholder_background = pygame.transform.scale(
-            utils.load_img(common.ASSETS_DIR / "imgs" / "placeholder_background2.png", mode="convert"),
-            (common.WIDTH, common.HEIGHT),
-        ).convert()
-
         # Other stuff
         self.settings = self.game_class.settings
         self.imgs = self.game_class.imgs
