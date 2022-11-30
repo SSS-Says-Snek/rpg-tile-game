@@ -177,7 +177,7 @@ class GraphicsSystem(System):
             self._draw_mob_item(entity, pos)
 
     def draw_mobs_debug(self):
-        for entity, (pos, _) in self.world.get_components(Position, Movement):
+        for entity, pos in self.world.get_component(Position):
             if self.level_state.debug:
                 self._draw_mob_debug(entity, pos)
 

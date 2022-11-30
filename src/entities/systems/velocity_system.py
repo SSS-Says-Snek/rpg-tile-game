@@ -49,8 +49,8 @@ class VelocitySystem(System):
 
                     # TODO: Add jump particles
 
-        if player_pos.pos.y > 960:
-            print("A")
+        # if player_pos.pos.y > 960:
+        #     print("A")
 
     def process(self, event_list: Events, dts: Dts):
         self.handle_player_keys(event_list)

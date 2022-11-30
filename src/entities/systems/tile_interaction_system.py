@@ -12,7 +12,7 @@ import types
 
 from src import pygame, utils
 from src.entities.components import tile_component
-from src.entities.components.component import Movement, Position
+from src.entities.components.component import Position
 from src.entities.systems.system import System
 from src.types import Dts, Events
 
@@ -40,7 +40,7 @@ class TileInteractionSystem(System):
         return False
 
     def process(self, event_list: Events, dts: Dts):
-        for entity, (pos, *_) in self.world.get_components(Position, Movement):
+        for entity, pos in self.world.get_component(Position):
             tile_entities = self.tilemap.get_neighboring_tile_entities(
                 2, pos, interacting_tiles=True
             )  # Guaranteed to be ONLY interactable tiles

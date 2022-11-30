@@ -68,11 +68,31 @@ class FollowsEntityClose:
         self.follow_range = follow_range
 
 
-class BackAndForthMovement:
-    def __init__(self):
-        pass
+class MeleeAttack:
+    def __init__(
+        self,
+        attack_range: int,
+        attack_cooldown: float,
+        damage: float,
+        collision: bool = False,
+    ):
+        self.attack_range = attack_range
+        self.attack_cooldown = attack_cooldown
+        self.damage = damage
+        self.collision = collision
+
+        self.last_attacked = 0
 
 
 class MeleeWeaponAttack:
     def __init__(self, attack_range: int):
         self.attack_range = attack_range
+
+
+class RangeAttack:
+    def __init__(self, target: int, attack_cooldown: float, ideal_parabola: bool = True):
+        self.target = target
+        self.attack_cooldown = attack_cooldown
+        self.ideal_parabola = -1 if ideal_parabola else 1
+
+        self.last_attacked = 0

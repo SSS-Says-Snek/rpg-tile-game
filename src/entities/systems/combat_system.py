@@ -15,8 +15,7 @@ from typing import Generator
 
 from src import common, pygame, utils
 from src.entities.components import item_component, projectile_component
-from src.entities.components.component import (Health, Inventory, Movement,
-                                               Position)
+from src.entities.components.component import Health, Inventory, Position
 from src.entities.effect import RegenEffect
 from src.entities.systems.system import System
 from src.types import Dts, Events
@@ -252,7 +251,7 @@ class CombatSystem(System):
         for entity, (_, health) in self.world.get_components(Position, Health):
             health.prev_hp = health.hp
 
-        for entity, (pos, _) in self.world.get_components(Position, Movement):
+        for entity, pos in self.world.get_component(Position):
             # Player to entity combat
             # For now, only player can wield weapons. Could definitely change
             # if entity == self.player:

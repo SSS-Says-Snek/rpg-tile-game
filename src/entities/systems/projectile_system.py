@@ -20,13 +20,7 @@ from src.types import Dts, Events
 
 
 class ProjectileSystem(System):
-    def __init__(self, level_state):
-        super().__init__(level_state)
-
     def process(self, event_list: Events, dts: Dts):
-        if random.random() < 0.01:
-            target_x, target_y = 100, 100
-
         # HEAVILY BUGGY IMPLEMENTATION: WILL WORK ON IT MORE
 
         for entity, (projectile, projectile_pos, projectile_graphics,) in self.world.get_components(
@@ -45,7 +39,7 @@ class ProjectileSystem(System):
             projectile_pos.rect = pygame.Rect(*projectile_pos.pos, *projectile_graphics.size)
             projectile_pos.tile_pos = utils.pixel_to_tile(projectile_pos.pos)
 
-            projectile_rotate_angle = math.degrees(
+            projectile_rotate_angle = 180 + math.degrees(
                 math.atan2(
                     rel_y - projectile.rel_y(projectile.t - 1),
                     rel_x - projectile.rel_x(projectile.t - 1),
@@ -70,7 +64,7 @@ class ProjectileSystem(System):
                         .color((255, 255, 255))
                         .at(
                             pygame.Vector2(projectile_pos.rect.bottomright)
-                            if projectile.vel_dir
+                            if projectile_rotate_angle > 0
                             else projectile_pos.pos,
                             angle=(90 - i * 5),
                         )
@@ -104,7 +98,7 @@ class ProjectileSystem(System):
                     self.world.delete_entity(entity)
                     break
 
-        if random.random() < 0.01:
+        """if random.random() < 0.01:
             for _ in range(1):
                 player_pos = self.world.component_for_entity(self.player, Position)
                 x_target, y_target = random.choice((random.randint(-1000, -700), random.randint(700, 1000))), 100
@@ -123,4 +117,4 @@ class ProjectileSystem(System):
                         pygame.Vector2(player_pos.pos.x - x_target, player_pos.pos.y + y_target)
                     ),
                     projectile_component.ProjectileGraphics(self.imgs["items/arrows_sprite"]),
-                )
+                )"""

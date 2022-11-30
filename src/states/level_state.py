@@ -22,8 +22,7 @@ from src.entities import effect
 # Components
 from src.entities.components import ai_component, item_component
 from src.entities.components.component import (Flags, Graphics, Health,
-                                               Inventory, MeleeAttack,
-                                               Movement, Position)
+                                               Inventory, Movement, Position)
 # Systems
 from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, HitSystem, InputSystem,
@@ -138,13 +137,13 @@ class LevelState(State):
                     Position(pos=pygame.Vector2(obj.x, obj.y)),
                     Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
                     Graphics(animations=walker_anims, animation_speeds=walker_anim_speeds),
-                    MeleeAttack(
+                    Movement(walker_settings["speed"]),
+                    ai_component.MeleeAttack(
                         attack_range=0,
                         attack_cooldown=walker_settings["attack_cooldown"],
                         damage=walker_settings["attack_damage"],
                         collision=walker_settings["attack_collision"],
                     ),
-                    Movement(walker_settings["speed"]),
                 )
                 self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
@@ -197,6 +196,16 @@ class LevelState(State):
                 )
 
                 self.ui.add_widget(MobHealthBar(self.ui, simple_melee_enemy, 40, 10))
+
+            elif obj.name == "test_shooter_enemy_spawn":
+                self.ecs_world.create_entity(
+                    Flags(collide_with_player=True),
+                    Position(pos=pygame.Vector2(obj.x, obj.y)),
+                    Health(hp=1000, max_hp=10000),
+                    Movement(speed=0.0),
+                    Graphics(sprite=self.imgs["mobs/test_shooter"]),
+                    ai_component.RangeAttack(target=self.player, attack_cooldown=1, ideal_parabola=True),
+                )
 
             elif obj.name == "health_potion_item":
                 health_potion_settings = self.settings["items/consumables/health_potion"]

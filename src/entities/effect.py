@@ -97,7 +97,7 @@ class BurnEffect(Effect):
         super().__init__(*args, **kwargs)
 
     def draw(self, entity: int, _):
-        if random.random() < 0.3:
+        if random.random() < 0.7:
             pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
             size = self.level_state.ecs_world.component_for_entity(entity, Graphics).size
             self.level_state.particle_system.create_fire_particle(

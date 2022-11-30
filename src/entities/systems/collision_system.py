@@ -86,9 +86,7 @@ class CollisionSystem(System):
             # Player can also go on ramps
             if entity == self.player:
                 # Still super inefficient
-                for nested_entity, (nested_flags, nested_pos, *_) in self.world.get_components(
-                    Flags, Position, Movement, Graphics
-                ):
+                for nested_entity, (nested_flags, nested_pos) in self.world.get_components(Flags, Position):
                     if nested_flags.collide_with_player:
                         neighboring_tile_rects.append(nested_pos.rect)
 

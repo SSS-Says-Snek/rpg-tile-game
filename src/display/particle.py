@@ -65,18 +65,18 @@ class ParticleSystem(set):
         self._draw_base("post_ui")
 
     def create_hit_particles(self, num_particles: int, pos: Position, color_list: list[Color]):
-        self.add(
-            Particle()
-            .builder()
-            .at(pos=pos.pos, angle=random.gauss(180, 180))
-            .color(color=random.choice(color_list))
-            .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
-            .lifespan(frames=40)
-            .angular_speed(speed=random.gauss(1.4, 0.8))
-            .effect_fade(start_fade_frac=0.5)
-            .build(),
-            num_particles=num_particles,
-        )
+        for _ in range(num_particles):
+            self.add(
+                Particle()
+                .builder()
+                .at(pos=pos.pos, angle=random.gauss(180, 180))
+                .color(color=random.choice(color_list))
+                .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
+                .lifespan(frames=40)
+                .angular_speed(speed=random.gauss(1.4, 0.8))
+                .effect_fade(start_fade_frac=0.5)
+                .build(),
+            )
 
     def create_effect_particle(
         self,
@@ -148,7 +148,7 @@ class Particle:
         self.angle = 0
         self.angular_speed = None
         self.lifespan = None
-        self.size = 10
+        self.size = 4
         self.gravity = 0
         self.parallax_val = None
 

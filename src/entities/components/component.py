@@ -15,7 +15,6 @@ __all__ = [
     "Position",
     "Movement",
     "Health",
-    "MeleeAttack",
     "Inventory",
 ]
 
@@ -113,22 +112,6 @@ class Health:
     @hp.setter
     def hp(self, value: float):
         self._hp = max(min(value, self.max_hp), 0)
-
-
-class MeleeAttack:
-    def __init__(
-        self,
-        attack_range: int,
-        attack_cooldown: float,
-        damage: float,
-        collision: bool = False,
-    ):
-        self.attack_range = attack_range
-        self.attack_cooldown = attack_cooldown
-        self.damage = damage
-        self.collision = collision
-
-        self.last_attacked = 0
 
 
 class Inventory:

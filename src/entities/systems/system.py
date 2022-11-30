@@ -7,7 +7,7 @@ This file contains the base class of all systems
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import esper
 
@@ -19,8 +19,9 @@ if TYPE_CHECKING:
 
 
 class System(esper.Processor):
-    # For system-to-graphics interaction
+    # For system-to-system interaction
     _send_to_graphics_widgets = []
+    _listeners: dict[str, list[Callable]] = {}
 
     def __init__(self, level_state: "LevelState"):
         super().__init__()
@@ -40,6 +41,15 @@ class System(esper.Processor):
 
     def send_to_graphics(self, *widgets: Widget, when: str = "post_ui"):
         self._send_to_graphics_widgets.extend(zip(widgets, [when] * len(widgets)))
+
+    def subscribe(self, event: str, func: Callable):
+        if event not in self._listeners:
+            self._listeners[event] = []
+        self._listeners[event].append(func)
+
+    def notify(self, event: str, *args, **kwargs):
+        for func in self._listeners.get(event, []):
+            func(*args, **kwargs)
 
     def process(self, event_list: Events, dts: Dts):
         pass

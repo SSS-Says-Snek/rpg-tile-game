@@ -13,11 +13,14 @@ import random
 
 from src.display.particle import Particle
 from src.entities.components.component import Health, Position
-from src.entities.systems import System
+from src.entities.systems.system import System
 from src.types import Dts, Events
 
 
 class HitSystem(System):
+    def __init__(self, level_state):
+        super().__init__(level_state)
+
     def process(self, event_list: Events, dts: Dts):
         for entity, (pos, health) in self.world.get_components(Position, Health):
             # Lost HP
@@ -25,16 +28,15 @@ class HitSystem(System):
                 if health.hp == 0:
                     self.particle_system.create_hit_particles(30, pos, self.settings["particles/death"])
                 else:
-                    self.particle_system.add(
-                        Particle()
-                        .builder()
-                        .at(pos=pos.pos, angle=random.gauss(180, 180))
-                        .color(color=random.choice([(255, 0, 0)]))
-                        .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
-                        .lifespan(frames=40)
-                        .angular_speed(speed=random.gauss(0.9, 0.8))
-                        .size(size=4)
-                        .effect_fade(start_fade_frac=0.5)
-                        .build(),
-                        num_particles=25,
-                    )
+                    for _ in range(25):
+                        self.particle_system.add(
+                            Particle()
+                            .builder()
+                            .at(pos=pos.pos, angle=random.gauss(180, 180))
+                            .color(color=random.choice([(255, 0, 0)]))
+                            .gravity(gravity_acc=0.35, gravity_y_vel=-3.5)
+                            .lifespan(frames=40)
+                            .angular_speed(speed=random.gauss(0.9, 0.8))
+                            .effect_fade(start_fade_frac=0.5)
+                            .build(),
+                        )
