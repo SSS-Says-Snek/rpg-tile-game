@@ -143,7 +143,7 @@ class ItemUsages(types.SimpleNamespace):
         if not item.used:
             return
 
-        arrow_sprite = utils.load_img(common.IMG_DIR / "items" / "arrows_sprite.png").convert_alpha()
+        arrow_sprite = self.imgs["items/arrows_sprite"].convert_alpha()
 
         ranged_weapon = self.world.component_for_entity(equipped_item, item_component.RangedWeapon)
         mouse_pos = pygame.mouse.get_pos()

@@ -7,16 +7,13 @@ This file defines some utility functions
 """
 from __future__ import annotations
 
-import pathlib
-from functools import lru_cache
-from typing import Optional
-
+from src import pygame
+from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.types import Color
 
-from src import common, pygame
-from src.common import ANIM_DIR, TILE_HEIGHT, TILE_WIDTH
-from src.display import animation
-from src.utils.time import Time
+from .loaders import (DirLoader, load_font, load_img, load_img_dir, load_imgs,
+                      load_mob_animations)
+from .time import Time
 
 time = Time()
 
@@ -41,20 +38,6 @@ class Task:
         if time.get_ticks() - self.time_instantiated > time_threshold:
             return True
         return False
-
-
-def removeprefix(string, prefix: str) -> str:
-    """Backwards compatibility"""
-    if string.startswith(prefix):
-        return string[len(prefix) :]
-    return string
-
-
-def removesuffix(string: str, suffix: str) -> str:
-    """Backwards compatibility"""
-    if string.endswith(suffix):
-        return string[: -len(suffix)]
-    return string
 
 
 def pixel_to_tile(
@@ -123,57 +106,6 @@ def rot_pivot(image: pygame.Surface, pos: tuple, origin_pos: tuple, angle: float
     rotated_image = pygame.transform.rotate(image, angle)
     rotated_image_rect = rotated_image.get_rect(center=rotated_image_center)
     return rotated_image, rotated_image_rect
-
-
-@lru_cache(maxsize=256)
-def load_img(path: pathlib.Path, mode: str = "alpha", colorkey: Optional[Color] = None) -> pygame.Surface:
-    img = pygame.image.load(path)
-
-    if mode == "alpha":
-        img = img.convert_alpha()
-    elif mode == "convert":
-        img = img.convert()
-
-    if colorkey is not None:
-        img.set_colorkey(colorkey)
-
-    return img
-
-
-def load_img_dir(
-    path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
-) -> list[pygame.Surface]:
-    imgs = [pygame.image.load(file) for file in path.iterdir()]
-    return load_imgs(imgs, convert_mode, colorkey)
-
-
-def load_imgs(
-    imgs: list[pygame.Surface], convert_mode: str = "alpha", colorkey: Optional[Color] = None
-) -> list[pygame.Surface]:
-    if convert_mode == "alpha":
-        imgs = [img.convert_alpha() for img in imgs]
-    elif convert_mode == "convert":
-        imgs = [img.convert() for img in imgs]
-
-    if colorkey is not None:
-        for img in imgs:
-            img.set_colorkey(colorkey)
-
-    return imgs
-
-
-@lru_cache(maxsize=512)
-def load_font(size: int, font_name: str = "PixelMillenium"):
-    return pygame.font.Font(common.FONT_DIR / f"{font_name}.ttf", size)
-
-
-def load_mob_animations(mob_settings: dict, size: tuple[int, int] = (32, 32)):
-    animations = {
-        animation_type: animation.Animation(ANIM_DIR / mob_settings["animation_dir"] / f"{animation_type}.png", size)
-        for animation_type in mob_settings["animation_types"]
-    }
-
-    return animations, mob_settings["animation_speed"]
 
 
 def enum_eq(enum):

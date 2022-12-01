@@ -30,10 +30,7 @@ class GraphicsSystem(System):
         self.cloud_parallax = 0.3
         self.cloud_paths = list((common.IMG_DIR / "deco" / "clouds").iterdir())
 
-        self.background = pygame.transform.scale(
-            self.imgs["placeholder_background2"],
-            common.RES
-        ).convert()
+        self.background = pygame.transform.scale(self.imgs["placeholder_background2"], common.RES).convert()
 
     #####################################################################
     # DRAWING FUNCTIONS: Very similar to ParticleSystem's draw handling #

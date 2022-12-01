@@ -13,7 +13,7 @@ from src import common, pygame
 from src.common import IMG_DIR, SETTINGS_DIR
 from src.display.shaders import ShaderManager
 # from src.display.widgets.button import DefaultButton
-from src.loader import Loader
+from src.utils.loaders import DirLoader
 
 pygame.init()
 
@@ -43,8 +43,8 @@ class Game:
         #     )
         # )
 
-        self.settings = Loader(SETTINGS_DIR, ".json", json.load)
-        self.imgs = Loader(IMG_DIR, ".png", pygame.image.load)
+        self.settings = DirLoader(SETTINGS_DIR, ".json", json.load)
+        self.imgs = DirLoader(IMG_DIR, ".png", pygame.image.load)
         self.game_name = self.settings["game/name"]
 
         self.state: State = LevelState(self)

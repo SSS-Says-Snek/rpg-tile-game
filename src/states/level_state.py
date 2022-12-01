@@ -66,18 +66,22 @@ class LevelState(State):
         self.debug = False
 
         # Add ECS systems
-        self.core_processes = list(map(lambda tup: (tup[0](self), tup[1]), (
-            (InputSystem, 9),
-        )))
-        self.pausable_processes = list(map(lambda tup: (tup[0](self), tup[1]), (
-            (VelocitySystem, 8),
-            (CollisionSystem, 7),
-            (TileInteractionSystem, 6),
-            (NPCCombatSystem, 5),
-            (CombatSystem, 4),
-            (ProjectileSystem, 3),
-            (HitSystem, 2), (GraphicsSystem, 1)
-        )))
+        self.core_processes = list(map(lambda tup: (tup[0](self), tup[1]), ((InputSystem, 9),)))
+        self.pausable_processes = list(
+            map(
+                lambda tup: (tup[0](self), tup[1]),
+                (
+                    (VelocitySystem, 8),
+                    (CollisionSystem, 7),
+                    (TileInteractionSystem, 6),
+                    (NPCCombatSystem, 5),
+                    (CombatSystem, 4),
+                    (ProjectileSystem, 3),
+                    (HitSystem, 2),
+                    (GraphicsSystem, 1),
+                ),
+            )
+        )
 
         for core_process_class, core_priority in self.core_processes:
             self.ecs_world.add_processor(core_process_class, priority=core_priority)
