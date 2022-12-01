@@ -383,4 +383,4 @@ class WindParticle(Particle):
         # Makes transitions smooth
         self.vel.x += (self.starting_vel.x - self.vel.x) / 20
         self.vel.x += (-2 / 50 + self.starting_vel.x - self.vel.x) / 7
-        self.per_frame_vel.x = math.sin(pygame.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2
+        self.per_frame_vel.x = math.sin(utils.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2

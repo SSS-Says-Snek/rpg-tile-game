@@ -62,7 +62,7 @@ class TileHover(Widget):
     def draw(self, camera: Camera):
         # Adjust bob
         rect_copy = self.rect.copy()
-        rect_copy.y += round(math.sin(pygame.time.get_ticks() / 150) * 5)
+        rect_copy.y += round(math.sin(utils.time.get_ticks() / 150) * 5)
 
         screen.blit(self.SURF, camera.apply(rect_copy))
         screen.blit(self.outline, camera.apply((self.x - 1, self.y - 1)))

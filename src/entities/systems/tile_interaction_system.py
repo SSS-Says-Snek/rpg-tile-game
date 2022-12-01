@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import types
 
-from src import pygame, utils
+from src import pygame
 from src.entities.components import tile_component
 from src.entities.components.component import Position
 from src.entities.systems.system import System

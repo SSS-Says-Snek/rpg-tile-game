@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from src import pygame
+from src import pygame, utils
 from src.entities.components.component import Inventory
 
 
@@ -25,7 +25,7 @@ class Item:
         self.used = True
 
         inventory_component.cooldown = self.cooldown
-        inventory_component.last_used = pygame.time.get_ticks()
+        inventory_component.last_used = utils.time.get_ticks()
 
 
 class ItemPosition:

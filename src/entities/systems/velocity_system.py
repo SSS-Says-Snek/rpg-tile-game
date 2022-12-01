@@ -21,7 +21,7 @@ class VelocitySystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-        self.settings = self.level_state.settings
+        self.settings = self.level.settings
         self.player_settings = self.settings["mobs/player"]
 
     def about_to_fall(self, pos: Position):
@@ -97,7 +97,7 @@ class VelocitySystem(System):
                     elif self.about_to_fall(pos):
                         print(f"Entity {entity} switched to flee")
                         entity_state.state = entity_state.Flee
-                        entity_state.state.flee_start_time = pygame.time.get_ticks()
+                        entity_state.state.flee_start_time = utils.time.get_ticks()
                         pos.direction *= -1
 
                 elif entity_state.state == entity_state.Flee:
@@ -107,7 +107,7 @@ class VelocitySystem(System):
                     movement.vel.x = entity_state.state.flee_speed * pos.direction
 
                     if (
-                        pygame.time.get_ticks() - entity_state.state.flee_start_time
+                        utils.time.get_ticks() - entity_state.state.flee_start_time
                         > entity_state.state.flee_time * 1000
                     ):
                         entity_state.state = entity_state.Patrol

@@ -30,8 +30,8 @@ class TileMap:
         self.width = self.tilemap.width * self.tilemap.tilewidth
         self.height = self.tilemap.height * self.tilemap.tileheight
 
-        self.level_state = level_state
-        self.ecs_world = self.level_state.ecs_world
+        self.level = level_state
+        self.ecs_world = self.level.ecs_world
 
         # Map tile name to image for other usages (such as tile outlines)
         self.tilename_to_img = {}

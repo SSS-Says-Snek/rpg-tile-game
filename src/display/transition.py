@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Callable, Optional
 
-from src import pygame, screen
+from src import pygame, screen, utils
 
 
 class FadeTransition:
@@ -88,7 +88,7 @@ class EaseTransition:
 
     def start(self):
         self.transitioning = True
-        self.time_started = pygame.time.get_ticks()
+        self.time_started = utils.time.get_ticks()
 
     def stop(self):
         self.transitioning = False
@@ -98,10 +98,10 @@ class EaseTransition:
         if not self.transitioning:
             return
 
-        time_elapsed = pygame.time.get_ticks() - self.time_started
+        time_elapsed = utils.time.get_ticks() - self.time_started
         self.value = self.ease_func(min(time_elapsed / self.duration, 1)) * self.range + self.begin
 
-        if pygame.time.get_ticks() - self.time_started > self.duration:
+        if utils.time.get_ticks() - self.time_started > self.duration:
             self.transitioning = False
             self.value = self.default_end
             if self.callback is not None:

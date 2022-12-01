@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import math
 
-from src import pygame
+from src import pygame, utils
 from src.entities.components import (ai_component, item_component,
                                      projectile_component)
 from src.entities.components.component import Health, Inventory, Position
@@ -42,7 +42,7 @@ class NPCCombatSystem(System):
 
                         if (
                             conditional
-                            and pygame.time.get_ticks() - melee_attack.last_attacked
+                            and utils.time.get_ticks() - melee_attack.last_attacked
                             > melee_attack.attack_cooldown * 1000
                         ):
                             self.camera.start_shake(10)
@@ -50,7 +50,7 @@ class NPCCombatSystem(System):
                             nested_health.hp -= melee_attack.damage
                             nested_health.hp = max(nested_health.hp, 0)
 
-                            melee_attack.last_attacked = pygame.time.get_ticks()
+                            melee_attack.last_attacked = utils.time.get_ticks()
 
                     elif self.world.has_component(entity, ai_component.MeleeWeaponAttack):
                         melee_weapon_attack = self.world.component_for_entity(entity, ai_component.MeleeWeaponAttack)
@@ -61,7 +61,7 @@ class NPCCombatSystem(System):
 
                         if (
                             pos.in_range(nested_pos.tile_pos, melee_weapon_attack.attack_range)
-                            and pygame.time.get_ticks() - inventory.last_used > equipped_item.cooldown * 1000
+                            and utils.time.get_ticks() - inventory.last_used > equipped_item.cooldown * 1000
                         ):
                             equipped_item.use(inventory)
 
@@ -115,7 +115,7 @@ class NPCCombatSystem(System):
                         #     if rect.bottom < a * ((rect.left + rect.right) / 2) ** 2 + b * ((rect.left + rect.right) / 2) < rect.top:
                         #         print("!")
 
-                        if pygame.time.get_ticks() - range_attack.last_attacked > range_attack.attack_cooldown * 1000:
+                        if utils.time.get_ticks() - range_attack.last_attacked > range_attack.attack_cooldown * 1000:
                             self.world.create_entity(
                                 projectile_component.Projectile(
                                     vel=v,
@@ -130,4 +130,4 @@ class NPCCombatSystem(System):
                                 projectile_component.ProjectileGraphics(self.imgs["items/arrows_sprite"]),
                             )
 
-                            range_attack.last_attacked = pygame.time.get_ticks()
+                            range_attack.last_attacked = utils.time.get_ticks()

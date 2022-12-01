@@ -14,7 +14,6 @@ import random
 from src import pygame, utils
 from src.display.particle import RoundParticle
 from src.entities.components import component, projectile_component
-from src.entities.components.component import Position
 from src.entities.systems.system import System
 from src.types import Dts, Events
 

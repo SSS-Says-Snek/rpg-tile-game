@@ -26,18 +26,18 @@ class System(esper.Processor):
     def __init__(self, level_state: "LevelState"):
         super().__init__()
 
-        self.level_state: "LevelState" = level_state
-        self.player = self.level_state.player
+        self.level: "LevelState" = level_state
+        self.player = self.level.player
 
-        self.settings = self.level_state.settings
-        self.imgs = self.level_state.imgs
-        self.camera = self.level_state.camera
-        self.tilemap = self.level_state.tilemap
-        self.particle_system = self.level_state.particle_system
-        self.effect_system = self.level_state.effect_system
+        self.settings = self.level.settings
+        self.imgs = self.level.imgs
+        self.camera = self.level.camera
+        self.tilemap = self.level.tilemap
+        self.particle_system = self.level.particle_system
+        self.effect_system = self.level.effect_system
 
         self.world: esper.World = self.world
-        self.ui = self.level_state.ui
+        self.ui = self.level.ui
 
     def send_to_graphics(self, *widgets: Widget, when: str = "post_ui"):
         self._send_to_graphics_widgets.extend(zip(widgets, [when] * len(widgets)))

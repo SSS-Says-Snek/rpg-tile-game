@@ -290,7 +290,7 @@ class CombatSystem(System):
                 )  # IDK
 
             item_pos.pos.y = pos.pos.y
-            item_pos.pos.y += math.sin(pygame.time.get_ticks() / 250) * 2  # Bobbing effect
+            item_pos.pos.y += math.sin(utils.time.get_ticks() / 250) * 2  # Bobbing effect
 
             self.handle_items(
                 equipped_item,
