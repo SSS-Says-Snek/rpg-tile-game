@@ -21,7 +21,7 @@ from src.entities.components.component import Position
 from src.types import Color
 
 
-class ParticleSystem(set):
+class ParticleManager(set):
     def __init__(self, camera: Camera, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -50,6 +50,7 @@ class ParticleSystem(set):
     def _draw_base(self, draw_when: str):
         for particle in self:
             if particle.draw_when == draw_when:
+                particle.pre_draw()
                 particle.draw(self.camera)
 
     def draw_pre_interactables(self):
@@ -251,7 +252,6 @@ class Particle:
             )
         self.pos += self.vel
         self.pos.y += self.gravity_vel
-        self.draw_pos = self.pos.copy()
 
         if (
             (self.lifespan is not None and self.life >= self.lifespan)
@@ -266,8 +266,8 @@ class Particle:
 
         self.per_frame_vel.update()
 
-
-
+    def pre_draw(self):
+        self.draw_pos = self.pos.copy()
 
     def draw(self, camera: Camera):
         # For now ONLY SQUARE (ofc I'll add derived particles)

@@ -12,7 +12,7 @@ from typing import Optional
 import esper
 
 from src.display.camera import Camera
-from src.display.particle import ParticleSystem
+from src.display.particle import ParticleManager
 from src.display.widgets.widget import Widget
 from src.types import Dts, Events
 
@@ -23,7 +23,7 @@ class UI:
 
         self.camera = camera
         self.world: Optional[esper.World] = None
-        self.particle_system: Optional[ParticleSystem] = None
+        self.particle_system: Optional[ParticleManager] = None
         self.widgets = {}
         self.hud_widgets = {}
 

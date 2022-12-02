@@ -46,7 +46,7 @@ class LevelState(State):
 
         # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT, self.tilemap.width, self.tilemap.height)
-        self.particle_system = particle.ParticleSystem(self.camera)
+        self.particle_system = particle.ParticleManager(self.camera)
         self.effect_system = effect.EffectSystem(self)
 
         # UI stuff

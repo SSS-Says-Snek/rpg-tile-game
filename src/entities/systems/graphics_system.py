@@ -229,7 +229,7 @@ class GraphicsSystem(System):
                 )
                 .starting_vel(
                     # - 0.3 is for semi-guarentee no lagging
-                    pygame.Vector2(random.choice(self.wind_gusts) / random.uniform(13, 17) - 0.3, 0)
+                    pygame.Vector2(random.choice(self.wind_gusts) / random.uniform(13, 17) - 0.4, 0)
                 )
                 .lifespan(frames=2000)
                 .draw_when(when="pre_interactables")
