@@ -13,7 +13,7 @@ import types
 from dataclasses import dataclass
 from typing import Generator
 
-from src import common, pygame, utils
+from src import pygame, utils, core
 from src.entities.components import item_component, projectile_component
 from src.entities.components.component import Health, Inventory, Position
 from src.entities.effect import RegenEffect
@@ -187,7 +187,7 @@ class ItemUsages(types.SimpleNamespace):
         # Particles
         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
         self.effect_system.add_effect(
-            item.owner, RegenEffect(self.level_state).builder().heal(10).duration(8, 2).build()
+            item.owner, RegenEffect(self.level).builder().heal(10).duration(8, 2).build()
         )
 
         item.used = False
@@ -290,7 +290,7 @@ class CombatSystem(System):
                 )  # IDK
 
             item_pos.pos.y = pos.pos.y
-            item_pos.pos.y += math.sin(utils.time.get_ticks() / 250) * 2  # Bobbing effect
+            item_pos.pos.y += math.sin(core.time.get_ticks() / 250) * 2  # Bobbing effect
 
             self.handle_items(
                 equipped_item,

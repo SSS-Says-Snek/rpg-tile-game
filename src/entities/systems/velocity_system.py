@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import math
 
-from src import pygame, utils
+from src import pygame, utils, core
 from src.entities.components import ai_component, component
 from src.entities.components.component import Flags, Movement, Position
 from src.entities.systems.system import System
@@ -97,7 +97,7 @@ class VelocitySystem(System):
                     elif self.about_to_fall(pos):
                         print(f"Entity {entity} switched to flee")
                         entity_state.state = entity_state.Flee
-                        entity_state.state.flee_start_time = utils.time.get_ticks()
+                        entity_state.state.flee_start_time = core.time.get_ticks()
                         pos.direction *= -1
 
                 elif entity_state.state == entity_state.Flee:
@@ -107,7 +107,7 @@ class VelocitySystem(System):
                     movement.vel.x = entity_state.state.flee_speed * pos.direction
 
                     if (
-                        utils.time.get_ticks() - entity_state.state.flee_start_time
+                        core.time.get_ticks() - entity_state.state.flee_start_time
                         > entity_state.state.flee_time * 1000
                     ):
                         entity_state.state = entity_state.Patrol

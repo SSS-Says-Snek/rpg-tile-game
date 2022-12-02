@@ -7,35 +7,32 @@ This file defines some utility functions
 """
 from __future__ import annotations
 
-from src import pygame
+from src import pygame, core
 from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.types import Color
 
 from .loaders import (DirLoader, load_font, load_img, load_img_dir, load_imgs,
                       load_mob_animations)
-from .time import Time
-
-time = Time()
 
 
 class Task:
     def __init__(self, period: int):
         # Period in milliseconds
-        self.time_instantiated = time.get_ticks()
+        self.time_instantiated = core.time.get_ticks()
         self.last_invoked = 0
         self.period = period
 
     def update(self):
-        if time.get_ticks() - self.last_invoked > self.period:
-            self.last_invoked = time.get_ticks()
+        if core.time.get_ticks() - self.last_invoked > self.period:
+            self.last_invoked = core.time.get_ticks()
             return True
         return False
 
     def update_time(self):
-        self.time_instantiated = time.get_ticks()
+        self.time_instantiated = core.time.get_ticks()
 
     def time_passed(self, time_threshold: float):
-        if time.get_ticks() - self.time_instantiated > time_threshold:
+        if core.time.get_ticks() - self.time_instantiated > time_threshold:
             return True
         return False
 

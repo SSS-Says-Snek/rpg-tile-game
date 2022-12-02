@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 import random
 
-from src import common, pygame, screen, utils
+from src import common, pygame, screen, utils, core
 from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.display.particle import ImageParticle
 from src.entities.components import (ai_component, item_component,
@@ -63,12 +63,12 @@ class GraphicsSystem(System):
 
     def _draw_tree_layer(self, layer: pygame.Surface, adj_rect: pygame.Rect, anim_offset: float):
         screen.blit(
-            pygame.transform.rotate(layer, math.sin(utils.time.get_ticks() / 800) * 1.4),
+            pygame.transform.rotate(layer, math.sin(core.time.get_ticks() / 800) * 1.4),
             self.camera.apply(
                 pygame.Vector2(adj_rect.topleft)
                 + pygame.Vector2(
-                    math.sin(utils.time.get_ticks() / 600 + anim_offset) * 2,
-                    math.sin(utils.time.get_ticks() / 750 + anim_offset) * 1.5,
+                    math.sin(core.time.get_ticks() / 600 + anim_offset) * 2,
+                    math.sin(core.time.get_ticks() / 750 + anim_offset) * 1.5,
                 )
                 * (self.wind_gusts[self.random_wind_gust_idx] / 7.5)
             ),
@@ -193,7 +193,7 @@ class GraphicsSystem(System):
                     self.camera.apply(
                         (
                             item_pos.pos[0],
-                            item_pos.pos[1] - 5 - math.sin(utils.time.get_ticks() / 200) * 5,
+                            item_pos.pos[1] - 5 - math.sin(core.time.get_ticks() / 200) * 5,
                         )
                     ),
                 )
@@ -263,7 +263,7 @@ class GraphicsSystem(System):
             angle_apply = math.copysign(30, -h_dis) + h_dis * 3.5
             blade.target_angle = max(min(blade.target_angle + angle_apply, 90), -90)
         else:
-            blade.target_angle = -(math.sin(utils.time.get_ticks() / 600) - blade.rotate_weight) * blade.rotate_angle
+            blade.target_angle = -(math.sin(core.time.get_ticks() / 600) - blade.rotate_weight) * blade.rotate_angle
 
         blade.angle += (blade.target_angle - blade.angle) / 6
 

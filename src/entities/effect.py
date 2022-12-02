@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
-from src import utils
+from src import utils, core
 from src.entities.components.component import Graphics, Health, Position
 
 
@@ -50,7 +50,7 @@ class Effect:
         self.interval = 0
 
         self.apply_effect = utils.Task(0)
-        self.time_created = utils.time.get_ticks()
+        self.time_created = core.time.get_ticks()
 
         self.time_waiting = 0
 
@@ -78,15 +78,15 @@ class Effect:
 
     @property
     def on(self):
-        return not utils.time.get_ticks() - self.time_created > self.duration * 1000
+        return not core.time.get_ticks() - self.time_created > self.duration * 1000
 
     def builder(self):
         return self.Builder(self)
 
     def update(self, entity: int):
         if self.time_waiting == 0:
-            self.time_waiting = utils.time.get_ticks()
-        if self.apply_effect.update() and utils.time.get_ticks() - self.time_waiting > self.interval:
+            self.time_waiting = core.time.get_ticks()
+        if self.apply_effect.update() and core.time.get_ticks() - self.time_waiting > self.interval:
             health_component = self.world.component_for_entity(entity, Health)
             health_component.hp += self.heal_power
             health_component.hp -= self.damage
@@ -134,15 +134,15 @@ class BurnEffect:
         self.burn_duration = burn_duration
         self.burn_interval = burn_interval
 
-        self.time_created = utils.time.get_ticks()
+        self.time_created = core.time.get_ticks()
         self.last_burnt = 0
 
     def update(self, entity: int):
         health_component = self.level_state.ecs_world.component_for_entity(entity, Health)
 
-        if utils.time.get_ticks() - self.last_burnt > self.burn_interval * 1000:
+        if core.time.get_ticks() - self.last_burnt > self.burn_interval * 1000:
             health_component.hp -= 10
-            self.last_burnt = utils.time.get_ticks()
+            self.last_burnt = core.time.get_ticks()
 
         if random.random() < 0.3:
             pos = self.level_state.ecs_world.component_for_entity(entity, Position).pos
@@ -153,5 +153,5 @@ class BurnEffect:
 
     @property
     def on(self):
-        return not utils.time.get_ticks() - self.time_created > self.burn_duration * 1000
+        return not core.time.get_ticks() - self.time_created > self.burn_duration * 1000
 """

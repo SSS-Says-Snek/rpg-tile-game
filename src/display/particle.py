@@ -15,7 +15,7 @@ from typing import Callable, Optional, Union
 
 import pygame.gfxdraw
 
-from src import pygame, screen, utils
+from src import pygame, screen, utils, core
 from src.display.camera import Camera
 from src.entities.components.component import Position
 from src.types import Color
@@ -266,6 +266,9 @@ class Particle:
 
         self.per_frame_vel.update()
 
+
+
+
     def draw(self, camera: Camera):
         # For now ONLY SQUARE (ofc I'll add derived particles)
         particle_rect = pygame.Rect(*self.draw_pos, self.size, self.size)
@@ -383,4 +386,4 @@ class WindParticle(Particle):
         # Makes transitions smooth
         self.vel.x += (self.starting_vel.x - self.vel.x) / 20
         self.vel.x += (-2 / 50 + self.starting_vel.x - self.vel.x) / 7
-        self.per_frame_vel.x = math.sin(utils.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2
+        self.per_frame_vel.x = math.sin(core.time.get_ticks() / 1000 * (self.starting_vel.x + 0.5) / 10) * 2

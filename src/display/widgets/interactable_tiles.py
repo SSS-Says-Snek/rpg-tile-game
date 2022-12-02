@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.entities.components.tile_component import Tile
 
-from src import pygame, screen, utils
+from src import pygame, screen, utils, core
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
 from src.display.camera import Camera
 from src.display.transition import EaseTransition
@@ -62,7 +62,7 @@ class TileHover(Widget):
     def draw(self, camera: Camera):
         # Adjust bob
         rect_copy = self.rect.copy()
-        rect_copy.y += round(math.sin(utils.time.get_ticks() / 150) * 5)
+        rect_copy.y += round(math.sin(core.time.get_ticks() / 150) * 5)
 
         screen.blit(self.SURF, camera.apply(rect_copy))
         screen.blit(self.outline, camera.apply((self.x - 1, self.y - 1)))

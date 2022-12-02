@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pygame.gfxdraw
 
-from src import pygame, screen, utils
+from src import pygame, screen, core
 from src.common import TILE_WIDTH
 from src.display.camera import Camera
 from src.display.ui import UI
@@ -152,7 +152,7 @@ class Hotbar(Widget):
                     # Witchcraftery
                     rect_height = (
                         1
-                        - (utils.time.get_ticks() - self.inventory_component.last_used)
+                        - (core.time.get_ticks() - self.inventory_component.last_used)
                         / (self.inventory_component.cooldown * 1000)
                     ) * self.frame_size[1]
                 else:

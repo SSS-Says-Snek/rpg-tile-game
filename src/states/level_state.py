@@ -66,7 +66,7 @@ class LevelState(State):
         self.debug = False
 
         # Add ECS systems
-        self.core_processes = list(map(lambda tup: (tup[0](self), tup[1]), ((InputSystem, 9),)))
+        self.core_processes = list(map(lambda tup: (tup[0](self), tup[1]), ((InputSystem, 9), (GraphicsSystem, 1))))
         self.pausable_processes = list(
             map(
                 lambda tup: (tup[0](self), tup[1]),
@@ -77,8 +77,7 @@ class LevelState(State):
                     (NPCCombatSystem, 5),
                     (CombatSystem, 4),
                     (ProjectileSystem, 3),
-                    (HitSystem, 2),
-                    (GraphicsSystem, 1),
+                    (HitSystem, 2)
                 ),
             )
         )
