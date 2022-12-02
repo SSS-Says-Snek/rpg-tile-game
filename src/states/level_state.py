@@ -12,7 +12,7 @@ import esper
 from pytmx import TiledObject
 
 # Important modules
-from src import common, pygame, screen, utils
+from src import common, pygame, screen, utils, core
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
@@ -270,12 +270,12 @@ class LevelState(State):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_F1:
                 self.debug = not self.debug
-            elif event.key == pygame.K_F6 and not utils.time.paused:
-                utils.time.pause()
+            elif event.key == pygame.K_F6 and not core.time.paused:
+                core.time.pause()
                 for pausable_process, _ in self.pausable_processes:
                     self.ecs_world.remove_processor(type(pausable_process))
-            elif event.key == pygame.K_F7 and utils.time.paused:
-                utils.time.unpause()
+            elif event.key == pygame.K_F7 and core.time.paused:
+                core.time.unpause()
                 for pausable_process, _ in self.pausable_processes:
                     self.ecs_world.add_processor(pausable_process)
 
@@ -283,7 +283,7 @@ class LevelState(State):
         # Draws UI in GraphicsSystem
         self.ecs_world.process(events, dts)
 
-        if not utils.time.paused:
+        if not core.time.paused:
             self.particle_system.update()
             self.effect_system.update()
 
