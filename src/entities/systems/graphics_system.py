@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 import random
 
-from src import common, pygame, screen, utils, core
+from src import common, core, pygame, screen, utils
 from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.display.particle import ImageParticle
 from src.entities.components import (ai_component, item_component,

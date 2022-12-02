@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
-from src import utils, core
+from src import core, utils
 from src.entities.components.component import Graphics, Health, Position
 
 

@@ -15,7 +15,7 @@ from typing import Callable, Optional, Union
 
 import pygame.gfxdraw
 
-from src import pygame, screen, utils, core
+from src import core, pygame, screen, utils
 from src.display.camera import Camera
 from src.entities.components.component import Position
 from src.types import Color

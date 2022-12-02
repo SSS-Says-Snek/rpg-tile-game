@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import math
 
-from src import pygame, utils, core
+from src import core, pygame, utils
 from src.entities.components import ai_component, component
 from src.entities.components.component import Flags, Movement, Position
 from src.entities.systems.system import System

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pygame.gfxdraw
 
-from src import pygame, screen, core
+from src import core, pygame, screen
 from src.common import TILE_WIDTH
 from src.display.camera import Camera
 from src.display.ui import UI

@@ -7,7 +7,7 @@ This file defines some utility functions
 """
 from __future__ import annotations
 
-from src import pygame, core
+from src import core, pygame
 from src.common import TILE_HEIGHT, TILE_WIDTH
 from src.types import Color
 

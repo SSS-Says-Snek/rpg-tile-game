@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.entities.components.tile_component import Tile
 
-from src import pygame, screen, utils, core
+from src import core, pygame, screen, utils
 from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
 from src.display.camera import Camera
 from src.display.transition import EaseTransition

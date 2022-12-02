@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from src import pygame, core
+from src import core, pygame
 from src.entities.components.component import Inventory
 
 

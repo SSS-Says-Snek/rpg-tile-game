@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import math
 
-from src import pygame, core
+from src import core, pygame
 from src.entities.components import (ai_component, item_component,
                                      projectile_component)
 from src.entities.components.component import Health, Inventory, Position

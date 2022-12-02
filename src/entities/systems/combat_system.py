@@ -13,7 +13,7 @@ import types
 from dataclasses import dataclass
 from typing import Generator
 
-from src import pygame, utils, core
+from src import core, pygame, utils
 from src.entities.components import item_component, projectile_component
 from src.entities.components.component import Health, Inventory, Position
 from src.entities.effect import RegenEffect
@@ -186,9 +186,7 @@ class ItemUsages(types.SimpleNamespace):
 
         # Particles
         self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
-        self.effect_system.add_effect(
-            item.owner, RegenEffect(self.level).builder().heal(10).duration(8, 2).build()
-        )
+        self.effect_system.add_effect(item.owner, RegenEffect(self.level).builder().heal(10).duration(8, 2).build())
 
         item.used = False
 

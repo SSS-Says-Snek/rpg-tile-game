@@ -8,7 +8,7 @@ This file defines the input system, used to get player inputs
 
 from __future__ import annotations
 
-from src import pygame, core
+from src import core, pygame
 from src.entities.components import item_component
 from src.entities.components.component import Inventory
 from src.entities.systems.system import System

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Callable, Optional
 
-from src import pygame, screen, core
+from src import core, pygame, screen
 
 
 class FadeTransition:

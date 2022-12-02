@@ -12,7 +12,7 @@ import esper
 from pytmx import TiledObject
 
 # Important modules
-from src import common, pygame, screen, utils, core
+from src import common, core, pygame, screen, utils
 # Display modules
 from src.display import particle
 from src.display.camera import Camera
@@ -77,7 +77,7 @@ class LevelState(State):
                     (NPCCombatSystem, 5),
                     (CombatSystem, 4),
                     (ProjectileSystem, 3),
-                    (HitSystem, 2)
+                    (HitSystem, 2),
                 ),
             )
         )
