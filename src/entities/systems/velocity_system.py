@@ -77,7 +77,7 @@ class VelocitySystem(System):
                         pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range)
                         and entity_followed_pos.tile_pos.y == pos.tile_pos.y
                     ):
-                        print(f"Entity {entity} switched to follow")
+                        # print(f"Entity {entity} switched to follow")
                         entity_state.state = entity_state.Follow
 
                 elif entity_state.state == entity_state.Follow:
@@ -92,10 +92,10 @@ class VelocitySystem(System):
                         not pos.in_range(entity_followed_pos.tile_pos, follows_entity_close.follow_range)
                         or entity_followed_pos.tile_pos.y != pos.tile_pos.y
                     ):
-                        print(f"Entity {entity} switched to patrol")
+                        # print(f"Entity {entity} switched to patrol")
                         entity_state.state = entity_state.Patrol
                     elif self.about_to_fall(pos):
-                        print(f"Entity {entity} switched to flee")
+                        # print(f"Entity {entity} switched to flee")
                         entity_state.state = entity_state.Flee
                         entity_state.state.flee_start_time = core.time.get_ticks()
                         pos.direction *= -1

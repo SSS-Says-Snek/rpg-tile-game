@@ -18,11 +18,11 @@ from src.display.widgets.health_bar import ItemDurabilityBar
 from src.display.widgets.widget import Widget
 from src.entities.components import item_component
 from src.entities.components.component import Inventory
-from src.types import Pos, Size
+from src.types import Size, TupPos
 
 
 class Hotbar(Widget):
-    def __init__(self, ui: UI, entity: int, center_pos: Pos, frame_size: Size):
+    def __init__(self, ui: UI, entity: int, center_pos: TupPos, frame_size: Size):
         super().__init__()
 
         self.uuid = None

@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Callable, Optional
 
 from src import core, pygame, screen
+from src.types import VoidFunc
 
 
 class FadeTransition:
@@ -45,8 +46,20 @@ class EaseTransition:
         duration: int,
         ease_func: Callable[[float], float],
         default_end: Optional[float] = None,
-        callback: Optional[Callable[[], None]] = None,
+        callback: Optional[VoidFunc] = None,
     ):
+        """
+        Provides an easy way to obtain numbers in a range from various easing functions
+
+        Args:
+            begin: The beginning
+            end: The end
+            duration: The duration
+            ease_func: The easing function
+            default_end: What the value will default to after each transition
+            callback: A function that is called when each transition is finished
+        """
+
         self.begin = begin
         self.end = end
         self.range = end - begin
@@ -60,28 +73,28 @@ class EaseTransition:
         self.value = None
 
     @staticmethod
-    def ease_in_out_quad(x: float):
+    def ease_in_out_quad(x: float) -> float:
         if x < 0.5:
             return 2 * x**2
         return 1 - (-x * 2 + 2) ** 2 / 2
 
     @staticmethod
-    def ease_out_quad(x: float):
+    def ease_out_quad(x: float) -> float:
         return 1 - (1 - x) ** 2
 
     @staticmethod
-    def ease_out_cub(x: float):
+    def ease_out_cub(x: float) -> float:
         return 1 - (1 - x) ** 3
 
     @staticmethod
-    def ease_out_pow(power: int):
+    def ease_out_pow(power: int) -> Callable[[float], float]:
         def inner(x: float):
             return 1 - (1 - x) ** power
 
         return inner
 
     @staticmethod
-    def ease_out_exp(x: float):
+    def ease_out_exp(x: float) -> float:
         if x == 1:
             return 1
         return 1 - (2 ** (-10 * x))

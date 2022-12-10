@@ -21,21 +21,38 @@ if TYPE_CHECKING:
 
 class State(abc.ABC):
     def __init__(self, game_class: "Game"):
+        """
+        A base class for all game states (E.g game state, menu state)
+
+        Args:
+            game_class: The game class
+        """
+
         self.game_class = game_class
-        self.next_state: type(State) = self.__class__
+        self.next_state: type[State] = self.__class__
 
     @abc.abstractmethod
     def draw(self):
+        """Draws graphics. This function gets called once per frame"""
         pass
 
     @abc.abstractmethod
     def handle_event(self, event: pygame.event.Event):
+        """For each event, this function gets called"""
         pass
 
     def update(self, event_list: Events, dts: Dts):
+        """This function gets called once per frame"""
         pass
 
     def change_state(self, desired_state_str: str):
+        """
+        Changes to a new state given the name of the state in strings
+
+        Args:
+            desired_state_str: The location of the state class in "module.name" format
+        """
+
         state_module_name, state_name = desired_state_str.split(".")
         state_module = importlib.import_module(f"src.states.{state_module_name}")
         self.next_state = getattr(state_module, state_name)

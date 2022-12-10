@@ -7,6 +7,8 @@ This file defines the level state, which is the state where the main game happen
 """
 from __future__ import annotations
 
+from typing import Optional
+
 # ECS system
 import esper
 from pytmx import TiledObject
@@ -30,7 +32,7 @@ from src.entities.systems import (CollisionSystem, CombatSystem,
                                   NPCCombatSystem, ProjectileSystem,
                                   TileInteractionSystem, VelocitySystem)
 from src.tilemap import TileMap
-from src.types import Dts, Events
+from src.types import Dts, Entity, Events
 
 # State (for inheritance)
 from .state import State
@@ -60,7 +62,7 @@ class LevelState(State):
         self.settings = self.game_class.settings
         self.imgs = self.game_class.imgs
 
-        self.player = None
+        self.player: Optional[Entity] = None
         self.load_map()
 
         self.debug = False

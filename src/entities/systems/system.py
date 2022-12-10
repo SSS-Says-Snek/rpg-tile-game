@@ -20,10 +20,17 @@ if TYPE_CHECKING:
 
 class System(esper.Processor):
     # For system-to-system interaction
-    _send_to_graphics_widgets = []
+    _send_to_graphics_widgets: list[Widget] = []
     _listeners: dict[str, list[Callable]] = {}
 
     def __init__(self, level_state: "LevelState"):
+        """
+        A base class for all ECS systems (E.g graphics system, collision system)
+
+        Args:
+            level_state: The level state
+        """
+
         super().__init__()
 
         self.level: "LevelState" = level_state
@@ -40,16 +47,48 @@ class System(esper.Processor):
         self.ui = self.level.ui
 
     def send_to_graphics(self, *widgets: Widget, when: str = "post_ui"):
+        """
+        Sends multiple widgets to the graphics system to be processed
+
+        Args:
+            *widgets: Widgets to send to the graphics system
+            when: A string indicating when it should be processed (goofy version of z index)
+        """
+
         self._send_to_graphics_widgets.extend(zip(widgets, [when] * len(widgets)))
 
     def subscribe(self, event: str, func: Callable):
+        """
+        Allows the system to subscribe to any event
+
+        Args:
+            event: The event name
+            func: A function that will get called when event is triggered
+        """
+
         if event not in self._listeners:
             self._listeners[event] = []
         self._listeners[event].append(func)
 
     def notify(self, event: str, *args, **kwargs):
+        """
+        Notifies all systems of the event happening
+
+        Args:
+            event: The event name
+            *args: Positional arguments to pass to the function
+            **kwargs: Keyword arguments to pass to the function
+        """
         for func in self._listeners.get(event, []):
             func(*args, **kwargs)
 
     def process(self, event_list: Events, dts: Dts):
+        """
+        Processes stuff (sorry that's the best I got
+
+        Args:
+            event_list: List of events that happened this frame
+            dts: Delta time of this event
+        """
+
         pass

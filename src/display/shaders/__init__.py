@@ -16,6 +16,11 @@ from src.common import RES, SHADER_DIR, screen
 
 class ShaderManager:
     def __init__(self):
+        """
+        A manager to manage all GLSL shaders.
+        This also handles pygame screen rendering
+        """
+
         self.ctx = moderngl.create_context()
         self.program = self.ctx.program(
             vertex_shader=self.load_shader("vertex"), fragment_shader=self.load_shader("fragment")
@@ -40,14 +45,36 @@ class ShaderManager:
         self.vao = self.ctx.vertex_array(self.program, vao_content, ibo)
 
     @staticmethod
-    def load_shader(name: str):
+    def load_shader(name: str) -> str:
+        """
+        Loads source code of a GLSL shader given name of the file
+
+        Args:
+            name: Name of the shader file
+
+        Returns:
+            Source code of the shader
+        """
         with open(SHADER_DIR / f"{name}.glsl") as f:
             return f.read()
 
-    def load_buffer(self, data: list[int], fmt: str):
+    def load_buffer(self, data: list[int], fmt: str) -> moderngl.Buffer:
+        """
+        Loads a buffer given given data and packing format
+
+        Args:
+            data: Data of buffer
+            fmt: Format to pack data into
+
+        Returns:
+            A ModernGL buffer storing the packed data
+        """
+
         return self.ctx.buffer(struct.pack(fmt, *data))
 
     def render(self):
+        """Renders the pygame "screen" onto the actual window"""
+
         texture_data = screen.get_view("1")
         self.screen_texture.write(texture_data)
         self.ctx.clear(14 / 255, 40 / 255, 66 / 255)

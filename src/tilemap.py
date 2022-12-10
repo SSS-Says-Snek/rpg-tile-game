@@ -9,9 +9,10 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from src.entities.components.component import Position
+from src.types import Entity
 
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
@@ -26,6 +27,14 @@ from src.entities.components import tile_component
 
 class TileMap:
     def __init__(self, map_path: pathlib.Path, level_state: "LevelState"):
+        """
+        A class that manages Tiled tilemaps with PyTMX
+
+        Args:
+            map_path: The Path to the tmx map
+            level_state: The game state
+        """
+
         self.tilemap = pytmx.load_pygame(str(map_path))
         self.width = self.tilemap.width * self.tilemap.tilewidth
         self.height = self.tilemap.height * self.tilemap.tileheight
@@ -46,6 +55,13 @@ class TileMap:
         self.interactable_tiles = {}
 
     def make_map(self) -> tuple[pygame.Surface, pygame.Surface]:
+        """
+        Creates both the normal map and the interactable tiles surface
+
+        Returns:
+            A tuple of the normal map, as well as the interactable tiles map
+        """
+
         normal_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         interactable_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -139,11 +155,22 @@ class TileMap:
     def get_visible_tile_layers(self) -> list[pytmx.TiledTileLayer]:
         return [layer for layer in self.tilemap.visible_layers if isinstance(layer, pytmx.TiledTileLayer)]
 
-    def get_neighboring_tile_entities(self, radius: int, pos: Position, interacting_tiles=False) -> list[int]:
+    def get_neighboring_tile_entities(
+        self, radius: int, pos: Position, interacting_tiles: bool = False
+    ) -> list[Entity]:
         """
         Get (static) neighboring tiles within x tiles given position and radius.
         Setting interacting_tiles to True gives you neighboring interactables
+
+        Args:
+            radius: (Square) Radius to get tiles
+            pos: Position to get tiles around
+            interacting_tiles: Whether to output interacting tiles or not
+
+        Returns:
+            List of entity IDs
         """
+
         neighboring_tile_entities = []
 
         for layer_id in range(len(self.get_visible_tile_layers())):
@@ -163,8 +190,19 @@ class TileMap:
         return neighboring_tile_entities
 
     def get_unwalkable_rects(
-        self, neighboring_tiles: list[int]
+        self, neighboring_tiles: list[Entity]
     ) -> tuple[list[pygame.Rect], list[tuple[pygame.Rect, tile_component.Type]]]:
+        """
+        Gets unwalkable tile rects and ramps given list of entity IDs
+
+        Args:
+            neighboring_tiles: List of neighboring tiles' entity IDs
+
+        Returns:
+            A list of unwalkable rects, as well as a list of ramps
+        """
+        # TODO: Separate into two functions for unwalkables and ramps
+
         unwalkable_tile_rects = []
         ramps = []
 
@@ -185,5 +223,16 @@ class TileMap:
 
         return unwalkable_tile_rects, ramps
 
-    def get_tile(self, tile_x: int, tile_y: int) -> Optional[dict]:
+    def get_tile(self, tile_x: Union[int, float], tile_y: Union[int, float]) -> Optional[dict]:
+        """
+        Gets tile given x and y position
+
+        Args:
+            tile_x: Tile x
+            tile_y: Tile y
+
+        Returns:
+            Properties of tile
+        """
+
         return self.tiles.get((0, (tile_x, tile_y)))

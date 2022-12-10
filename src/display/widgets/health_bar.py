@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import colorsys
 import math
-from typing import Any
+from typing import Any, Union
 
 from src import pygame, screen, utils
 from src.common import IMG_DIR
@@ -18,7 +18,7 @@ from src.display.ui import UI
 from src.display.widgets.widget import Widget
 from src.entities.components import item_component
 from src.entities.components.component import Health, Position
-from src.types import Pos, TupColor
+from src.types import TupColor, TupPos
 
 
 class HealthBar(Widget):
@@ -27,7 +27,7 @@ class HealthBar(Widget):
         health_component,
         ui: UI,
         entity: int,
-        pos: Pos,
+        pos: Union[TupPos, Position],
         width: int,
         height: int,
         border_width: int = 2,
@@ -153,7 +153,7 @@ class PlayerHealthBar(HealthBar):
         self,
         ui: UI,
         entity: int,
-        pos: Pos,
+        pos: Union[TupPos, Position],
         width: int,
         height: int,
         border_width: int = 2,
@@ -250,7 +250,7 @@ class ItemDurabilityBar(PlayerHealthBar):
         self,
         ui: UI,
         entity: int,
-        pos: Pos,
+        pos: Union[TupPos, Position],
         width: int,
         height: int,
         border_width: int = 2,
@@ -266,7 +266,6 @@ class ItemDurabilityBar(PlayerHealthBar):
             border_width=border_width,
             center=center,
         )
-        self.draw_border = super(PlayerHealthBar, self).draw_border
 
     def draw(self, camera):
         if self.health_component.hp == self.health_component.max_hp:

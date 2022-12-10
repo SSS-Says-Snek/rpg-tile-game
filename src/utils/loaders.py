@@ -9,23 +9,35 @@ from __future__ import annotations
 import os
 import pathlib
 from functools import lru_cache
-from typing import IO, Any, Callable, Iterable, Optional
+from typing import IO, Callable, Generic, Iterable, Optional, TypeVar, Union
 
 from src import pygame
 from src.common import ANIM_DIR, FONT_DIR
 from src.display import animation
-from src.types import Color
+from src.types import Color, JSONSerializable
 from src.utils.compat import removesuffix
 
+_T = TypeVar("_T")
 
-class DirLoader:
+
+class DirLoader(Generic[_T]):
     def __init__(
         self,
         data_dir: pathlib.Path,
         file_ext: str,
-        data_loader: Callable[[IO], Any],
+        data_loader: Callable[[IO], _T],
         open_mode: str = "r",
     ):
+        """
+        Loads an asset directory based on assets from the `data_loader` function
+
+        Args:
+            data_dir: The directory to load
+            file_ext: The file extension of each asset
+            data_loader: A function that converts a file handler to actual usable data
+            open_mode: File open mode
+        """
+
         self.data = {}
 
         for directory, subcategories, setting_filenames in os.walk(data_dir):
@@ -45,7 +57,7 @@ class DirLoader:
                     current_dict = self._reduce_dict(parts)
                     current_dict[key] = data_loader(f)
 
-    def __getitem__(self, items):
+    def __getitem__(self, items: Union[tuple[str, ...], str]) -> Union[list[_T], _T]:
         if not isinstance(items, tuple):
             split_keys = items.split("/")
             return self._reduce_dict(split_keys)
@@ -53,7 +65,7 @@ class DirLoader:
             split_keys = [item.split("/") for item in items]
             return [self._reduce_dict(split_key) for split_key in split_keys]
 
-    def _reduce_dict(self, parts: Iterable[str]) -> dict:
+    def _reduce_dict(self, parts: Iterable[str]) -> Union[dict[str, _T], _T]:
         """Utilizes dict references to grab a portion of settings to be updated"""
 
         current_dict = self.data
@@ -100,11 +112,24 @@ def load_imgs(
 
 
 @lru_cache(maxsize=512)
-def load_font(size: int, font_name: str = "PixelMillenium"):
+def load_font(size: int, font_name: str = "PixelMillenium") -> pygame.font.Font:
     return pygame.font.Font(FONT_DIR / f"{font_name}.ttf", size)
 
 
-def load_mob_animations(mob_settings: dict, size: tuple[int, int] = (32, 32)):
+def load_mob_animations(
+    mob_settings: dict[str, JSONSerializable], size: tuple[int, int] = (32, 32)
+) -> tuple[dict[str, animation.Animation], dict]:
+    """
+    Loads animations and animation speed given mob settings
+
+    Args:
+        mob_settings: Mob settings
+        size: The size of the mob (frame)
+
+    Returns:
+        A dictionary of frames, as well as the playback speed of the animations
+    """
+
     animations = {
         animation_type: animation.Animation(ANIM_DIR / mob_settings["animation_dir"] / f"{animation_type}.png", size)
         for animation_type in mob_settings["animation_types"]

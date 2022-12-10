@@ -12,6 +12,7 @@ import json
 from src import common, pygame
 from src.common import IMG_DIR, SETTINGS_DIR
 from src.display.shaders import ShaderManager
+from src.types import JSONSerializable
 # from src.display.widgets.button import DefaultButton
 from src.utils.loaders import DirLoader
 
@@ -28,7 +29,7 @@ class Game:
 
         # UI DRAWING MUST BE HANDLED IN THE STATE CODE DUE TO CONFLICTS FROM LEVEL_STATE
         # No camera at start of game
-        self.ui = UI(None)
+        self.ui = UI()
 
         self.shader_manager = ShaderManager()
 
@@ -43,8 +44,8 @@ class Game:
         #     )
         # )
 
-        self.settings = DirLoader(SETTINGS_DIR, ".json", json.load)
-        self.imgs = DirLoader(IMG_DIR, ".png", pygame.image.load)
+        self.settings: DirLoader[JSONSerializable] = DirLoader(SETTINGS_DIR, ".json", json.load)
+        self.imgs: DirLoader[pygame.Surface] = DirLoader(IMG_DIR, ".png", pygame.image.load)
         self.game_name = self.settings["game/name"]
 
         self.state: State = LevelState(self)

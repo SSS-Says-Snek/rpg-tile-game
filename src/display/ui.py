@@ -18,7 +18,14 @@ from src.types import Dts, Events
 
 
 class UI:
-    def __init__(self, camera: Optional[Camera]):
+    def __init__(self, camera: Optional[Camera] = None):
+        """
+        A user interface manager for the entire game
+
+        Args:
+            camera: The game camera
+        """
+
         self.current_widget_uuid = 0
 
         self.camera = camera
@@ -28,6 +35,8 @@ class UI:
         self.hud_widgets = {}
 
     def draw(self):
+        """Draws all widgets"""
+
         for widget_dict in self.widgets.copy().values():
             widget = widget_dict["widget"]
             if not widget_dict["visible"]:
@@ -39,6 +48,14 @@ class UI:
                 widget.draw()
 
     def update(self, event_list: Events, dts: Dts):
+        """
+        Updates all widgets
+
+        Args:
+            event_list: List of events that happened this frame
+            dts: Delta time this frame
+        """
+
         for widget_dict in self.widgets.copy().values():
             widget = widget_dict["widget"]
             if not widget_dict["visible"]:
@@ -52,7 +69,20 @@ class UI:
         hud: bool = False,
         hud_name: Optional[str] = None,
         visible: bool = True,
-    ):
+    ) -> int:
+        """
+        Adds a widget to the UI
+
+        Args:
+            widget: The widget to add
+            hud: Whether or not it is a heads-up display widget
+            hud_name: The HUD name to reference it elsewhere if it is a HUD widget
+            visible: Whether it is currently visible or not
+
+        Returns:
+            An ID for the widget
+        """
+
         widget.uuid = self.current_widget_uuid
         self.widgets[self.current_widget_uuid] = {"widget": widget, "visible": visible}
         if hud and hud_name:
@@ -62,7 +92,21 @@ class UI:
         return widget.uuid
 
     def remove_widget(self, uuid: int):
+        """
+        Remove a widget given ID
+
+        Args:
+            uuid: ID of widget
+        """
+
         del self.widgets[uuid]
 
     def toggle_visible(self, uuid: int):
+        """
+        Toggles visibility of widget
+
+        Args:
+            uuid: ID of widget
+        """
+
         self.widgets[uuid]["visible"] = not self.widgets[uuid]["visible"]

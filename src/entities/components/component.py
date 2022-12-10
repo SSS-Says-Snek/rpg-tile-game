@@ -66,7 +66,7 @@ class Graphics:
 
         if sprite is not None:
             self.size = sprite.get_size()
-        else:
+        elif self.animations is not None:
             self.size = list(self.animations.values())[0].frames[0].get_size()
 
 

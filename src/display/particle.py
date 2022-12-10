@@ -23,16 +23,35 @@ from src.types import Color
 
 class ParticleManager(set):
     def __init__(self, camera: Camera, *args, **kwargs):
+        """
+        A manager for all game particles based on a set
+
+        Args:
+            camera: Game camera
+            *args: Positional arguments for the set
+            **kwargs: Keyword arguments for the set
+        """
+
         super().__init__(*args, **kwargs)
 
         self.camera = camera
         self.draw = self.draw_pre_ui
 
     def add(self, element, num_particles: int = 1):
+        """
+        Adds a particle to the set
+
+        Args:
+            element: The particle to add
+            num_particles: TBD
+        """
+
         for _ in range(num_particles):
             super().add(element)
 
     def update(self):
+        """Updates all particles and remove dead ones"""
+
         dead_particles = set()
 
         for particle in self:
@@ -48,6 +67,13 @@ class ParticleManager(set):
     #############################################################################################
 
     def _draw_base(self, draw_when: str):
+        """
+        A base function to use when drawing at different times
+
+        Args:
+            draw_when: When to draw the particle
+        """
+
         for particle in self:
             if particle.draw_when == draw_when:
                 particle.pre_draw()
@@ -133,12 +159,14 @@ class ParticleManager(set):
 
 
 class Particle:
-    """
-    Arguments are NOT passed to particles via instantiation.
-    Instead, there is a builder
-    """
-
     def __init__(self):
+        """
+        A class that manages one single particle.
+
+        Arguments are NOT passed to particles via instantiation.
+        Instead, there is a builder
+        """
+
         # Default values
         self.pos = pygame.Vector2(0, 0)
         self.draw_pos = pygame.Vector2(0, 0)
@@ -283,6 +311,8 @@ class Particle:
 
 
 class RoundParticle(Particle):
+    """A particle that draws round particles instead of square ones"""
+
     def draw(self, camera: Camera):
         # For now ONLY SQUARE (ofc I'll add derived particles)
         particle_rect = pygame.Rect(*self.draw_pos, self.size, self.size)
@@ -299,6 +329,8 @@ class RoundParticle(Particle):
 
 
 class ImageParticle(Particle):
+    """A particle that uses images instead of shapes"""
+
     def __init__(self):
         super().__init__()
 
@@ -349,6 +381,8 @@ class ImageParticle(Particle):
 
 
 class TextParticle(Particle):
+    """A text particle"""
+
     def __init__(self):
         super().__init__()
 
@@ -380,6 +414,8 @@ class TextParticle(Particle):
 
 
 class WindParticle(Particle):
+    """A particle primarily used for wind"""
+
     def update(self):
         super().update()
 

@@ -21,6 +21,14 @@ class Animation:
         sprite_size: Optional[Size] = None,
         frames: Optional[list[pygame.Surface]] = None,
     ):
+        """
+        A class that makes it easy to handle animations
+
+        Args:
+            spritesheet_path: Path to directory of spritesheets
+            sprite_size: Size of sprites
+            frames: Number of frames
+        """
         self.frames = frames if frames is not None else []
 
         if spritesheet_path is not None and sprite_size is not None and self.frames == []:
@@ -30,13 +38,22 @@ class Animation:
         self.num_frames = len(self.frames)
 
     def play_anim(self, blit_pos, raw_dt: float, play_speed: int):
+        """
+        Plays an animation and blits it on screen
+
+        Args:
+            blit_pos: The blitting position
+            raw_dt: DT for independant framerates
+            play_speed: The playing speed for the animation
+        """
+
         self.idx += raw_dt * play_speed
         self.idx %= self.num_frames
 
         screen.blit(self.frames[int(self.idx)], blit_pos)
 
 
-def load_spritesheet(spritesheet_path: pathlib.Path, sprite_size: Size):
+def load_spritesheet(spritesheet_path: pathlib.Path, sprite_size: Size) -> list[pygame.Surface]:
     images = []
 
     spritesheet = pygame.image.load(spritesheet_path).convert_alpha()
