@@ -266,6 +266,7 @@ class ItemDurabilityBar(PlayerHealthBar):
             border_width=border_width,
             center=center,
         )
+        self.draw_border = super(PlayerHealthBar, self).draw_border
 
     def draw(self, camera):
         if self.health_component.hp == self.health_component.max_hp:

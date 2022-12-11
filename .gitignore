@@ -162,3 +162,6 @@ build/
 
 # Brainstorm file
 brainstorm
+
+# Profile files
+*.prof
