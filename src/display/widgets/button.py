@@ -10,11 +10,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from src import pygame, screen
+from src import pygame, screen, core
 from src.display.transition import EaseTransition
 from src.display.ui import UI
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events, TupColor, TupPos, TupSize, VoidFunc
+from src.types import Dts, Events, TupColor, Pos, TupSize, VoidFunc
 
 
 class DefaultButton(Widget):
@@ -23,7 +23,7 @@ class DefaultButton(Widget):
     def __init__(
         self,
         ui: UI,
-        pos: TupPos,
+        pos: Pos,
         size: TupSize,
         color: TupColor = (128, 128, 128),
         text: Optional[str] = None,
@@ -101,8 +101,8 @@ class DefaultButton(Widget):
                 border_radius=self.border_roundness,
             )
 
-    def update(self, event_list: Events, dts: Dts):
-        for event in event_list:
+    def update(self):
+        for event in core.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos) and not self.border_clicked:
                 self.border_clicked = True
                 self.border_fade.start()

@@ -20,7 +20,6 @@ from src.common import IMG_DIR, TILE_HEIGHT, TILE_WIDTH, WIDTH
 from src.display.camera import Camera
 from src.display.transition import EaseTransition
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events
 
 
 def create_tile_hover_surf(font: pygame.font.Font) -> pygame.Surface:
@@ -134,8 +133,8 @@ class SignDialogue(Widget):
                 (x + line_surf.get_width(), y, 2, line_surf.get_height() * 4 / 5),
             )
 
-    def update(self, event_list: Events, dts: Dts):
-        for event in event_list:
+    def update(self):
+        for event in core.event.get():
             if (
                 event.type == pygame.KEYDOWN
                 and event.key in (pygame.K_e, pygame.K_RETURN)

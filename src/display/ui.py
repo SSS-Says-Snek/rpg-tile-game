@@ -7,14 +7,18 @@ This file defines the UI class, used to handle... the game UI
 """
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, TypedDict
 
 import esper
 
 from src.display.camera import Camera
 from src.display.particle import ParticleManager
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events
+
+
+class WidgetDict(TypedDict):
+    widget: Widget
+    visible: bool
 
 
 class UI:
@@ -31,8 +35,8 @@ class UI:
         self.camera = camera
         self.world: Optional[esper.World] = None
         self.particle_system: Optional[ParticleManager] = None
-        self.widgets = {}
-        self.hud_widgets = {}
+        self.widgets: dict[int, WidgetDict] = {}
+        self.hud_widgets: dict[str, WidgetDict] = {}
 
     def draw(self):
         """Draws all widgets"""
@@ -45,23 +49,17 @@ class UI:
             if self.camera is not None:
                 widget.draw(self.camera)
             else:
-                widget.draw()
+                widget.draw(None)
 
-    def update(self, event_list: Events, dts: Dts):
-        """
-        Updates all widgets
-
-        Args:
-            event_list: List of events that happened this frame
-            dts: Delta time this frame
-        """
+    def update(self):
+        """Updates all widgets in the user interface"""
 
         for widget_dict in self.widgets.copy().values():
             widget = widget_dict["widget"]
             if not widget_dict["visible"]:
                 continue
 
-            widget.update(event_list, dts)
+            widget.update()
 
     def add_widget(
         self,

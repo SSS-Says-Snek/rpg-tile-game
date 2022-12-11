@@ -40,19 +40,19 @@ class TileMap:
         self.height = self.tilemap.height * self.tilemap.tileheight
 
         self.level = level_state
-        self.ecs_world = self.level.ecs_world
+        self.world = self.level.world
 
         # Map tile name to image for other usages (such as tile outlines)
         self.tilename_to_img = {}
 
         # Tiles will be filled in on render_map
-        self.tiles = {}
-        self.entity_tiles = {}
+        self.tiles: dict[tuple, dict] = {}
+        self.entity_tiles: dict[tuple, int] = {}
 
         # Interactable tiles are different: They are generally uncollidable (so players can walk through),
         # and are created through Tiled objects, rather than tiles. This is because
         # a lot of interactable tiles have specific data other tiles won't have.
-        self.interactable_tiles = {}
+        self.interactable_tiles: dict[tuple, int] = {}
 
     def make_map(self) -> tuple[pygame.Surface, pygame.Surface]:
         """
@@ -98,7 +98,7 @@ class TileMap:
                             self.tilename_to_img[tile_img_name] = tile_img
 
                     tile = tile_component.Tile(x, y, self.tilemap.tilewidth, self.tilemap.tileheight, tile_type)
-                    entity_id = self.ecs_world.create_entity(tile)
+                    entity_id = self.world.create_entity(tile)
                     self.entity_tiles[(layer_id, (x, y))] = entity_id
 
                     blit_surf.blit(
@@ -117,7 +117,7 @@ class TileMap:
                         "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
                         "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                     )
-                self.interactable_tiles[obj_pos] = self.ecs_world.create_entity(
+                self.interactable_tiles[obj_pos] = self.world.create_entity(
                     tile,
                     tile_component.Interactable(tile, self.tilename_to_img["sign"]),
                     tile_component.Sign(obj.text),
@@ -145,10 +145,10 @@ class TileMap:
                             )
                         )
 
-                self.ecs_world.create_entity(tile, tile_component.Decoration(img, layers))
+                self.world.create_entity(tile, tile_component.Decoration(img, layers))
 
             if obj.name == "grass":
-                self.ecs_world.create_entity(tile, tile_component.GrassBlades(*obj_pos, obj.width))
+                self.world.create_entity(tile, tile_component.GrassBlades(*obj_pos, obj.width))
 
         return normal_surf, interactable_surf
 
@@ -207,7 +207,7 @@ class TileMap:
         ramps = []
 
         for tile_entity in neighboring_tiles:
-            tile = self.ecs_world.component_for_entity(tile_entity, tile_component.Tile)
+            tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
             unwalkable_tile_rect = pygame.Rect(
                 tile.x * tile.width,
                 tile.y * tile.height,

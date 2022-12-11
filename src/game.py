@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 
-from src import common, pygame
+from src import common, pygame, core
 from src.common import IMG_DIR, SETTINGS_DIR
 from src.display.shaders import ShaderManager
 from src.types import JSONSerializable
@@ -58,9 +58,8 @@ class Game:
         while self.running:
             # Set dt and events for other stuff to access via states
             events = pygame.event.get()
-            dts = {"raw_dt": self.clock.tick(common.FPS) / 1000}
-            dts["raw_dt"] = min(dts["raw_dt"], 0.025)
-            dts["dt"] = dts["raw_dt"] * common.FPS
+            core.event.events = events
+            core.dt.dt = self.clock.tick(common.FPS) / 1000
 
             pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3f} FPS")
 
@@ -73,7 +72,7 @@ class Game:
                 self.state.handle_event(event)
 
             # State runs other functions that get called once a frame
-            self.state.update(events, dts)
+            self.state.update()
 
             # State handles drawing
             self.state.draw()

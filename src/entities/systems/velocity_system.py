@@ -14,7 +14,7 @@ from src import core, pygame, utils
 from src.entities.components import ai_component, component
 from src.entities.components.component import Flags, Movement, Position
 from src.entities.systems.system import System
-from src.types import Dts, Events
+from src.types import Events
 
 
 class VelocitySystem(System):
@@ -52,8 +52,8 @@ class VelocitySystem(System):
         # if player_pos.pos.y > 960:
         #     print("A")
 
-    def process(self, event_list: Events, dts: Dts):
-        self.handle_player_keys(event_list)
+    def process(self):
+        self.handle_player_keys(core.event.get())
 
         for entity, (flags, pos, movement) in self.world.get_components(Flags, Position, Movement):
             if entity == self.player:

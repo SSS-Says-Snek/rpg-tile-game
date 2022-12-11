@@ -13,14 +13,13 @@ import importlib
 from typing import TYPE_CHECKING
 
 from src import pygame
-from src.types import Dts, Events
 
 if TYPE_CHECKING:
     from src.game import Game
 
 
 class State(abc.ABC):
-    def __init__(self, game_class: "Game"):
+    def __init__(self, game_class: Game):
         """
         A base class for all game states (E.g game state, menu state)
 
@@ -34,15 +33,23 @@ class State(abc.ABC):
     @abc.abstractmethod
     def draw(self):
         """Draws graphics. This function gets called once per frame"""
+
         pass
 
     @abc.abstractmethod
     def handle_event(self, event: pygame.event.Event):
-        """For each event, this function gets called"""
+        """
+        For each event, this function gets called
+
+        Args:
+            event: Type of event
+        """
+
         pass
 
-    def update(self, event_list: Events, dts: Dts):
+    def update(self):
         """This function gets called once per frame"""
+
         pass
 
     def change_state(self, desired_state_str: str):

@@ -10,12 +10,11 @@ from __future__ import annotations
 
 import pygame
 
-from src import utils
+from src import utils, core
 from src.entities.components import item_component, tile_component
 from src.entities.components.component import (Flags, Graphics, Inventory,
                                                Movement, Position)
 from src.entities.systems.system import System
-from src.types import Dts, Events
 
 
 class CollisionSystem(System):
@@ -70,7 +69,7 @@ class CollisionSystem(System):
 
         return collide_bottom
 
-    def process(self, event_list: Events, dts: Dts):
+    def process(self):
         # Mob
         for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
             pos.rect = pygame.Rect(*pos.pos, *graphics.size)
@@ -92,12 +91,12 @@ class CollisionSystem(System):
 
             # Apply gravity
             # Weird bug, can patch it up by capping movement y vel
-            movement.vel.y += movement.gravity_acc.y / 2
+            movement.vel.y += movement.gravity_acc.y / 2 * core.dt.dt
             if movement.vel.y > 170:
                 movement.vel.y = 170
             pos.pos.y += movement.vel.y
 
-            collide_bottom_tiles = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, dts["dt"])
+            collide_bottom_tiles = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, core.dt.dt)
             collide_bottom_ramps = self.collide_with_ramps(pos, ramps)
             if collide_bottom_tiles or collide_bottom_ramps:
                 pos.on_ground = True

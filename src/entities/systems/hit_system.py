@@ -14,14 +14,13 @@ import random
 from src.display.particle import Particle
 from src.entities.components.component import Health, Position
 from src.entities.systems.system import System
-from src.types import Dts, Events
 
 
 class HitSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    def process(self, event_list: Events, dts: Dts):
+    def process(self):
         for entity, (pos, health) in self.world.get_components(Position, Health):
             # Lost HP
             if health.hp - health.prev_hp < 0:

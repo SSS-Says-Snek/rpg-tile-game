@@ -14,7 +14,7 @@ from src import pygame
 from src.entities.components import tile_component
 from src.entities.components.component import Position
 from src.entities.systems.system import System
-from src.types import Dts, Events
+from src.types import Events
 
 
 class TileInteractionSystem(System):
@@ -39,7 +39,7 @@ class TileInteractionSystem(System):
             return True
         return False
 
-    def process(self, event_list: Events, dts: Dts):
+    def process(self):
         for entity, pos in self.world.get_component(Position):
             tile_entities = self.tilemap.get_neighboring_tile_entities(
                 2, pos, interacting_tiles=True

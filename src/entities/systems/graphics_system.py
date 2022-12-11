@@ -17,7 +17,6 @@ from src.entities.components import (ai_component, item_component,
 from src.entities.components.component import (Graphics, Inventory, Movement,
                                                Position)
 from src.entities.systems.system import System
-from src.types import Dts, Events
 
 
 class GraphicsSystem(System):
@@ -36,26 +35,26 @@ class GraphicsSystem(System):
     # DRAWING FUNCTIONS: Very similar to ParticleSystem's draw handling #
     #####################################################################
 
-    def handle_widgets_base(self, event_list: Events, dts: Dts, when: str):
+    def handle_widgets_base(self, when: str):
         for widget, widget_when in self._send_to_graphics_widgets:
             if widget_when == when:
                 widget.draw(self.camera)
-                widget.update(event_list, dts)
+                widget.update()
 
-    def handle_pre_interactable_widgets(self, event_list: Events, dts: Dts):
-        self.handle_widgets_base(event_list, dts, "pre_interactables")
+    def handle_pre_interactable_widgets(self):
+        self.handle_widgets_base("pre_interactables")
 
-    def handle_post_interactable_widgets(self, event_list: Events, dts: Dts):
-        self.handle_widgets_base(event_list, dts, "post_interactables")
+    def handle_post_interactable_widgets(self):
+        self.handle_widgets_base("post_interactables")
 
-    def handle_pre_tilemap_widgets(self, event_list: Events, dts: Dts):
-        self.handle_widgets_base(event_list, dts, "pre_tilemap")
+    def handle_pre_tilemap_widgets(self):
+        self.handle_widgets_base("pre_tilemap")
 
-    def handle_pre_ui_widgets(self, event_list: Events, dts: Dts):
-        self.handle_widgets_base(event_list, dts, "pre_ui")
+    def handle_pre_ui_widgets(self):
+        self.handle_widgets_base("pre_ui")
 
-    def handle_post_ui_widgets(self, event_list: Events, dts: Dts):
-        self.handle_widgets_base(event_list, dts, "post_ui")
+    def handle_post_ui_widgets(self):
+        self.handle_widgets_base("post_ui")
 
     ####################
     # Helper functions #
@@ -110,7 +109,7 @@ class GraphicsSystem(System):
 
         screen.blit(info, info_pos)
 
-    def _draw_mob(self, dts: Dts, entity: int, graphics: Graphics, pos: Position):
+    def _draw_mob(self, raw_dt: float, entity: int, graphics: Graphics, pos: Position):
         """Draws the actual mob sprite and animations"""
 
         if graphics.sprites is not None:
@@ -118,32 +117,32 @@ class GraphicsSystem(System):
                 screen.blit(graphics.sprites["right"], self.camera.apply(pos.pos))
             else:
                 screen.blit(graphics.sprites["left"], self.camera.apply(pos.pos))
-        else:
+        elif graphics.animations is not None:
             movement = self.world.component_for_entity(entity, Movement)
 
             if movement.vel.x > 0 and graphics.animations.get("move_right"):
                 graphics.animations["move_right"].play_anim(
                     self.camera.apply(pos.pos),
-                    dts["raw_dt"],
+                    raw_dt,
                     graphics.animation_speeds["move"],
                 )
             elif movement.vel.x < 0 and graphics.animations.get("move_left"):
                 graphics.animations["move_left"].play_anim(
                     self.camera.apply(pos.pos),
-                    dts["raw_dt"],
+                    raw_dt,
                     graphics.animation_speeds["move"],
                 )
 
             elif pos.direction == 1 and graphics.animations.get("idle_right"):
                 graphics.animations["idle_right"].play_anim(
                     self.camera.apply(pos.pos),
-                    dts["raw_dt"],
+                    raw_dt,
                     graphics.animation_speeds["idle"],
                 )
             elif pos.direction == -1 and graphics.animations.get("idle_left"):
                 graphics.animations["idle_left"].play_anim(
                     self.camera.apply(pos.pos),
-                    dts["raw_dt"],
+                    raw_dt,
                     graphics.animation_speeds["idle"],
                 )
 
@@ -172,10 +171,10 @@ class GraphicsSystem(System):
 
                 item_graphics.current_img = item_graphics.original_img
 
-    def draw_mobs(self, dts: Dts):
+    def draw_mobs(self, raw_dt: float):
         """Draws all mobs appropriately"""
         for entity, (graphics, pos) in self.world.get_components(Graphics, Position):
-            self._draw_mob(dts, entity, graphics, pos)
+            self._draw_mob(raw_dt, entity, graphics, pos)
             self._draw_mob_item(entity, pos)
 
     def draw_mobs_debug(self):
@@ -315,40 +314,40 @@ class GraphicsSystem(System):
                     movement_factor=1.5,
                 )
 
-    def process(self, event_list: Events, dts: Dts):
+    def process(self):
         # Blits background
         screen.blit(self.background, (0, 0))
 
         # No shake :( thinking
         self.camera.adjust_to(
-            dts["dt"],
+            core.dt.dt,
             self.world.component_for_entity(self.player, Position).pos,
         )
 
         self.particle_system.draw_pre_interactables()
-        self.handle_pre_interactable_widgets(event_list, dts)
+        self.handle_pre_interactable_widgets()
         screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
-        self.handle_post_interactable_widgets(event_list, dts)
+        self.handle_post_interactable_widgets()
 
         self.animate_trees()
         self.animate_grass()
 
-        self.draw_mobs(dts)
+        self.draw_mobs(core.dt.raw_dt)
 
         self.draw_world_items()
 
         self.draw_projectiles()
 
         self.particle_system.draw_pre_tilemap()
-        self.handle_pre_tilemap_widgets(event_list, dts)
+        self.handle_pre_tilemap_widgets()
         screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
 
         self.particle_system.draw_pre_ui()
-        self.handle_pre_ui_widgets(event_list, dts)
+        self.handle_pre_ui_widgets()
         self.ui.draw()
-        self.ui.update(event_list, dts)
+        self.ui.update()
         self.particle_system.draw_post_ui()
-        self.handle_post_ui_widgets(event_list, dts)
+        self.handle_post_ui_widgets()
 
         self.draw_mobs_debug()
 

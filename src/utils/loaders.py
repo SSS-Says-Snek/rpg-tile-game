@@ -9,12 +9,12 @@ from __future__ import annotations
 import os
 import pathlib
 from functools import lru_cache
-from typing import IO, Callable, Generic, Iterable, Optional, TypeVar, Union
+from typing import IO, Callable, Generic, Iterable, Optional, TypeVar, Union, overload
 
 from src import pygame
 from src.common import ANIM_DIR, FONT_DIR
 from src.display import animation
-from src.types import Color, JSONSerializable
+from src.types import Color, JSONSerializable, TupSize
 from src.utils.compat import removesuffix
 
 _T = TypeVar("_T")
@@ -56,6 +56,14 @@ class DirLoader(Generic[_T]):
 
                     current_dict = self._reduce_dict(parts)
                     current_dict[key] = data_loader(f)
+
+    @overload
+    def __getitem__(self, items: tuple[str, ...]) -> list[_T]:
+        ...
+
+    @overload
+    def __getitem__(self, items: str) -> _T:
+        ...
 
     def __getitem__(self, items: Union[tuple[str, ...], str]) -> Union[list[_T], _T]:
         if not isinstance(items, tuple):
@@ -117,7 +125,7 @@ def load_font(size: int, font_name: str = "PixelMillenium") -> pygame.font.Font:
 
 
 def load_mob_animations(
-    mob_settings: dict[str, JSONSerializable], size: tuple[int, int] = (32, 32)
+    mob_settings: dict[str, JSONSerializable], size: TupSize = (32, 32)
 ) -> tuple[dict[str, animation.Animation], dict]:
     """
     Loads animations and animation speed given mob settings

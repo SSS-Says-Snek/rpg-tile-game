@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Callable
 import esper
 
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events
 
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
@@ -20,10 +19,10 @@ if TYPE_CHECKING:
 
 class System(esper.Processor):
     # For system-to-system interaction
-    _send_to_graphics_widgets: list[Widget] = []
+    _send_to_graphics_widgets: list[tuple[Widget, str]] = []
     _listeners: dict[str, list[Callable]] = {}
 
-    def __init__(self, level_state: "LevelState"):
+    def __init__(self, level_state: LevelState):
         """
         A base class for all ECS systems (E.g graphics system, collision system)
 
@@ -33,7 +32,7 @@ class System(esper.Processor):
 
         super().__init__()
 
-        self.level: "LevelState" = level_state
+        self.level: LevelState = level_state
         self.player = self.level.player
 
         self.settings = self.level.settings
@@ -79,16 +78,11 @@ class System(esper.Processor):
             *args: Positional arguments to pass to the function
             **kwargs: Keyword arguments to pass to the function
         """
+
         for func in self._listeners.get(event, []):
             func(*args, **kwargs)
 
-    def process(self, event_list: Events, dts: Dts):
-        """
-        Processes stuff (sorry that's the best I got
-
-        Args:
-            event_list: List of events that happened this frame
-            dts: Delta time of this event
-        """
+    def process(self):
+        """Processes stuff (sorry that's the best I got :( )"""
 
         pass

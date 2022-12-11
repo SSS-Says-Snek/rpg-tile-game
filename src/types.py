@@ -17,11 +17,11 @@ if TYPE_CHECKING:
     pass
 
 
-TupPos = tuple[int, int]
+Pos = tuple[int, int]
 TupSize = tuple[int, int]
 Size = Union[TupSize, list[int]]
 TupColor = Union[tuple[int, int, int], tuple[int, int, int, int]]
-Color = Union[tuple[int, int, int], list[int], pygame.Color]
+Color = Union[TupColor, list[int], pygame.Color]
 Events = list[pygame.event.Event]
 Dts = dict[str, float]
 Entity = int

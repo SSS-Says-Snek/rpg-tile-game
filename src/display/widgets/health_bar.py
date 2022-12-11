@@ -18,7 +18,7 @@ from src.display.ui import UI
 from src.display.widgets.widget import Widget
 from src.entities.components import item_component
 from src.entities.components.component import Health, Position
-from src.types import TupColor, TupPos
+from src.types import TupColor, Pos
 
 
 class HealthBar(Widget):
@@ -27,7 +27,7 @@ class HealthBar(Widget):
         health_component,
         ui: UI,
         entity: int,
-        pos: Union[TupPos, Position],
+        pos: Union[Pos, Position],
         width: int,
         height: int,
         border_width: int = 2,
@@ -102,7 +102,7 @@ class HealthBar(Widget):
         else:
             self.flash_hp_diff = 0
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         self.flash_duration -= 1
         self.rect.width = self.health_component.hp / self.health_component.max_hp * self.width
 
@@ -153,7 +153,7 @@ class PlayerHealthBar(HealthBar):
         self,
         ui: UI,
         entity: int,
-        pos: Union[TupPos, Position],
+        pos: Union[Pos, Position],
         width: int,
         height: int,
         border_width: int = 2,
@@ -220,7 +220,7 @@ class MobHealthBar(HealthBar):
         else:
             self.flash_hp_diff = 0
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         if self.health_component.hp == self.health_component.max_hp:
             # No health bar if max hp
             return
@@ -250,7 +250,7 @@ class ItemDurabilityBar(PlayerHealthBar):
         self,
         ui: UI,
         entity: int,
-        pos: Union[TupPos, Position],
+        pos: Union[Pos, Position],
         width: int,
         height: int,
         border_width: int = 2,
@@ -268,7 +268,7 @@ class ItemDurabilityBar(PlayerHealthBar):
         )
         self.draw_border = super(PlayerHealthBar, self).draw_border
 
-    def draw(self, camera):
+    def draw(self, camera: Camera):
         if self.health_component.hp == self.health_component.max_hp:
             # No durability bar if max hp
             return

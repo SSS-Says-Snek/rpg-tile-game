@@ -32,7 +32,7 @@ from src.entities.systems import (CollisionSystem, CombatSystem,
                                   NPCCombatSystem, ProjectileSystem,
                                   TileInteractionSystem, VelocitySystem)
 from src.tilemap import TileMap
-from src.types import Dts, Entity, Events
+from src.types import Entity
 
 # State (for inheritance)
 from .state import State
@@ -43,7 +43,7 @@ class LevelState(State):
         super().__init__(game_class)
 
         # esper and tilemap stuff
-        self.ecs_world = esper.World()
+        self.world = esper.World()
         self.tilemap = TileMap(common.MAP_DIR / "map2.tmx", self)
 
         # Stuff
@@ -55,7 +55,7 @@ class LevelState(State):
         self.ui = self.game_class.ui
         self.ui.level = self
         self.ui.camera = self.camera
-        self.ui.world = self.ecs_world
+        self.ui.world = self.world
         self.ui.particle_system = self.particle_system
 
         # Other stuff
@@ -85,9 +85,9 @@ class LevelState(State):
         )
 
         for core_process_class, core_priority in self.core_processes:
-            self.ecs_world.add_processor(core_process_class, priority=core_priority)
+            self.world.add_processor(core_process_class, priority=core_priority)
         for normal_process_class, normal_priority in self.pausable_processes:
-            self.ecs_world.add_processor(normal_process_class, priority=normal_priority)
+            self.world.add_processor(normal_process_class, priority=normal_priority)
 
     def load_spawn(self, obj: TiledObject):
         if obj.name == "player_spawn":
@@ -102,7 +102,7 @@ class LevelState(State):
                 hotbar_size=player_settings["hotbar_size"],
             )
 
-            self.player = self.ecs_world.create_entity(
+            self.player = self.world.create_entity(
                 Movement(speed=player_settings["speed"]),
                 Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
                 Graphics(animations=player_anims, animation_speeds=player_anim_speeds),
@@ -112,7 +112,7 @@ class LevelState(State):
             )
 
             # Add initial sword
-            inventory_component.inventory[0] = self.ecs_world.create_entity(
+            inventory_component.inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
                     cooldown=sword_settings["cooldown"],
@@ -139,7 +139,7 @@ class LevelState(State):
             walker_settings = self.settings["mobs/enemy/melee/walker"]
             walker_anims, walker_anim_speeds = utils.load_mob_animations(walker_settings)
 
-            walker_enemy = self.ecs_world.create_entity(
+            walker_enemy = self.world.create_entity(
                 Flags(mob_type="walker_enemy"),
                 Position(pos=pygame.Vector2(obj.x, obj.y)),
                 Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
@@ -166,7 +166,7 @@ class LevelState(State):
             # temporary
             inventory_component = Inventory(size=1, hotbar_size=1)
 
-            simple_melee_enemy = self.ecs_world.create_entity(
+            simple_melee_enemy = self.world.create_entity(
                 Flags(collide_with_player=True),
                 Position(pos=pygame.Vector2(obj.x, obj.y)),
                 Health(hp=simple_melee_settings["hp"], max_hp=simple_melee_settings["max_hp"]),
@@ -190,7 +190,7 @@ class LevelState(State):
                 inventory_component,
             )
 
-            inventory_component.inventory[0] = self.ecs_world.create_entity(
+            inventory_component.inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
                     cooldown=simple_melee_settings["attack_cooldown"],
@@ -205,7 +205,7 @@ class LevelState(State):
             self.ui.add_widget(MobHealthBar(self.ui, simple_melee_enemy, 40, 10))
 
         elif obj.name == "test_shooter_enemy_spawn":
-            self.ecs_world.create_entity(
+            self.world.create_entity(
                 Flags(collide_with_player=True),
                 Position(pos=pygame.Vector2(obj.x, obj.y)),
                 Health(hp=1000, max_hp=10000),
@@ -220,7 +220,7 @@ class LevelState(State):
             health_potion_surf = self.imgs["items/health_potion"]
             health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 
-            self.ecs_world.create_entity(
+            self.world.create_entity(
                 item_component.Item(name="Health Potion", cooldown=health_potion_settings["cooldown"]),
                 item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                 item_component.ItemGraphics(
@@ -236,7 +236,7 @@ class LevelState(State):
             gravity_bow_settings = self.settings["items/weapons/gravity_bow"]
             gravity_bow_surf, gravity_bow_icon = self.imgs["items/gravity_bow_hold", "items/gravity_bow_icon"]
 
-            self.ecs_world.create_entity(
+            self.world.create_entity(
                 item_component.Item(name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]),
                 item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y)),
                 item_component.ItemGraphics(
@@ -259,7 +259,7 @@ class LevelState(State):
             self.load_item(obj)
 
     def reset(self):
-        self.ecs_world.clear_database()
+        self.world.clear_database()
 
     def draw(self):
         self.effect_system.draw()
@@ -275,15 +275,15 @@ class LevelState(State):
             elif event.key == pygame.K_F6 and not core.time.paused:
                 core.time.pause()
                 for pausable_process, _ in self.pausable_processes:
-                    self.ecs_world.remove_processor(type(pausable_process))
+                    self.world.remove_processor(type(pausable_process))
             elif event.key == pygame.K_F7 and core.time.paused:
                 core.time.unpause()
                 for pausable_process, _ in self.pausable_processes:
-                    self.ecs_world.add_processor(pausable_process)
+                    self.world.add_processor(pausable_process)
 
-    def update(self, events: Events, dts: Dts):
+    def update(self):
         # Draws UI in GraphicsSystem
-        self.ecs_world.process(events, dts)
+        self.world.process()
 
         if not core.time.paused:
             self.particle_system.update()

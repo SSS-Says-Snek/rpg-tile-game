@@ -18,7 +18,6 @@ from src.entities.components import item_component, projectile_component
 from src.entities.components.component import Health, Inventory, Position
 from src.entities.effect import RegenEffect
 from src.entities.systems.system import System
-from src.types import Dts, Events
 
 
 @dataclass
@@ -244,7 +243,7 @@ class CombatSystem(System):
                 self.item_usages.handle_health_potion(item_data)
 
     # Actual processing
-    def process(self, event_list: Events, dts: Dts):
+    def process(self):
         # Set prev_hp for HitSystem
         for entity, (_, health) in self.world.get_components(Position, Health):
             health.prev_hp = health.hp

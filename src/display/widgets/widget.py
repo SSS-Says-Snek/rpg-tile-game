@@ -9,8 +9,9 @@ This file contains the Widget ABC
 
 from __future__ import annotations
 
+from typing import Optional
+
 from src.display.camera import Camera
-from src.types import Dts, Events
 
 
 class Widget:
@@ -19,7 +20,7 @@ class Widget:
 
         self.interact_rect = None
 
-    def draw(self, camera: Camera):
+    def draw(self, camera: Optional[Camera]):
         """
         Draws the widget
 
@@ -29,13 +30,7 @@ class Widget:
 
         pass
 
-    def update(self, event_list: Events, dts: Dts):
-        """
-        Updates the widget
-
-        Args:
-            event_list: List of events that happened this frame
-            dts: Delta time of this event
-        """
+    def update(self):
+        """Updates the widget"""
 
         pass

@@ -15,11 +15,10 @@ from src import pygame, utils
 from src.display.particle import RoundParticle
 from src.entities.components import component, projectile_component
 from src.entities.systems.system import System
-from src.types import Dts, Events
 
 
 class ProjectileSystem(System):
-    def process(self, event_list: Events, dts: Dts):
+    def process(self):
         # HEAVILY BUGGY IMPLEMENTATION: WILL WORK ON IT MORE
 
         for entity, (projectile, projectile_pos, projectile_graphics,) in self.world.get_components(

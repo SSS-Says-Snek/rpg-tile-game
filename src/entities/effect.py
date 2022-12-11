@@ -9,6 +9,9 @@ from __future__ import annotations
 import random
 from typing import TYPE_CHECKING
 
+from src.display.camera import Camera
+from src.types import Entity
+
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
@@ -18,13 +21,13 @@ from src.entities.components.component import Graphics, Health, Position
 
 class EffectSystem:
     def __init__(self, level_state: "LevelState"):
-        self.effect_dict = {}
+        self.effect_dict: dict[int, Effect] = {}
 
         self.level = level_state
         self.particle_system = self.level.particle_system
         self.camera = self.level.camera
 
-    def add_effect(self, entity: int, effect: Effect):
+    def add_effect(self, entity: Entity, effect: Effect):
         self.effect_dict[entity] = effect
 
     def update(self):
@@ -40,9 +43,9 @@ class EffectSystem:
 
 
 class Effect:
-    def __init__(self, level_state: "LevelState"):
+    def __init__(self, level_state: LevelState):
         self.level = level_state
-        self.world = self.level.ecs_world
+        self.world = self.level.world
 
         self.heal_power = 0
         self.damage = 0
@@ -83,7 +86,14 @@ class Effect:
     def builder(self):
         return self.Builder(self)
 
-    def update(self, entity: int):
+    def update(self, entity: Entity):
+        """
+        Updates effect
+
+        Args:
+            entity: Entity ID of effect "owner"
+        """
+
         if self.time_waiting == 0:
             self.time_waiting = core.time.get_ticks()
         if self.apply_effect.update() and core.time.get_ticks() - self.time_waiting > self.interval:
@@ -91,15 +101,20 @@ class Effect:
             health_component.hp += self.heal_power
             health_component.hp -= self.damage
 
+    def draw(self, entity: Entity, camera: Camera):
+        """Draws some stuff for the effect"""
+
+        pass
+
 
 class BurnEffect(Effect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def draw(self, entity: int, _):
+    def draw(self, entity: Entity, _):
         if random.random() < 0.7:
-            pos = self.level.ecs_world.component_for_entity(entity, Position).pos
-            size = self.level.ecs_world.component_for_entity(entity, Graphics).size
+            pos = self.level.world.component_for_entity(entity, Position).pos
+            size = self.level.world.component_for_entity(entity, Graphics).size
             self.level.particle_system.create_fire_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
@@ -109,10 +124,10 @@ class RegenEffect(Effect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def draw(self, entity: int, _):  # No camera >:(
+    def draw(self, entity: Entity, _):  # No camera >:(
         if random.random() < 0.12:
-            pos = self.level.ecs_world.component_for_entity(entity, Position).pos
-            size = self.level.ecs_world.component_for_entity(entity, Graphics).size
+            pos = self.level.world.component_for_entity(entity, Position).pos
+            size = self.level.world.component_for_entity(entity, Graphics).size
             self.level.particle_system.create_regen_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
