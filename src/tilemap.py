@@ -9,7 +9,7 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union, NewType
 
 from src.entities.components.component import Position
 from src.types import Entity
@@ -26,7 +26,7 @@ from src.entities.components import tile_component
 
 
 class TileMap:
-    def __init__(self, map_path: pathlib.Path, level_state: "LevelState"):
+    def __init__(self, map_path: pathlib.Path, level_state: LevelState):
         """
         A class that manages Tiled tilemaps with PyTMX
 
@@ -112,6 +112,7 @@ class TileMap:
             tile = tile_component.Tile(*obj_pos, obj.width, obj.height)
             if obj.name == "sign":
                 if obj.text is None:
+                    # Dummy text
                     obj.text = (
                         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
                         "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "

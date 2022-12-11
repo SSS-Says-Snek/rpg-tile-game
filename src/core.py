@@ -7,6 +7,8 @@ This file contains global state of various things for any file to access
 
 Attributes:
     time (Time): A global state for the game's current time (adjusted with pausing)
+    dt (DT): A global state for the game's current deltatime (for framerate independance)
+    event (Event): A global state for the game's current event queue
 """
 
 from __future__ import annotations
@@ -95,13 +97,19 @@ class DT:
         """
 
         self._dts["raw_dt"] = min(raw_dt, self.threshold_factor / common.FPS)
-        self._dts["dt"] = raw_dt * common.FPS
+        self._dts["dt"] = self._dts["raw_dt"] * common.FPS
 
 class Event:
     def __init__(self):
+        """
+        Contains information regarding current events on the event queue
+        """
+
         self.events: Events = []
 
     def get(self):
+        """Gets current events"""
+
         return self.events
 
 
