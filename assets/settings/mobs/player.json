@@ -13,5 +13,5 @@
     "hp": 100,
     "max_hp": 100,
     "speed": 4.5,
-    "jump_vel": -25
+    "jump_vel": -22
 }

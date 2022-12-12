@@ -89,7 +89,7 @@ class Movement:
         self,
         speed: float,
         acc: pygame.Vector2 = pygame.Vector2(0, 0),
-        gravity_acc: float = 2.6,
+        gravity_acc: float = 2.1,
     ):
         self.speed = speed
         self.vel = pygame.Vector2(0, 0)
