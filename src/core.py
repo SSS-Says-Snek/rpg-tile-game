@@ -13,7 +13,7 @@ Attributes:
 
 from __future__ import annotations
 
-from src import pygame, common
+from src import common, pygame
 from src.types import Events
 
 
@@ -99,6 +99,7 @@ class DT:
         self._dts["raw_dt"] = min(raw_dt, self.threshold_factor / common.FPS)
         self._dts["dt"] = self._dts["raw_dt"] * common.FPS
 
+
 class Event:
     def __init__(self):
         """
@@ -117,4 +118,3 @@ class Event:
 time = Time()
 event = Event()
 dt = DT(1.5)
-

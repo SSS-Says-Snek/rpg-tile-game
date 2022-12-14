@@ -9,7 +9,7 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, Optional, Union, NewType
+from typing import TYPE_CHECKING, NewType, Optional, Union
 
 from src.entities.components.component import Position
 from src.types import Entity

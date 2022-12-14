@@ -18,7 +18,7 @@ from src.display.ui import UI
 from src.display.widgets.widget import Widget
 from src.entities.components import item_component
 from src.entities.components.component import Health, Position
-from src.types import TupColor, Pos
+from src.types import Pos, TupColor
 
 
 class HealthBar(Widget):

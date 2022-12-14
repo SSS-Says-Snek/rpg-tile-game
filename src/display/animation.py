@@ -8,7 +8,6 @@ This file defines some animation-related things
 from __future__ import annotations
 
 import pathlib
-from typing import Optional
 
 from src import pygame, screen
 from src.types import Size
@@ -17,9 +16,8 @@ from src.types import Size
 class Animation:
     def __init__(
         self,
-        spritesheet_path: Optional[pathlib.Path] = None,
-        sprite_size: Optional[Size] = None,
-        frames: Optional[list[pygame.Surface]] = None,
+        spritesheet_path: pathlib.Path,
+        sprite_size: Size,
     ):
         """
         A class that makes it easy to handle animations
@@ -27,12 +25,10 @@ class Animation:
         Args:
             spritesheet_path: Path to directory of spritesheets
             sprite_size: Size of sprites
-            frames: Number of frames
         """
-        self.frames = frames if frames is not None else []
 
-        if spritesheet_path is not None and sprite_size is not None and self.frames == []:
-            self.frames = load_spritesheet(spritesheet_path, sprite_size)
+        self.sprite_size = sprite_size
+        self.frames = load_spritesheet(spritesheet_path, sprite_size)
 
         self.idx = 0
         self.num_frames = len(self.frames)

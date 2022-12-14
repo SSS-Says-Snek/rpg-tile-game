@@ -8,7 +8,7 @@ This file contains common type aliases used in the game src
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Union, Literal
+from typing import TYPE_CHECKING, Callable, Literal, Union
 
 from src import pygame
 

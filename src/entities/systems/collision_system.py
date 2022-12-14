@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pygame
 
-from src import utils, core
+from src import core, utils
 from src.entities.components import item_component, tile_component
 from src.entities.components.component import (Flags, Graphics, Inventory,
                                                Movement, Position)

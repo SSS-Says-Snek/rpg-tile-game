@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 
-from src import common, pygame, core
+from src import common, core, pygame
 from src.common import IMG_DIR, SETTINGS_DIR
 from src.display.shaders import ShaderManager
 from src.types import JSONSerializable

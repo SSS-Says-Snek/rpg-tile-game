@@ -7,13 +7,14 @@ This file defines the UI class, used to handle... the game UI
 """
 from __future__ import annotations
 
-from typing import Optional, NamedTuple
+from typing import NamedTuple, Optional
 
 import esper
 
 from src.display.camera import Camera
 from src.display.particle import ParticleManager
 from src.display.widgets.widget import Widget
+
 
 class WidgetInfo(NamedTuple):
     widget: Widget
@@ -92,7 +93,6 @@ class UI:
         """
         self.hud_widgets[hud_name] = WidgetInfo(widget, visible)
         self.add_widget(widget, visible)
-
 
     def remove_widget(self, uuid: int):
         """

@@ -10,11 +10,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from src import pygame, screen, core
+from src import core, pygame, screen
 from src.display.transition import EaseTransition
 from src.display.ui import UI
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events, TupColor, Pos, TupSize, VoidFunc
+from src.types import Dts, Events, Pos, TupColor, TupSize, VoidFunc
 
 
 class DefaultButton(Widget):

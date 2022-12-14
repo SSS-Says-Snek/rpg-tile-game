@@ -18,7 +18,7 @@ from src.display.widgets.health_bar import ItemDurabilityBar
 from src.display.widgets.widget import Widget
 from src.entities.components import item_component
 from src.entities.components.component import Inventory
-from src.types import Size, Pos
+from src.types import Pos, Size
 
 
 class Hotbar(Widget):

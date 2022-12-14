@@ -7,12 +7,14 @@ This file defines some utility functions
 """
 from __future__ import annotations
 
-from typing import Optional
+import operator
+from typing import Optional, Union
 
 from src import core, pygame
 from src.common import TILE_HEIGHT, TILE_WIDTH
-from src.types import Color
+from src.types import Color, TupSize
 
+from ..display import animation
 from .loaders import (DirLoader, load_font, load_img, load_img_dir, load_imgs,
                       load_mob_animations)
 
@@ -195,3 +197,10 @@ def enum_eq(enum):
 
     enum.__eq__ = __eq__
     return enum
+
+
+def get_size(graphics_unit: Union[pygame.Surface, dict[str, animation.Animation]]) -> TupSize:
+    if isinstance(graphics_unit, pygame.Surface):
+        return graphics_unit.get_size()
+    elif isinstance(graphics_unit, dict):
+        return max(graphics_unit.values(), key=operator.attrgetter("sprite_size")).sprite_size

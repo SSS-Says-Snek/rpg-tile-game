@@ -101,29 +101,29 @@ class LevelState(State):
                 size=player_settings["inventory_size"],
                 hotbar_size=player_settings["hotbar_size"],
             )
-            graphics = Graphics(animations=player_anims, animation_speeds=player_anim_speeds)
 
             self.player = self.world.create_entity(
                 Movement(speed=player_settings["speed"]),
                 Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
-                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=graphics.size),
+                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(player_anims)),
                 Flags(),
+                Graphics(animations=player_anims, animation_speeds=player_anim_speeds),
                 inventory,
-                graphics
             )
 
             # Add initial sword
-            item_graphics = item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon)
             inventory.inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
                     cooldown=sword_settings["cooldown"],
                     owner=self.player,
                 ),
-                item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), rect_size=item_graphics.size, in_inventory=True),
+                item_component.ItemPosition(
+                    pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(weapon_surf), in_inventory=True
+                ),
                 item_component.MeleeWeapon(attack_damage=sword_settings["damage"]),
                 item_component.SlashingSword(),
-                item_graphics
+                item_component.ItemGraphics(sprite=weapon_surf, icon=weapon_icon),
             )
 
             self.ui.add_widget(PlayerHealthBar(self.ui, self.player, (700, 10), 230, 20))
@@ -140,11 +140,10 @@ class LevelState(State):
             walker_settings = self.settings["mobs/enemy/melee/walker"]
             walker_anims, walker_anim_speeds = utils.load_mob_animations(walker_settings)
 
-            graphics = Graphics(animations=walker_anims, animation_speeds=walker_anim_speeds)
-
             walker_enemy = self.world.create_entity(
                 Flags(mob_type="walker_enemy"),
-                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=graphics.size),
+                Graphics(animations=walker_anims, animation_speeds=walker_anim_speeds),
+                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(walker_anims)),
                 Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
                 Movement(walker_settings["speed"]),
                 ai_component.MeleeAttack(
@@ -153,7 +152,6 @@ class LevelState(State):
                     damage=walker_settings["attack_damage"],
                     collision=walker_settings["attack_collision"],
                 ),
-                graphics
             )
             self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 
@@ -167,11 +165,11 @@ class LevelState(State):
             speed = simple_melee_settings["speed"]
 
             inventory = Inventory(size=1, hotbar_size=1)
-            graphics = Graphics(animations=simple_melee_animations, animation_speeds=simple_melee_animation_speeds)
 
             simple_melee_enemy = self.world.create_entity(
                 Flags(collide_with_player=True),
-                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=graphics.size),
+                Graphics(animations=simple_melee_animations, animation_speeds=simple_melee_animation_speeds),
+                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(simple_melee_animations)),
                 Health(hp=simple_melee_settings["hp"], max_hp=simple_melee_settings["max_hp"]),
                 Movement(speed=simple_melee_settings["speed"]),
                 ai_component.FollowsEntityClose(
@@ -190,35 +188,33 @@ class LevelState(State):
                     starting_state=ai_component.EntityState.Patrol,
                 ),
                 inventory,
-                graphics
             )
 
             # Adds sword
-            item_graphics = item_component.ItemGraphics(sprite=weapon_surf)
             inventory.inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
                     cooldown=simple_melee_settings["attack_cooldown"],
                     owner=simple_melee_enemy,
                 ),
-                item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), rect_size=item_graphics.size, in_inventory=True),
+                item_component.ItemGraphics(sprite=weapon_surf),
+                item_component.ItemPosition(
+                    pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(weapon_surf), in_inventory=True
+                ),
                 item_component.MeleeWeapon(attack_damage=simple_melee_settings["attack_damage"]),
                 item_component.SlashingSword(),
-                item_graphics
             )
 
             self.ui.add_widget(MobHealthBar(self.ui, simple_melee_enemy, 40, 10))
 
         elif obj.name == "test_shooter_enemy_spawn":
-            graphics = Graphics(sprite=self.imgs["mobs/test_shooter"])
-
             test_shooter_enemy = self.world.create_entity(
                 Flags(collide_with_player=True),
-                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=graphics.size),
+                Graphics(sprite=self.imgs["mobs/test_shooter"]),
+                Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(self.imgs["mobs/test_shooter"])),
                 Health(hp=10000, max_hp=10000),
                 Movement(speed=0.0),
                 ai_component.RangeAttack(target=self.player, attack_cooldown=1),
-                graphics
             )
             self.ui.add_widget(MobHealthBar(self.ui, test_shooter_enemy, 40, 10))
 
@@ -228,37 +224,37 @@ class LevelState(State):
             health_potion_surf = self.imgs["items/health_potion"]
             health_potion_holding = pygame.transform.scale(health_potion_surf, (16, 16))
 
-            item_graphics = item_component.ItemGraphics(
-                sprite=health_potion_holding,
-                icon=health_potion_surf,
-                world_sprite=health_potion_surf,
-            )
-
             self.world.create_entity(
                 item_component.Item(name="Health Potion", cooldown=health_potion_settings["cooldown"]),
-                item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), rect_size=item_graphics.size),
+                item_component.ItemGraphics(
+                    sprite=health_potion_holding,
+                    icon=health_potion_surf,
+                    world_sprite=health_potion_surf,
+                ),
+                item_component.ItemPosition(
+                    pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(health_potion_holding)
+                ),
                 item_component.Consumable(num_uses=health_potion_settings["uses"]),
                 item_component.HealthPotion(heal_power=health_potion_settings["heal_power"]),
-                item_graphics
             )
 
         elif obj.name == "gravity_bow_item":
             gravity_bow_settings = self.settings["items/weapons/gravity_bow"]
             gravity_bow_surf, gravity_bow_icon = self.imgs["items/gravity_bow_hold", "items/gravity_bow_icon"]
 
-            item_graphics = item_component.ItemGraphics(
-                sprite=gravity_bow_surf,
-                world_sprite=gravity_bow_icon,
-                icon=gravity_bow_icon,
-                flip_on_dir=True,
-            )
-
             self.world.create_entity(
                 item_component.Item(name="Newbie's Bow", cooldown=gravity_bow_settings["cooldown"]),
-                item_component.ItemPosition(pos=pygame.Vector2(obj.x, obj.y), rect_size=item_graphics.size),
+                item_component.ItemGraphics(
+                    sprite=gravity_bow_surf,
+                    world_sprite=gravity_bow_icon,
+                    icon=gravity_bow_icon,
+                    flip_on_dir=True,
+                ),
+                item_component.ItemPosition(
+                    pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(gravity_bow_surf)
+                ),
                 item_component.RangedWeapon(projectile_damage=gravity_bow_settings["damage"]),
                 item_component.GravityBow(launch_vel=pygame.Vector2(gravity_bow_settings["launch_vel"])),
-                item_graphics
             )
 
         elif obj.name == "jetpack_item":

@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 _C = TypeVar("_C")
 
+
 class System(esper.Processor):
     # For system-to-system interaction
     _send_to_graphics_widgets: list[tuple[Widget, str]] = []

@@ -9,12 +9,13 @@ from __future__ import annotations
 import os
 import pathlib
 from functools import lru_cache
-from typing import IO, Callable, Generic, Iterable, Optional, TypeVar, Union, overload
+from typing import (IO, Callable, Generic, Iterable, Optional, TypeVar, Union,
+                    overload)
 
 from src import pygame
 from src.common import ANIM_DIR, FONT_DIR
 from src.display import animation
-from src.types import Color, JSONSerializable, TupSize, ImgLoadOptions
+from src.types import Color, ImgLoadOptions, JSONSerializable, TupSize
 from src.utils.compat import removesuffix
 
 _T = TypeVar("_T")
