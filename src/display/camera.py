@@ -36,9 +36,9 @@ class Camera:
 
         self.camera = pygame.Rect(0, 0, self.camera_width, self.camera_height)
 
-        self.shake_offset = pygame.Vector2()
+        self.last_shake = pygame.Vector2()
         self.shake_frames = 0
-        self.shake_pixels = 5
+        self.shake_pixels = 2
 
     def apply(
         self,
@@ -102,25 +102,27 @@ class Camera:
             target_pos: Target position of game object
         """
 
-        x = self.camera_width // 2 - target_pos.x + self.shake_offset.x
-        y = self.camera_height // 2 - target_pos.y + self.shake_offset.y
+        x = self.camera_width // 2 - target_pos.x
+        y = self.camera_height // 2 - target_pos.y
         self.camera.topleft = (x, y)
 
     def start_shake(self, num_frames):
         """Starts shaking screen"""
 
         self.shake_frames = num_frames
+        self.last_shake.x, self.last_shake.y = self.camera.topleft
 
     def do_shake(self):
         """Performs shaking action"""
+        print("E")
 
-        self.shake_offset.x += random.randint(-self.shake_pixels, self.shake_pixels)
-        self.shake_offset.y += random.randint(-self.shake_pixels, self.shake_pixels)
+        self.camera.x += random.randint(-self.shake_pixels, self.shake_pixels)
+        self.camera.y += random.randint(-self.shake_pixels, self.shake_pixels)
 
         self.shake_frames -= 1
 
         if self.shake_frames == 0:
-            self.shake_offset.x, self.shake_offset.y = 0, 0
+            self.camera.x, self.camera.y = self.last_shake.xy
 
     def visible(self, other_rect: pygame.Rect, strict: bool = False) -> bool:
         """

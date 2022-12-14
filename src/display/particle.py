@@ -18,7 +18,7 @@ import pygame.gfxdraw
 from src import core, pygame, screen, utils
 from src.display.camera import Camera
 from src.entities.components.component import Position
-from src.types import Color
+from src.types import Color, ImgLoadOptions
 
 
 class ParticleManager(set):
@@ -187,7 +187,6 @@ class Particle:
         self.life = 0
         self.gravity_vel = 0
         self.effects = set()
-        self.effects_extra_args = {}
 
     class Builder:
         def __init__(self, particle):
@@ -200,7 +199,7 @@ class Particle:
             self.particle.angle = angle
             return self
 
-        def color(self, color: Union[pygame.Color, tuple[int, int, int]]):
+        def color(self, color: Color):
             self.particle.color = pygame.Color(color)
             return self
 
@@ -220,7 +219,7 @@ class Particle:
             self.particle.color.hsva = (h, s, v, 100)
             return self
 
-        def lifespan(self, frames: Union[int, None]):
+        def lifespan(self, frames: Optional[int]):
             self.particle.lifespan = frames
             return self
 
@@ -249,7 +248,6 @@ class Particle:
 
         def _effect(self, effect: Callable, *args):
             self.particle.effects.add(effect)
-            self.particle.effects_extra_args[effect] = args
             return self
 
         def effect_fade(self, start_fade_frac: float = 0):
@@ -262,6 +260,16 @@ class Particle:
                 particle.color.a = max(min(int((1 - adj_alpha) * 255), 255), 0)
 
             return self._effect(fade)
+
+        def effect_angular_slowdown(self, slowdown_factor: float = 0.97, start_slowdown_frac: float = 0):
+            def angular_slowdown(particle):
+                start_slowdown = start_slowdown_frac * particle.lifespan
+                if particle.life < start_slowdown:
+                    return
+
+                particle.angular_speed *= slowdown_factor
+
+            return self._effect(angular_slowdown)
 
         def build(self):
             return self.particle
@@ -340,7 +348,7 @@ class ImageParticle(Particle):
         def image(
             self,
             image: pygame.Surface,
-            convert_mode: str = "alpha",
+            convert_mode: ImgLoadOptions = "alpha",
             scale: Optional[float] = None,
             colorkey: Optional[Color] = None,
         ):

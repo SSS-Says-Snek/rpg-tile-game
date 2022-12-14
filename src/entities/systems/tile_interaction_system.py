@@ -44,14 +44,14 @@ class TileInteractionSystem(System):
             tile_entities = self.tilemap.get_neighboring_tile_entities(
                 2, pos, interacting_tiles=True
             )  # Guaranteed to be ONLY interactable tiles
-            player_rect = self.world.component_for_entity(self.player, Position).rect
+            player_rect = self.component_for_player(Position).rect
 
             for tile_entity in tile_entities:
                 tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
                 tile_rect = tile.rect
                 interactable = self.world.component_for_entity(tile_entity, tile_component.Interactable)
 
-                # No interaction? Skip
+                # Only interact when player is touching the tile (kind of duh)
                 if not player_rect.colliderect(tile_rect):
                     continue
 

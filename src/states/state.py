@@ -28,7 +28,7 @@ class State(abc.ABC):
         """
 
         self.game_class = game_class
-        self.next_state: type[State] = self.__class__
+        self.next_state: type[State] = type(self)
 
     @abc.abstractmethod
     def draw(self):

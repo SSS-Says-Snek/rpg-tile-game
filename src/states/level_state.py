@@ -49,7 +49,7 @@ class LevelState(State):
         # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT, self.tilemap.width, self.tilemap.height)
         self.particle_system = particle.ParticleManager(self.camera)
-        self.effect_system = effect.EffectSystem(self)
+        self.effect_manager = effect.EffectManager(self)
 
         # UI stuff
         self.ui = self.game_class.ui
@@ -125,15 +125,14 @@ class LevelState(State):
             )
 
             self.ui.add_widget(PlayerHealthBar(self.ui, self.player, (700, 10), 230, 20))
-            self.ui.add_widget(
+            self.ui.add_hud_widget(
                 Hotbar(self.ui, self.player, (common.WIDTH // 2, 40), (64, 64)),
-                hud=True,
                 hud_name="hotbar",
             )
-            self.effect_system.add_effect(
-                self.player,
-                effect.BurnEffect(self).builder().damage(10).duration(5, 1).build(),
-            )
+            # self.effect_manager.add_effect(
+            #     self.player,
+            #     effect.BurnEffect(self).builder().damage(10).duration(5, 1).build(),
+            # )
 
         elif obj.name == "walker_enemy_spawn":
             walker_settings = self.settings["mobs/enemy/melee/walker"]
@@ -163,9 +162,7 @@ class LevelState(State):
             weapon_surf = self.imgs["items/bronze_sword"]
             speed = simple_melee_settings["speed"]
 
-            # temporary
             inventory_component = Inventory(size=1, hotbar_size=1)
-
             simple_melee_enemy = self.world.create_entity(
                 Flags(collide_with_player=True),
                 Position(pos=pygame.Vector2(obj.x, obj.y)),
@@ -190,6 +187,7 @@ class LevelState(State):
                 inventory_component,
             )
 
+            # Adds sword
             inventory_component.inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
@@ -205,14 +203,15 @@ class LevelState(State):
             self.ui.add_widget(MobHealthBar(self.ui, simple_melee_enemy, 40, 10))
 
         elif obj.name == "test_shooter_enemy_spawn":
-            self.world.create_entity(
+            test_shooter_enemy = self.world.create_entity(
                 Flags(collide_with_player=True),
                 Position(pos=pygame.Vector2(obj.x, obj.y)),
-                Health(hp=1000, max_hp=10000),
+                Health(hp=10000, max_hp=10000),
                 Movement(speed=0.0),
                 Graphics(sprite=self.imgs["mobs/test_shooter"]),
-                ai_component.RangeAttack(target=self.player, attack_cooldown=1, ideal_parabola=True),
+                ai_component.RangeAttack(target=self.player, attack_cooldown=1),
             )
+            self.ui.add_widget(MobHealthBar(self.ui, test_shooter_enemy, 40, 10))
 
     def load_item(self, obj: TiledObject):
         if obj.name == "health_potion_item":
@@ -262,7 +261,7 @@ class LevelState(State):
         self.world.clear_database()
 
     def draw(self):
-        self.effect_system.draw()
+        self.effect_manager.draw()
 
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
@@ -287,7 +286,7 @@ class LevelState(State):
 
         if not core.time.paused:
             self.particle_system.update()
-            self.effect_system.update()
+            self.effect_manager.update()
 
 
 class TestState(State):

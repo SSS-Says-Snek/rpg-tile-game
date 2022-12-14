@@ -19,21 +19,21 @@ class InputSystem(System):
         super().__init__(level_state)
 
     def process(self):
-        inventory = self.world.component_for_entity(self.player, Inventory)
+        inventory = self.component_for_player(Inventory)
         equipped_item = inventory.inventory[inventory.equipped_item_idx]
 
         for event in core.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left button
                 cont = False
-                for widget_dict in self.ui.widgets.copy().values():
-                    interact_rect = widget_dict["widget"].interact_rect
+                for widget_info in self.ui.widgets.values():
+                    interact_rect = widget_info.widget.interact_rect
                     if interact_rect is not None and interact_rect.collidepoint(event.pos):
                         cont = True
                         break
                 if cont:
                     continue
 
-                hotbar_ui = self.ui.hud_widgets["hotbar"]["widget"]
+                hotbar_ui = self.ui.hud_widgets["hotbar"].widget
 
                 if hotbar_ui.frame_rect.collidepoint(event.pos):
                     for i, hotbar_rect in enumerate(hotbar_ui.hotbar_rects):

@@ -19,8 +19,8 @@ from src import core, utils
 from src.entities.components.component import Graphics, Health, Position
 
 
-class EffectSystem:
-    def __init__(self, level_state: "LevelState"):
+class EffectManager:
+    def __init__(self, level_state: LevelState):
         self.effect_dict: dict[int, Effect] = {}
 
         self.level = level_state

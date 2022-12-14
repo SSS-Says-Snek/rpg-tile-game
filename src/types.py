@@ -8,7 +8,7 @@ This file contains common type aliases used in the game src
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Union
+from typing import TYPE_CHECKING, Callable, Union, Literal
 
 from src import pygame
 
@@ -27,3 +27,4 @@ Dts = dict[str, float]
 Entity = int
 JSONSerializable = Union[str, int, float, bool, None, dict, list]
 VoidFunc = Callable[[], None]
+ImgLoadOptions = Literal["convert", "alpha"]

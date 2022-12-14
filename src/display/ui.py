@@ -7,7 +7,7 @@ This file defines the UI class, used to handle... the game UI
 """
 from __future__ import annotations
 
-from typing import Optional, TypedDict
+from typing import Optional, NamedTuple
 
 import esper
 
@@ -15,8 +15,7 @@ from src.display.camera import Camera
 from src.display.particle import ParticleManager
 from src.display.widgets.widget import Widget
 
-
-class WidgetDict(TypedDict):
+class WidgetInfo(NamedTuple):
     widget: Widget
     visible: bool
 
@@ -30,33 +29,29 @@ class UI:
             camera: The game camera
         """
 
-        self.current_widget_uuid = 0
+        self.current_uuid = 0
 
         self.camera = camera
         self.world: Optional[esper.World] = None
         self.particle_system: Optional[ParticleManager] = None
-        self.widgets: dict[int, WidgetDict] = {}
-        self.hud_widgets: dict[str, WidgetDict] = {}
+
+        self.widgets: dict[int, WidgetInfo] = {}
+        self.hud_widgets: dict[str, WidgetInfo] = {}
 
     def draw(self):
         """Draws all widgets"""
 
-        for widget_dict in self.widgets.copy().values():
-            widget = widget_dict["widget"]
-            if not widget_dict["visible"]:
+        for widget, visible in self.widgets.copy().values():
+            if not visible:
                 continue
 
-            if self.camera is not None:
-                widget.draw(self.camera)
-            else:
-                widget.draw(None)
+            widget.draw(self.camera)
 
     def update(self):
         """Updates all widgets in the user interface"""
 
-        for widget_dict in self.widgets.copy().values():
-            widget = widget_dict["widget"]
-            if not widget_dict["visible"]:
+        for widget, visible in self.widgets.values():
+            if not visible:
                 continue
 
             widget.update()
@@ -64,8 +59,6 @@ class UI:
     def add_widget(
         self,
         widget: Widget,
-        hud: bool = False,
-        hud_name: Optional[str] = None,
         visible: bool = True,
     ) -> int:
         """
@@ -73,21 +66,33 @@ class UI:
 
         Args:
             widget: The widget to add
-            hud: Whether or not it is a heads-up display widget
-            hud_name: The HUD name to reference it elsewhere if it is a HUD widget
             visible: Whether it is currently visible or not
 
         Returns:
             An ID for the widget
         """
 
-        widget.uuid = self.current_widget_uuid
-        self.widgets[self.current_widget_uuid] = {"widget": widget, "visible": visible}
-        if hud and hud_name:
-            self.hud_widgets[hud_name] = {"widget": widget, "visible": visible}
+        widget.uuid = self.current_uuid
+        self.widgets[self.current_uuid] = WidgetInfo(widget, visible)
 
-        self.current_widget_uuid += 1
+        self.current_uuid += 1
         return widget.uuid
+
+    def add_hud_widget(self, widget, hud_name: str, visible: bool = True):
+        """
+        Adds an HUD widget to the UI
+
+        Args:
+            widget: The HUD widget to add
+            hud_name: The HUD name to reference it elsewhere
+            visible: Whether it is currently visible or not
+
+        Returns:
+            An ID for the widget
+        """
+        self.hud_widgets[hud_name] = WidgetInfo(widget, visible)
+        self.add_widget(widget, visible)
+
 
     def remove_widget(self, uuid: int):
         """
@@ -107,4 +112,4 @@ class UI:
             uuid: ID of widget
         """
 
-        self.widgets[uuid]["visible"] = not self.widgets[uuid]["visible"]
+        self.widgets[uuid].visible = not self.widgets[uuid].visible

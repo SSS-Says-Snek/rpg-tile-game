@@ -98,7 +98,7 @@ class ProjectileSystem(System):
 
         """if random.random() < 0.01:
             for _ in range(1):
-                player_pos = self.world.component_for_entity(self.player, Position)
+                player_pos = self.component_for_player(Position)
                 x_target, y_target = random.choice((random.randint(-1000, -700), random.randint(700, 1000))), 100
                 if x_target == 0:
                     x_target = 1

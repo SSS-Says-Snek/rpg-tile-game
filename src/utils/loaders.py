@@ -14,7 +14,7 @@ from typing import IO, Callable, Generic, Iterable, Optional, TypeVar, Union, ov
 from src import pygame
 from src.common import ANIM_DIR, FONT_DIR
 from src.display import animation
-from src.types import Color, JSONSerializable, TupSize
+from src.types import Color, JSONSerializable, TupSize, ImgLoadOptions
 from src.utils.compat import removesuffix
 
 _T = TypeVar("_T")
@@ -83,7 +83,7 @@ class DirLoader(Generic[_T]):
 
 
 @lru_cache(maxsize=256)
-def load_img(path: pathlib.Path, mode: str = "alpha", colorkey: Optional[Color] = None) -> pygame.Surface:
+def load_img(path: pathlib.Path, mode: ImgLoadOptions = "alpha", colorkey: Optional[Color] = None) -> pygame.Surface:
     img = pygame.image.load(path)
 
     if mode == "alpha":
@@ -98,14 +98,14 @@ def load_img(path: pathlib.Path, mode: str = "alpha", colorkey: Optional[Color] 
 
 
 def load_img_dir(
-    path: pathlib.Path, convert_mode: str = "alpha", colorkey: Optional[Color] = None
+    path: pathlib.Path, convert_mode: ImgLoadOptions = "alpha", colorkey: Optional[Color] = None
 ) -> list[pygame.Surface]:
     imgs = [pygame.image.load(file) for file in path.iterdir()]
     return load_imgs(imgs, convert_mode, colorkey)
 
 
 def load_imgs(
-    imgs: list[pygame.Surface], convert_mode: str = "alpha", colorkey: Optional[Color] = None
+    imgs: list[pygame.Surface], convert_mode: ImgLoadOptions = "alpha", colorkey: Optional[Color] = None
 ) -> list[pygame.Surface]:
     if convert_mode == "alpha":
         imgs = [img.convert_alpha() for img in imgs]

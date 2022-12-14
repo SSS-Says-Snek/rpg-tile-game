@@ -7,7 +7,7 @@ This file contains the base class of all systems
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, TypeVar
 
 import esper
 
@@ -16,6 +16,8 @@ from src.display.widgets.widget import Widget
 if TYPE_CHECKING:
     from src.states.level_state import LevelState
 
+
+_C = TypeVar("_C")
 
 class System(esper.Processor):
     # For system-to-system interaction
@@ -40,7 +42,7 @@ class System(esper.Processor):
         self.camera = self.level.camera
         self.tilemap = self.level.tilemap
         self.particle_system = self.level.particle_system
-        self.effect_system = self.level.effect_system
+        self.effect_system = self.level.effect_manager
 
         self.world: esper.World = self.world
         self.ui = self.level.ui
@@ -81,6 +83,19 @@ class System(esper.Processor):
 
         for func in self._listeners.get(event, []):
             func(*args, **kwargs)
+
+    def component_for_player(self, component: type[_C]) -> _C:
+        """
+        Gets a component of a player since it is so common
+
+        Args:
+            component: Type of component
+
+        Returns:
+            The player's component
+        """
+
+        return self.world.component_for_entity(self.player, component)
 
     def process(self):
         """Processes stuff (sorry that's the best I got :( )"""

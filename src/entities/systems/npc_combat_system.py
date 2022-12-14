@@ -44,11 +44,9 @@ class NPCCombatSystem(System):
                             and core.time.get_ticks() - melee_attack.last_attacked
                             > melee_attack.attack_cooldown * 1000
                         ):
-                            self.camera.start_shake(10)
+                            # self.camera.start_shake(10)
 
                             nested_health.hp -= melee_attack.damage
-                            nested_health.hp = max(nested_health.hp, 0)
-
                             melee_attack.last_attacked = core.time.get_ticks()
 
                     elif self.world.has_component(entity, ai_component.MeleeWeaponAttack):

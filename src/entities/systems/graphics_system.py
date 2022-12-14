@@ -105,7 +105,7 @@ class GraphicsSystem(System):
 
         if self.world.has_component(entity, ai_component.EntityState):
             entity_state = self.world.component_for_entity(entity, ai_component.EntityState)
-            info.blit(font.render(f"State: {entity_state.state.__class__.__name__}", True, (0, 0, 0)), (10, 70))
+            info.blit(font.render(f"State: {type(entity_state.state).__name__}", True, (0, 0, 0)), (10, 70))
 
         screen.blit(info, info_pos)
 
@@ -253,7 +253,7 @@ class GraphicsSystem(System):
             )
 
     def handle_blade_rotation(self, tile_grass: tile_component.GrassBlades, blade):
-        player_rect = self.world.component_for_entity(self.player, Position).rect
+        player_rect = self.component_for_player(Position).rect
         player_grass_pos = (player_rect.centerx, player_rect.bottom)
         blade_pos = (tile_grass.tile_x * TILE_WIDTH + blade.x, tile_grass.tile_y * TILE_HEIGHT)
 
@@ -321,7 +321,7 @@ class GraphicsSystem(System):
         # No shake :( thinking
         self.camera.adjust_to(
             core.dt.dt,
-            self.world.component_for_entity(self.player, Position).pos,
+            self.component_for_player(Position).pos,
         )
 
         self.particle_system.draw_pre_interactables()

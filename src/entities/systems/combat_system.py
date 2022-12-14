@@ -255,7 +255,7 @@ class CombatSystem(System):
             if not self.world.has_component(entity, Inventory):
                 continue
 
-            # inventory = self.world.component_for_entity(self.player, Inventory)
+            # inventory = self.component_for_player(Inventory)
             inventory = self.world.component_for_entity(entity, Inventory)
             equipped_item = inventory.inventory[inventory.equipped_item_idx]
 

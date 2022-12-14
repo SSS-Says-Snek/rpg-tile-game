@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 
 from src import core, pygame, utils
+from src.display.particle import RoundParticle
 from src.entities.components import ai_component, component
 from src.entities.components.component import Flags, Movement, Position
 from src.entities.systems.system import System
@@ -21,7 +22,6 @@ class VelocitySystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-        self.settings = self.level.settings
         self.player_settings = self.settings["mobs/player"]
 
     def about_to_fall(self, pos: Position):
@@ -29,8 +29,8 @@ class VelocitySystem(System):
 
     def handle_player_keys(self, event_list: Events):
         keys = pygame.key.get_pressed()
-        player_movement = self.world.component_for_entity(self.player, Movement)
-        player_pos = self.world.component_for_entity(self.player, Position)
+        player_movement = self.component_for_player(Movement)
+        player_pos = self.component_for_player(Position)
 
         player_movement.vel.x = 0
 
@@ -47,7 +47,19 @@ class VelocitySystem(System):
                     player_pos.on_ground = False
                     player_movement.vel.y = self.player_settings["jump_vel"]
 
-                    # TODO: Add jump particles
+                    for angle in range(-1, 1 + 1):
+                        self.particle_system.add(
+                            RoundParticle()
+                            .builder()
+                            .at(pos=pygame.Vector2(player_pos.rect.midbottom), angle=angle * 30 + 90)
+                            .angular_speed(speed=1.3)
+                            .size(size=2)
+                            .color(color=(255, 255, 255))
+                            .lifespan(frames=40)
+                            .effect_fade(start_fade_frac=0.7)
+                            .effect_angular_slowdown(slowdown_factor=0.95, start_slowdown_frac=0.3)
+                            .build()
+                        )
 
         # if player_pos.pos.y > 960:
         #     print("A")

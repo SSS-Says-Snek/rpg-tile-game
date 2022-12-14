@@ -31,6 +31,7 @@ class Game:
         # No camera at start of game
         self.ui = UI()
 
+        # Shader manager to handle shaders and actually draw proxy screen onto actual screen
         self.shader_manager = ShaderManager()
 
         # self.ui.add_widget(
@@ -44,14 +45,17 @@ class Game:
         #     )
         # )
 
+        # Loaders
         self.settings: DirLoader[JSONSerializable] = DirLoader(SETTINGS_DIR, ".json", json.load)
         self.imgs: DirLoader[pygame.Surface] = DirLoader(IMG_DIR, ".png", pygame.image.load)
-        self.game_name = self.settings["game/name"]
 
+        # States
         self.state: State = LevelState(self)
-        self.loaded_states: dict[type(State), State] = {LevelState: self.state}
-        self.running: bool = True
+        self.loaded_states: dict[type[State], State] = {LevelState: self.state}
+        self.running = True
 
+        # Set caption
+        self.game_name = self.settings["game/name"]
         pygame.display.set_caption(self.game_name)
 
     def run(self):
@@ -77,14 +81,17 @@ class Game:
             # State handles drawing
             self.state.draw()
 
+            # Renders screen
+            self.shader_manager.render()
+
             # State detector/switcher
-            if self.state.next_state != self.state.__class__:
+            if self.state.next_state != type(self.state):
                 old_state = self.state
                 if self.state.next_state not in self.loaded_states:
+                    # Instantiate new state
                     self.loaded_states[self.state.next_state] = self.state.next_state(self)
                 self.state = self.loaded_states[self.state.next_state]
 
-                old_state.next_state = old_state.__class__  # Resets next state to self
+                old_state.next_state = type(old_state)  # Resets next state to self
 
-            self.shader_manager.render()
         pygame.quit()

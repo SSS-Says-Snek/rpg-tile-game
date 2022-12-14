@@ -79,7 +79,7 @@ class CollisionSystem(System):
 
             # Obvs, if it's gonna collide with player, player should be in it
             if flags.collide_with_player:
-                neighboring_tile_rects.append(self.world.component_for_entity(self.player, Position).rect)
+                neighboring_tile_rects.append(self.component_for_player(Position).rect)
 
             # Player collides with collide_with_player entities
             # Player can also go on ramps
@@ -112,9 +112,9 @@ class CollisionSystem(System):
             item_component.ItemPosition,
             item_component.ItemGraphics,
         ):
-            owner_pos = self.world.component_for_entity(self.player, Position)
+            owner_pos = self.component_for_player(Position)
             player_rect = owner_pos.rect
-            player_inventory = self.world.component_for_entity(self.player, Inventory)
+            player_inventory = self.component_for_player(Inventory)
             item_pos.rect = pygame.Rect(*item_pos.pos, *item_graphics.bound_size)
 
             # Player collided with item
