@@ -71,14 +71,14 @@ class Graphics:
 
 
 class Position:
-    def __init__(self, pos: pygame.Vector2):
+    def __init__(self, pos: pygame.Vector2, rect_size: tuple[int, int]):
         self.original_pos = pos.copy()
         self.pos: pygame.Vector2 = pos
         self.tile_pos: pygame.Vector2 = utils.pixel_to_tile(pos)
         self.direction: int = 1  # 1 for right, -1 for left
 
         self.on_ground: bool = False
-        self.rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
+        self.rect: pygame.Rect = pygame.Rect(*self.pos, *rect_size)
 
     def in_range(self, other_tile_pos: pygame.Vector2, radius: int) -> bool:
         return self.tile_pos.distance_to(other_tile_pos) < radius

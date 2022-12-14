@@ -61,9 +61,6 @@ class VelocitySystem(System):
                             .build()
                         )
 
-        # if player_pos.pos.y > 960:
-        #     print("A")
-
     def process(self):
         self.handle_player_keys(core.event.get())
 

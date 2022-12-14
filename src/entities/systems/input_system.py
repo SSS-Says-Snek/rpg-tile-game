@@ -33,12 +33,12 @@ class InputSystem(System):
                 if cont:
                     continue
 
-                hotbar_ui = self.ui.hud_widgets["hotbar"].widget
+                hotbar_widget = self.ui.hud_widgets["hotbar"].widget
 
-                if hotbar_ui.frame_rect.collidepoint(event.pos):
-                    for i, hotbar_rect in enumerate(hotbar_ui.hotbar_rects):
+                if hotbar_widget.frame_rect.collidepoint(event.pos):
+                    for i, hotbar_rect in enumerate(hotbar_widget.hotbar_rects):
                         adjusted_hotbar_rect = pygame.Rect(
-                            hotbar_rect.x + hotbar_ui.frame_rect.x,
+                            hotbar_rect.x + hotbar_widget.frame_rect.x,
                             hotbar_rect.y,
                             *hotbar_rect.size,
                         )

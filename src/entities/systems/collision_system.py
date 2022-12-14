@@ -72,7 +72,6 @@ class CollisionSystem(System):
     def process(self):
         # Mob
         for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
-            pos.rect = pygame.Rect(*pos.pos, *graphics.size)
             neighboring_tile_rects, ramps = self.tilemap.get_unwalkable_rects(
                 self.tilemap.get_neighboring_tile_entities(3, pos)
             )
@@ -113,9 +112,8 @@ class CollisionSystem(System):
             item_component.ItemGraphics,
         ):
             owner_pos = self.component_for_player(Position)
-            player_rect = owner_pos.rect
             player_inventory = self.component_for_player(Inventory)
-            item_pos.rect = pygame.Rect(*item_pos.pos, *item_graphics.bound_size)
+            player_rect = owner_pos.rect
 
             # Player collided with item
             if not item_pos.in_inventory and player_rect.colliderect(item_pos.rect):
