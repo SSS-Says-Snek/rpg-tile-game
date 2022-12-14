@@ -112,7 +112,7 @@ class LevelState(State):
             )
 
             # Add initial sword
-            inventory.inventory[0] = self.world.create_entity(
+            inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
                     cooldown=sword_settings["cooldown"],
@@ -191,7 +191,7 @@ class LevelState(State):
             )
 
             # Adds sword
-            inventory.inventory[0] = self.world.create_entity(
+            inventory[0] = self.world.create_entity(
                 item_component.Item(
                     name="Newbie's Sword",
                     cooldown=simple_melee_settings["attack_cooldown"],
@@ -214,7 +214,7 @@ class LevelState(State):
                 Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(self.imgs["mobs/test_shooter"])),
                 Health(hp=10000, max_hp=10000),
                 Movement(speed=0.0),
-                ai_component.RangeAttack(target=self.player, attack_cooldown=1),
+                ai_component.RangeAttack(target=self.player, attack_cooldown=2.0),
             )
             self.ui.add_widget(MobHealthBar(self.ui, test_shooter_enemy, 40, 10))
 
@@ -288,6 +288,9 @@ class LevelState(State):
                 core.time.unpause()
                 for pausable_process, _ in self.pausable_processes:
                     self.world.add_processor(pausable_process)
+            elif event.key == pygame.K_F8:
+                core.time.pause()
+                self.change_state("level_state.TestState")
 
     def update(self):
         # Draws UI in GraphicsSystem
@@ -304,5 +307,6 @@ class TestState(State):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
+            if event.key == pygame.K_F8:
+                core.time.unpause()
                 self.change_state("level_state.LevelState")

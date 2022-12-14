@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Generator
 
 from src import core, pygame, utils
+from src.common import TILE_HEIGHT
 from src.entities.components import item_component, projectile_component
 from src.entities.components.component import Health, Inventory, Position
 from src.entities.effect import RegenEffect
@@ -67,18 +68,17 @@ class ItemUsages(types.SimpleNamespace):
             item_pos,
             interactable_entities,
         ) = item_data
-        melee_weapon = self.world.component_for_entity(equipped_item, item_component.MeleeWeapon)
-
         item_pos.pos.x -= pos.direction * 6
 
         # Not used = no combat
         if not item.used:
             return
 
+        melee_weapon = self.world.component_for_entity(equipped_item, item_component.MeleeWeapon)
         slashing_sword = self.world.component_for_entity(equipped_item, item_component.SlashingSword)
 
         # Handle angle and positions
-        slashing_sword.angle -= 14 * pos.direction
+        slashing_sword.angle -= 16 * pos.direction
         (item_graphics.current_img, slashing_sword.rect,) = utils.rot_pivot(
             item_graphics.original_img,
             item_pos.pos,
@@ -86,7 +86,7 @@ class ItemUsages(types.SimpleNamespace):
             slashing_sword.angle,
         )
         item_pos.pos.x = slashing_sword.rect.x
-        item_pos.pos.y = slashing_sword.rect.y + 32
+        item_pos.pos.y = slashing_sword.rect.y + TILE_HEIGHT
 
         # Adjust sword pos
         if pos.direction == -1:
@@ -103,26 +103,19 @@ class ItemUsages(types.SimpleNamespace):
                 nested_health.hp -= melee_weapon.attack_damage
 
         # If slash angle > 150 deg, reset
-        if pos.direction == 1:
-            angle_comp_func = operator.le
-        else:
-            angle_comp_func = operator.ge
-
+        angle_comp_func = operator.le if pos.direction == 1 else operator.ge
         if angle_comp_func(slashing_sword.angle, -150 * pos.direction):
             slashing_sword.angle = 0
-            item_graphics.current_img = item_graphics.original_img
+            # item_graphics.current_img = item_graphics.original_img
 
             # Resets position
-            if pos.direction == 1:
-                # Facing right
-                item_pos.pos.x = pos.rect.right
-            else:
-                # Facing left
-                item_pos.pos.x = pos.rect.left - item_graphics.original_img.get_bounding_rect().width
-            item_pos.pos.y = pos.rect.y - 16
-
-            slashing_sword.rect.x = item_pos.pos.x
-            slashing_sword.rect.y = item_pos.pos.y
+            # if pos.direction == 1:
+            #     item_pos.pos.x = pos.rect.right
+            # else:
+            #     item_pos.pos.x = pos.rect.left - item_graphics.original_img.get_bounding_rect().width
+            #
+            # slashing_sword.rect.x = item_pos.pos.x
+            # slashing_sword.rect.y = item_pos.pos.y
 
             item.used = False
             melee_weapon.hit = False
@@ -138,25 +131,15 @@ class ItemUsages(types.SimpleNamespace):
             item_pos,
             interactable_entities,
         ) = item_data
+
         # Not used = no combat
         if not item.used:
             return
-
-        arrow_sprite = self.imgs["items/arrows_sprite"].convert_alpha()
 
         ranged_weapon = self.world.component_for_entity(equipped_item, item_component.RangedWeapon)
         mouse_pos = pygame.mouse.get_pos()
         adj_item_pos = self.camera.apply(item_pos.pos)
 
-        # adj_y_vel = (
-        #     math.sin(
-        #         math.atan2(
-        #             mouse_pos[1] - adj_item_pos.y,
-        #             mouse_pos[0] - adj_item_pos.x,
-        #         )
-        #     )
-        #     * 14
-        # )
         self.world.create_entity(
             projectile_component.Projectile(
                 vel=20,
@@ -168,7 +151,7 @@ class ItemUsages(types.SimpleNamespace):
                 shot_by=entity,
             ),
             projectile_component.ProjectilePosition(item_pos.pos.copy()),
-            projectile_component.ProjectileGraphics(arrow_sprite),
+            projectile_component.ProjectileGraphics(self.imgs["items/arrows_sprite"]),
         )
 
         item.used = False
@@ -237,7 +220,7 @@ class CombatSystem(System):
                 consumable.uses_left -= 1
                 if consumable.uses_left == 0:
                     self.world.delete_entity(equipped_item)
-                    inventory.inventory[inventory.equipped_item_idx] = None
+                    inventory.remove_item(inventory.equipped_item_idx)
 
             if self.world.has_component(equipped_item, item_component.HealthPotion) and item.used:
                 self.item_usages.handle_health_potion(item_data)
@@ -249,15 +232,11 @@ class CombatSystem(System):
             health.prev_hp = health.hp
 
         for entity, pos in self.world.get_component(Position):
-            # Player to entity combat
-            # For now, only player can wield weapons. Could definitely change
-            # if entity == self.player:
             if not self.world.has_component(entity, Inventory):
                 continue
 
-            # inventory = self.component_for_player(Inventory)
             inventory = self.world.component_for_entity(entity, Inventory)
-            equipped_item = inventory.inventory[inventory.equipped_item_idx]
+            equipped_item = inventory[inventory.equipped_item_idx]
 
             # No equipped item = no combat
             if equipped_item is None:

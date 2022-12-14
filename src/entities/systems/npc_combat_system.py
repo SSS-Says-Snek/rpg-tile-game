@@ -44,7 +44,7 @@ class NPCCombatSystem(System):
                             and core.time.get_ticks() - melee_attack.last_attacked
                             > melee_attack.attack_cooldown * 1000
                         ):
-                            # self.camera.start_shake(10)
+                            self.camera.start_shake(10)
 
                             nested_health.hp -= melee_attack.damage
                             melee_attack.last_attacked = core.time.get_ticks()
@@ -53,7 +53,7 @@ class NPCCombatSystem(System):
                         melee_weapon_attack = self.world.component_for_entity(entity, ai_component.MeleeWeaponAttack)
                         inventory = self.world.component_for_entity(entity, Inventory)
                         equipped_item = self.world.component_for_entity(
-                            inventory.inventory[inventory.equipped_item_idx], item_component.Item
+                            inventory[inventory.equipped_item_idx], item_component.Item
                         )
 
                         if (

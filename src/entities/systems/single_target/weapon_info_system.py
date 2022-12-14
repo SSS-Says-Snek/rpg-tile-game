@@ -10,4 +10,5 @@ from src.entities.systems import System
 
 
 class WeaponInfoSystem(System):
-    pass
+    def process(self):
+        pass

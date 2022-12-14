@@ -123,7 +123,7 @@ class CollisionSystem(System):
                     item_pos.pos.x, item_pos.pos.y = item_pos.pos.x, item_pos.pos.y
                     item_pos.in_inventory = True
 
-                    player_inventory.inventory[available_inventory_idx] = entity
+                    player_inventory[available_inventory_idx] = entity
 
                     self.particle_system.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
                 else:

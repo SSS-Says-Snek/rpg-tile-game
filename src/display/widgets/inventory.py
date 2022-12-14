@@ -51,7 +51,7 @@ class Hotbar(Widget):
         for i in range(self.hotbar_size):
             hotbar_rect = pygame.draw.rect(
                 self.original_frame,
-                (0, 0, 0),  # (66, 118, 70),
+                (0, 0, 0),
                 pygame.Rect(self.idx_to_pixelx(i), 0, *frame_size),
                 width=4,
             )
@@ -83,7 +83,7 @@ class Hotbar(Widget):
         # Draw icons and durability
         for hotbar_idx in range(self.hotbar_size):
             hotbar_rect = self.hotbar_rects[hotbar_idx]
-            item_entity = self.inventory_component.inventory[hotbar_idx]
+            item_entity = self.inventory_component[hotbar_idx]
 
             if item_entity is not None:
                 item_graphics = self.ui.world.component_for_entity(item_entity, item_component.ItemGraphics)

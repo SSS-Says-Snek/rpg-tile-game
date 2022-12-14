@@ -21,6 +21,7 @@ __all__ = [
 from typing import Optional
 
 from src import pygame, utils
+from src.types import Entity
 
 
 class References:  # Thinking about it
@@ -131,3 +132,12 @@ class Inventory:
             if item is None:
                 return i
         return None
+
+    def remove_item(self, idx: int):
+        self.inventory[idx] = None
+
+    def __getitem__(self, item: int) -> Optional[Entity]:
+        return self.inventory[item]
+
+    def __setitem__(self, key: int, value: Entity):
+        self.inventory[key] = value

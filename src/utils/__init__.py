@@ -200,6 +200,16 @@ def enum_eq(enum):
 
 
 def get_size(graphics_unit: Union[pygame.Surface, dict[str, animation.Animation]]) -> TupSize:
+    """
+    Gets the size of either a pygame Surface or an animation
+
+    Args:
+        graphics_unit: The graphics unit to measure
+
+    Returns:
+        Size of surf/animation
+    """
+
     if isinstance(graphics_unit, pygame.Surface):
         return graphics_unit.get_size()
     elif isinstance(graphics_unit, dict):

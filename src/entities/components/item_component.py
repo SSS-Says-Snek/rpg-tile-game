@@ -86,7 +86,7 @@ class MeleeWeapon:
 
 
 class RangedWeapon:
-    def __init__(self, projectile_damage, effects=None):
+    def __init__(self, projectile_damage: int, effects=None):
         self.projectile_damage = projectile_damage
 
         self.effects = effects

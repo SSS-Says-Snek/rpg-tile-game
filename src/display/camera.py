@@ -38,7 +38,7 @@ class Camera:
 
         self.last_shake = pygame.Vector2()
         self.shake_frames = 0
-        self.shake_pixels = 2
+        self.shake_pixels = 3
 
     def apply(
         self,
@@ -114,15 +114,14 @@ class Camera:
 
     def do_shake(self):
         """Performs shaking action"""
-        print("E")
 
         self.camera.x += random.randint(-self.shake_pixels, self.shake_pixels)
         self.camera.y += random.randint(-self.shake_pixels, self.shake_pixels)
 
         self.shake_frames -= 1
 
-        if self.shake_frames == 0:
-            self.camera.x, self.camera.y = self.last_shake.xy
+        # if self.shake_frames == 0:
+        #     self.camera.x, self.camera.y = self.last_shake.xy
 
     def visible(self, other_rect: pygame.Rect, strict: bool = False) -> bool:
         """

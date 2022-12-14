@@ -148,9 +148,10 @@ class GraphicsSystem(System):
 
     def _draw_mob_item(self, entity: int, pos: Position):
         """Draws the mob's equipped item (if any)"""
-        if self.world.has_component(entity, Inventory):  # entity == self.player:
+
+        if self.world.has_component(entity, Inventory):
             inventory = self.world.component_for_entity(entity, Inventory)
-            equipped_item = inventory.inventory[inventory.equipped_item_idx]
+            equipped_item = inventory[inventory.equipped_item_idx]
 
             if equipped_item is not None:
                 item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)
