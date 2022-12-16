@@ -19,7 +19,15 @@ class FadeTransition:
     FADE_OUT = 1
     FADE_OUT_IN = 2
 
-    def __init__(self, mode: int, duration: int, fade_out_frac: float = 1, finish_out_callback: Optional[VoidFunc] = None, surf: pygame.Surface = screen):
+    def __init__(
+        self,
+        mode: int,
+        duration: int,
+        fade_out_frac: float = 1,
+        finish_out_callback: Optional[VoidFunc] = None,
+        finish_in_callback: Optional[VoidFunc] = None,
+        surf: pygame.Surface = screen,
+    ):
         """
         Provides an easy way to darken a desired surface with linear interpolation
 
@@ -40,6 +48,7 @@ class FadeTransition:
         self.time_started = 0
         self.transitioning = False
         self.finish_out_callback = finish_out_callback
+        self.finish_in_callback = finish_in_callback
 
         self.darkness = pygame.Surface(surf.get_size())
         self.darkness.set_alpha(self.alpha)
@@ -58,13 +67,15 @@ class FadeTransition:
             duration_frac = time_elapsed / self.duration
 
             if self.mode == self.FADE_IN:
-                self.alpha = 255 - (duration_frac * 255)
+                self.alpha = self.fade_out - (duration_frac * 255)
             else:
                 self.alpha = duration_frac * self.fade_out
 
             if duration_frac > 1:
                 if self.finish_out_callback is not None and self.mode == self.FADE_OUT:
                     self.finish_out_callback()
+                elif self.finish_in_callback is not None and self.mode == self.FADE_IN:
+                    self.finish_in_callback()
 
                 self.transitioning = False
                 # Just in case it overreached
@@ -140,7 +151,7 @@ class EaseTransition:
 
     def start(self):
         self.transitioning = True
-        self.time_started = core.time.get_ticks()
+        self.time_started = core.time.get_raw_ticks()
 
     def stop(self):
         self.transitioning = False
@@ -150,10 +161,10 @@ class EaseTransition:
         if not self.transitioning:
             return
 
-        time_elapsed = core.time.get_ticks() - self.time_started
+        time_elapsed = core.time.get_raw_ticks() - self.time_started
         self.value = self.ease_func(min(time_elapsed / self.duration, 1)) * self.range + self.begin
 
-        if core.time.get_ticks() - self.time_started > self.duration:
+        if core.time.get_raw_ticks() - self.time_started > self.duration:
             self.transitioning = False
             self.value = self.default_end
             if self.callback is not None:

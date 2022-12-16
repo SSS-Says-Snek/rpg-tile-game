@@ -34,6 +34,7 @@ class DefaultButton(Widget):
         border_roundness: int = 0,
         hover_color: Optional[TupColor] = None,
         click_callback: Optional[VoidFunc] = None,
+        fade_callback: Optional[VoidFunc] = None
     ):
         super().__init__()
 
@@ -53,6 +54,7 @@ class DefaultButton(Widget):
         self.border_roundness = border_roundness
 
         self.click_callback = click_callback
+        self.fade_callback = fade_callback
 
         self.border_clicked = False
         self.border_fade = EaseTransition(
@@ -62,6 +64,9 @@ class DefaultButton(Widget):
 
     def _fade_callback(self):
         self.border_clicked = False
+
+        if self.fade_callback is not None:
+            self.fade_callback()
 
     def _draw_border_effect(self):
         border_effect = self.border_expand.value or 0

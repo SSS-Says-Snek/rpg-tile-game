@@ -47,7 +47,9 @@ class Game:
 
         # Loaders
         self.settings: DirLoader[JSONSerializable] = DirLoader(SETTINGS_DIR, ".json", json.load)
-        self.imgs: DirLoader[pygame.Surface] = DirLoader(IMG_DIR, ".png", lambda filename: pygame.image.load(filename).convert_alpha())
+        self.imgs: DirLoader[pygame.Surface] = DirLoader(
+            IMG_DIR, ".png", lambda filename: pygame.image.load(filename).convert_alpha()
+        )
 
         # States
         self.state: State = LevelState(self)

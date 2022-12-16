@@ -8,13 +8,14 @@ This file defines the UI class, used to handle... the game UI
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Iterable
+from typing import Iterable, Optional
 
 import esper
 
 from src.display.camera import Camera
 from src.display.particle import ParticleManager
 from src.display.widgets.widget import Widget
+
 
 @dataclass
 class WidgetInfo:
@@ -71,12 +72,7 @@ class UI:
 
             widget.update()
 
-    def add_widget(
-        self,
-        widget: Widget,
-        visible: bool = True,
-        when: str = "graphics_system"
-    ) -> int:
+    def add_widget(self, widget: Widget, visible: bool = True, when: str = "graphics_system") -> int:
         """
         Adds a widget to the UI
 

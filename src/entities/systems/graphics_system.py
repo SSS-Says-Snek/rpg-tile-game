@@ -7,11 +7,9 @@ Copyright (c) 2022-present SSS-Says-Snek
 from __future__ import annotations
 
 import math
-import random
 
 from src import common, core, pygame, screen, utils
 from src.common import TILE_HEIGHT, TILE_WIDTH
-from src.display.particle import ImageParticle
 from src.entities.components import (ai_component, item_component,
                                      projectile_component, tile_component)
 from src.entities.components.component import (Graphics, Inventory, Movement,
@@ -24,11 +22,6 @@ class GraphicsSystem(System):
         super().__init__(level_state)
 
         self.normal_map_surf, self.interactable_map_surf = self.tilemap.make_map()
-        self.wind_gusts = [-15, -15, -15]
-        self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
-        self.cloud_parallax = 0.3
-        self.cloud_paths = list((common.IMG_DIR / "deco" / "clouds").iterdir())
-
         self.background = pygame.transform.scale(self.imgs["placeholder_background2"], common.RES).convert()
 
     #####################################################################
@@ -69,7 +62,7 @@ class GraphicsSystem(System):
                     math.sin(core.time.get_ticks() / 600 + anim_offset) * 2,
                     math.sin(core.time.get_ticks() / 750 + anim_offset) * 1.5,
                 )
-                * (self.wind_gusts[self.random_wind_gust_idx] / 7.5)
+                * (math.sin(core.time.get_ticks() / 650) * 1.6)
             ),
         )
 
@@ -208,51 +201,6 @@ class GraphicsSystem(System):
                 self.camera.apply(projectile_pos.pos),
             )
 
-    def draw_clouds(self):
-        if random.random() < 0.015:
-            self.particle_system.add(
-                ImageParticle()
-                .builder()
-                .at(
-                    pygame.Vector2(
-                        # MAGIC NUMBERS - DON'T QUESTION
-                        # Gist: Spawns clouds at appropriate pos outside of screen
-                        common.WIDTH
-                        + (self.camera.camera.x + common.WIDTH) * self.cloud_parallax
-                        + random.randint(-300, 400),
-                        self.camera.camera.y * self.cloud_parallax + random.randint(-75, 125),
-                    )
-                )
-                .image(
-                    image=utils.load_img(random.choice(self.cloud_paths)),
-                    scale=random.uniform(0.6, 1.1),
-                )
-                .starting_vel(
-                    # - 0.3 is for semi-guarentee no lagging
-                    pygame.Vector2(random.choice(self.wind_gusts) / random.uniform(13, 17) - 0.4, 0)
-                )
-                .lifespan(frames=2000)
-                .draw_when(when="pre_interactables")
-                .parallax(parallax_val=self.cloud_parallax)
-                .effect_fade(start_fade_frac=0.9)
-                .build()
-            )
-
-    def draw_wind_particles(self):
-        # Adds wind gust particles
-        if random.random() < 0.19:
-            if random.random() < 0.05:
-                self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
-                self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
-
-            self.particle_system.create_wind_particle(
-                pygame.Vector2(
-                    random.randint(self.camera.camera.x, self.camera.camera.x + common.WIDTH),
-                    random.randint(self.camera.camera.y, self.camera.camera.y + common.HEIGHT),
-                ),
-                self.wind_gusts,
-            )
-
     def handle_blade_rotation(self, tile_grass: tile_component.GrassBlades, blade):
         player_rect = self.component_for_player(Position).rect
         player_grass_pos = (player_rect.centerx, player_rect.bottom)
@@ -305,16 +253,6 @@ class GraphicsSystem(System):
                 else:
                     self._draw_tree_layer(layer, adj_rect, tile_deco.anim_offset)
 
-            if random.random() < 0.025:
-                self.particle_system.create_wind_particle(
-                    pygame.Vector2(
-                        random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
-                        random.randint(tile.rect.y, tile.rect.y + tile.rect.height),
-                    ),
-                    self.wind_gusts,
-                    movement_factor=1.5,
-                )
-
     def process(self):
         # Blits background
         screen.blit(self.background, (0, 0))
@@ -346,15 +284,10 @@ class GraphicsSystem(System):
         self.particle_system.draw_pre_ui()
         self.handle_pre_ui_widgets()
         self.ui.draw()
-        self.ui.update()
         self.particle_system.draw_post_ui()
         self.handle_post_ui_widgets()
 
         self.draw_mobs_debug()
-
-        self.draw_wind_particles()
-
-        self.draw_clouds()
 
         # Cleanup widgets
         self._send_to_graphics_widgets.clear()

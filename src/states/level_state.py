@@ -29,10 +29,10 @@ from src.entities.components.component import (Flags, Graphics, Health,
 # Systems
 from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, HitSystem, InputSystem,
-                                  NPCCombatSystem, ProjectileSystem,
-                                  TileInteractionSystem, VelocitySystem)
+                                  NPCCombatSystem, ParticleGenSystem,
+                                  ProjectileSystem, TileInteractionSystem,
+                                  VelocitySystem)
 from src.entities.systems.single_target import ItemInfoSystem
-
 from src.tilemap import TileMap
 from src.types import Entity
 
@@ -71,14 +71,7 @@ class LevelState(State):
 
         # Add ECS systems
         self.core_processes = list(
-            map(
-                lambda tup: (tup[0](self), tup[1]),
-                (
-                    (InputSystem, 0),
-                    (GraphicsSystem, -8),
-                    (ItemInfoSystem, -9)
-                )
-            )
+            map(lambda tup: (tup[0](self), tup[1]), ((InputSystem, 0), (GraphicsSystem, -9), (ItemInfoSystem, -10)))
         )
         self.pausable_processes = list(
             map(
@@ -91,6 +84,7 @@ class LevelState(State):
                     (CombatSystem, -5),
                     (ProjectileSystem, -6),
                     (HitSystem, -7),
+                    (ParticleGenSystem, -8),
                 ),
             )
         )
@@ -327,6 +321,8 @@ class LevelState(State):
         if not core.time.paused:
             self.particle_system.update()
             self.effect_manager.update()
+
+        self.ui.update()
 
 
 class TestState(State):
