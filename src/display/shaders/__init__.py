@@ -33,9 +33,10 @@ class ShaderManager:
         # Describes triangles to render
         render_indices = [0, 1, 2, 1, 2, 3]
 
-        self.screen_texture = self.ctx.texture(RES, 3, pygame.image.tostring(screen, "RGB", True))
+        self.screen_texture = self.ctx.texture(RES, 4)
         self.screen_texture.repeat_x = False
         self.screen_texture.repeat_y = False
+        self.screen_texture.swizzle = "BGRA"
 
         vbo = self.load_buffer(world_coordinates, "8f")
         uv_map = self.load_buffer(texture_coordinates, "8f")
@@ -55,6 +56,7 @@ class ShaderManager:
         Returns:
             Source code of the shader
         """
+
         with open(SHADER_DIR / f"{name}.glsl") as f:
             return f.read()
 

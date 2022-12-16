@@ -31,6 +31,8 @@ from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, HitSystem, InputSystem,
                                   NPCCombatSystem, ProjectileSystem,
                                   TileInteractionSystem, VelocitySystem)
+from src.entities.systems.single_target import ItemInfoSystem
+
 from src.tilemap import TileMap
 from src.types import Entity
 
@@ -68,18 +70,27 @@ class LevelState(State):
         self.debug = False
 
         # Add ECS systems
-        self.core_processes = list(map(lambda tup: (tup[0](self), tup[1]), ((InputSystem, 9), (GraphicsSystem, 1))))
+        self.core_processes = list(
+            map(
+                lambda tup: (tup[0](self), tup[1]),
+                (
+                    (InputSystem, 0),
+                    (GraphicsSystem, -8),
+                    (ItemInfoSystem, -9)
+                )
+            )
+        )
         self.pausable_processes = list(
             map(
                 lambda tup: (tup[0](self), tup[1]),
                 (
-                    (VelocitySystem, 8),
-                    (CollisionSystem, 7),
-                    (TileInteractionSystem, 6),
-                    (NPCCombatSystem, 5),
-                    (CombatSystem, 4),
-                    (ProjectileSystem, 3),
-                    (HitSystem, 2),
+                    (VelocitySystem, -1),
+                    (CollisionSystem, -2),
+                    (TileInteractionSystem, -3),
+                    (NPCCombatSystem, -4),
+                    (CombatSystem, -5),
+                    (ProjectileSystem, -6),
+                    (HitSystem, -7),
                 ),
             )
         )
@@ -88,6 +99,10 @@ class LevelState(State):
             self.world.add_processor(core_process_class, priority=core_priority)
         for normal_process_class, normal_priority in self.pausable_processes:
             self.world.add_processor(normal_process_class, priority=normal_priority)
+
+        # Discard priority because chad
+        self.core_processes = list(map(lambda tup: tup[0], self.core_processes))
+        self.pausable_processes = list(map(lambda tup: tup[0], self.pausable_processes))
 
     def load_spawn(self, obj: TiledObject):
         if obj.name == "player_spawn":
@@ -282,15 +297,20 @@ class LevelState(State):
                 self.debug = not self.debug
             elif event.key == pygame.K_F6 and not core.time.paused:
                 core.time.pause()
-                for pausable_process, _ in self.pausable_processes:
+                for pausable_process in self.pausable_processes:
                     self.world.remove_processor(type(pausable_process))
             elif event.key == pygame.K_F7 and core.time.paused:
                 core.time.unpause()
-                for pausable_process, _ in self.pausable_processes:
+                for pausable_process in self.pausable_processes:
                     self.world.add_processor(pausable_process)
             elif event.key == pygame.K_F8:
                 core.time.pause()
                 self.change_state("level_state.TestState")
+            elif event.key == pygame.K_F9:
+                if common.FPS == 60:
+                    common.FPS = 600
+                else:
+                    common.FPS = 60
 
     def update(self):
         # Draws UI in GraphicsSystem

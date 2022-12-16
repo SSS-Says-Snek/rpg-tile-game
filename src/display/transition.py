@@ -19,22 +19,48 @@ class FadeTransition:
     FADE_OUT = 1
     FADE_OUT_IN = 2
 
-    def __init__(self, mode: int, fade_rate: float, screen_to_fade: pygame.Surface = screen):
+    def __init__(self, mode: int, duration: int, fade_out_frac: float = 1, screen_to_fade: pygame.Surface = screen):
+        """
+        Provides an easy way to
+        Args:
+            mode:
+            duration:
+            fade_out_frac:
+            screen_to_fade:
+        """
         self.mode = mode
-        self.fade_rate = fade_rate
+        self.duration = duration
         self.screen_to_fade = screen_to_fade
 
         self.alpha = 255 if mode == self.FADE_IN else 0
+        self.fade_out = fade_out_frac * 255
+
+        self.time_started = 0
+        self.transitioning = False
+
         self.darkness = pygame.Surface(screen_to_fade.get_size())
         self.darkness.set_alpha(self.alpha)
 
-    def draw(self):
-        if self.mode == self.FADE_IN:
-            self.alpha = max(self.alpha - self.fade_rate, 0)
-        else:
-            self.alpha = min(self.alpha + self.fade_rate, 255)
+    def start(self):
+        self.transitioning = True
+        self.time_started = core.time.get_raw_ticks()
 
-        self.darkness.set_alpha(self.alpha)
+    def draw(self):
+        if self.transitioning:
+            time_elapsed = core.time.get_raw_ticks() - self.time_started
+            duration_frac = time_elapsed / self.duration
+
+            if self.mode == self.FADE_IN:
+                self.alpha = (1 - duration_frac) * 255
+            else:
+                self.alpha = duration_frac * self.fade_out
+
+            if duration_frac > 1:
+                self.transitioning = False
+                # Just in case it overreached
+                self.alpha = self.fade_out
+
+            self.darkness.set_alpha(self.alpha)
         self.screen_to_fade.blit(self.darkness, (0, 0))
 
 

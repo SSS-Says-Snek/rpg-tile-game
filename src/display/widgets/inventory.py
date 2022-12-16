@@ -58,7 +58,7 @@ class Hotbar(Widget):
 
             self.hotbar_rects.append(hotbar_rect)
 
-            item_entity = self.inventory_component.inventory[i]
+            item_entity = self.inventory_component[i]
             if item_entity is None or not self.ui.world.has_component(item_entity, item_component.Consumable):
                 self.hotbar_durability_bars.append(None)
                 continue

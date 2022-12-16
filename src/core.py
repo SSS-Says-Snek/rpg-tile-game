@@ -13,7 +13,8 @@ Attributes:
 
 from __future__ import annotations
 
-from src import common, pygame
+from src import pygame
+from src.common import BASE_FPS
 from src.types import Events
 
 
@@ -26,17 +27,28 @@ class Time:
         self.pause_time = 0
         self.paused = False
 
-    def get_ticks(self):
+    def get_ticks(self) -> float:
         """
         Gets ticks since pygame app was opened, adjusted with pausing
 
         Returns:
-            float: Ticks since pygame app opened, adjusted with pausing
+            Ticks since pygame app opened, adjusted with pausing
         """
 
         if not self.paused:
             return pygame.time.get_ticks() - self.offsetted_time
         return self.pause_time
+
+    @staticmethod
+    def get_raw_ticks() -> float:
+        """
+        Get ticks since pygame app was opened, NOT adjusted for pausing
+
+        Returns:
+            Ticks since pygame app opened, NOT adjusted for pausing
+
+        """
+        return pygame.time.get_ticks()
 
     def pause(self):
         """Pauses time. Any call to `get_ticks` will return the paused time"""
@@ -96,8 +108,8 @@ class DT:
             raw_dt: Raw deltatime
         """
 
-        self._dts["raw_dt"] = min(raw_dt, self.threshold_factor / common.FPS)
-        self._dts["dt"] = self._dts["raw_dt"] * common.FPS
+        self._dts["raw_dt"] = min(raw_dt, self.threshold_factor / BASE_FPS)
+        self._dts["dt"] = self._dts["raw_dt"] * BASE_FPS
 
 
 class Event:

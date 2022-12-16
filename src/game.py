@@ -47,7 +47,7 @@ class Game:
 
         # Loaders
         self.settings: DirLoader[JSONSerializable] = DirLoader(SETTINGS_DIR, ".json", json.load)
-        self.imgs: DirLoader[pygame.Surface] = DirLoader(IMG_DIR, ".png", pygame.image.load)
+        self.imgs: DirLoader[pygame.Surface] = DirLoader(IMG_DIR, ".png", lambda filename: pygame.image.load(filename).convert_alpha())
 
         # States
         self.state: State = LevelState(self)
@@ -63,7 +63,9 @@ class Game:
             # Set dt and events for other stuff to access via states
             events = pygame.event.get()
             core.event.events = events
-            core.dt.dt = self.clock.tick(common.FPS) / 1000
+            e = self.clock.tick(common.FPS) / 1000
+            core.dt.dt = e
+            # (e)
 
             pygame.display.set_caption(f"{self.game_name} - {self.clock.get_fps():.3f} FPS")
 
