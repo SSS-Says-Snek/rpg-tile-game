@@ -29,7 +29,7 @@ class DefaultButton(Widget):
         text: Optional[str] = None,
         text_size: int = 20,
         text_color: TupColor = (0, 0, 0),
-        border_width: Optional[int] = None,
+        border_width: int = 0,
         border_color: TupColor = (60, 60, 60),
         border_roundness: int = 0,
         hover_color: Optional[TupColor] = None,
@@ -97,14 +97,13 @@ class DefaultButton(Widget):
         pygame.draw.rect(screen, bg_color, self.rect, border_radius=self.border_roundness)
 
         # Main rect
-        if self.border_width is not None:
-            pygame.draw.rect(
-                screen,
-                self.border_color,
-                self.rect,
-                width=self.border_width,
-                border_radius=self.border_roundness,
-            )
+        pygame.draw.rect(
+            screen,
+            self.border_color,
+            self.rect,
+            width=self.border_width,
+            border_radius=self.border_roundness,
+        )
 
     def update(self):
         for event in core.event.get():

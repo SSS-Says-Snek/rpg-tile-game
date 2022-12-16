@@ -42,7 +42,7 @@ class UI:
 
         self.camera = camera
         self.world: Optional[esper.World] = None
-        self.particle_system: Optional[ParticleManager] = None
+        self.particle_manager: Optional[ParticleManager] = None
 
         self.widgets: dict[int, WidgetInfo] = {}
         self.hud_widgets: dict[str, WidgetInfo] = {}

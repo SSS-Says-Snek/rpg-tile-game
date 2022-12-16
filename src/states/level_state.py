@@ -50,7 +50,7 @@ class LevelState(State):
 
         # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT, self.tilemap.width, self.tilemap.height)
-        self.particle_system = particle.ParticleManager(self.camera)
+        self.particle_manager = particle.ParticleManager(self.camera)
         self.effect_manager = effect.EffectManager(self)
 
         # UI stuff
@@ -58,7 +58,7 @@ class LevelState(State):
         self.ui.level = self
         self.ui.camera = self.camera
         self.ui.world = self.world
-        self.ui.particle_system = self.particle_system
+        self.ui.particle_manager = self.particle_manager
 
         # Other stuff
         self.settings = self.game_class.settings
@@ -319,7 +319,7 @@ class LevelState(State):
         self.world.process()
 
         if not core.time.paused:
-            self.particle_system.update()
+            self.particle_manager.update()
             self.effect_manager.update()
 
         self.ui.update()

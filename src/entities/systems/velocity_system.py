@@ -48,7 +48,7 @@ class VelocitySystem(System):
                     player_movement.vel.y = self.player_settings["jump_vel"]
 
                     for angle in range(-1, 1 + 1):
-                        self.particle_system.add(
+                        self.particle_manager.add(
                             RoundParticle()
                             .builder()
                             .at(pos=pygame.Vector2(player_pos.rect.midbottom), angle=angle * 30 + 90)

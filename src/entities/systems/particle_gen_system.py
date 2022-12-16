@@ -37,7 +37,7 @@ class ParticleGenSystem(System):
                 self.wind_gusts = [random.uniform(-15, -1.5) for _ in range(3)]
                 self.random_wind_gust_idx = random.randrange(0, len(self.wind_gusts))
 
-            self.particle_system.create_wind_particle(
+            self.particle_manager.create_wind_particle(
                 pygame.Vector2(
                     random.randint(self.camera.camera.x, self.camera.camera.x + WIDTH),
                     random.randint(self.camera.camera.y, self.camera.camera.y + HEIGHT),
@@ -48,7 +48,7 @@ class ParticleGenSystem(System):
     def create_tree_particles(self):
         for entity, (tile, tile_deco) in self.world.get_components(tile_component.Tile, tile_component.Decoration):
             if random.random() < 0.025:
-                self.particle_system.create_wind_particle(
+                self.particle_manager.create_wind_particle(
                     pygame.Vector2(
                         random.randint(tile.rect.x, tile.rect.x + tile.rect.width),
                         random.randint(tile.rect.y, tile.rect.y + tile.rect.height),
@@ -59,7 +59,7 @@ class ParticleGenSystem(System):
 
     def create_clouds(self):
         if random.random() < 0.015:
-            self.particle_system.add(
+            self.particle_manager.add(
                 ImageParticle()
                 .builder()
                 .at(

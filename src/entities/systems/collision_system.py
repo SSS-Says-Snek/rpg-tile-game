@@ -72,9 +72,9 @@ class CollisionSystem(System):
     def process(self):
         # Mob
         for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
-            neighboring_tile_rects, ramps = self.tilemap.get_unwalkable_rects(
-                self.tilemap.get_neighboring_tile_entities(3, pos)
-            )
+            neighboring_tile_entities = self.tilemap.get_neighboring_tile_entities(3, pos)
+            neighboring_tile_rects = self.tilemap.get_unwalkable_rects(neighboring_tile_entities)
+            neighboring_ramps = self.tilemap.get_ramps(neighboring_tile_entities)
 
             # Obvs, if it's gonna collide with player, player should be in it
             if flags.collide_with_player:
@@ -89,14 +89,13 @@ class CollisionSystem(System):
                         neighboring_tile_rects.append(nested_pos.rect)
 
             # Apply gravity
-            # Weird bug, can patch it up by capping movement y vel
+            # Cap vel so it doesn't just fly straight
             movement.vel.y += movement.gravity_acc.y / 2 * core.dt.dt
-            if movement.vel.y > 170:
-                movement.vel.y = 170
+            movement.vel.y = min(movement.vel.y, 170)
             pos.pos.y += movement.vel.y
 
             collide_bottom_tiles = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, core.dt.dt)
-            collide_bottom_ramps = self.collide_with_ramps(pos, ramps)
+            collide_bottom_ramps = self.collide_with_ramps(pos, neighboring_ramps)
             if collide_bottom_tiles or collide_bottom_ramps:
                 pos.on_ground = True
                 movement.vel.y = 0
@@ -125,7 +124,7 @@ class CollisionSystem(System):
 
                     player_inventory[available_inventory_idx] = entity
 
-                    self.particle_system.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
+                    self.particle_manager.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
                     self.notify("player_get_item", item)
                 else:
-                    self.particle_system.create_text_particle(owner_pos.pos, "No more room in inventory!")
+                    self.particle_manager.create_text_particle(owner_pos.pos, "No more room in inventory!")

@@ -25,10 +25,10 @@ class HitSystem(System):
             # Lost HP
             if health.hp - health.prev_hp < 0:
                 if health.hp == 0:
-                    self.particle_system.create_hit_particles(30, pos, self.settings["particles/death"])
+                    self.particle_manager.create_hit_particles(30, pos, self.settings["particles/death"])
                 else:
                     for _ in range(25):
-                        self.particle_system.add(
+                        self.particle_manager.add(
                             Particle()
                             .builder()
                             .at(pos=pos.pos, angle=random.gauss(180, 180))

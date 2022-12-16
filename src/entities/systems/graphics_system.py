@@ -263,7 +263,7 @@ class GraphicsSystem(System):
             self.component_for_player(Position).pos,
         )
 
-        self.particle_system.draw_pre_interactables()
+        self.particle_manager.draw_pre_interactables()
         self.handle_pre_interactable_widgets()
         screen.blit(self.interactable_map_surf, self.camera.apply((0, 0)))
         self.handle_post_interactable_widgets()
@@ -277,14 +277,14 @@ class GraphicsSystem(System):
 
         self.draw_projectiles()
 
-        self.particle_system.draw_pre_tilemap()
+        self.particle_manager.draw_pre_tilemap()
         self.handle_pre_tilemap_widgets()
         screen.blit(self.normal_map_surf, self.camera.apply((0, 0)))
 
-        self.particle_system.draw_pre_ui()
+        self.particle_manager.draw_pre_ui()
         self.handle_pre_ui_widgets()
         self.ui.draw()
-        self.particle_system.draw_post_ui()
+        self.particle_manager.draw_post_ui()
         self.handle_post_ui_widgets()
 
         self.draw_mobs_debug()

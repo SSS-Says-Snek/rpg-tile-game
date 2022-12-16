@@ -55,7 +55,7 @@ class ProjectileSystem(System):
 
             if random.random() < 0.2:
                 for i in range(-1, 2):
-                    self.particle_system.add(
+                    self.particle_manager.add(
                         RoundParticle()
                         .builder()
                         .size(2)
@@ -88,7 +88,7 @@ class ProjectileSystem(System):
             if projectile_pos.pos.y > self.tilemap.height:
                 self.world.delete_entity(entity)
 
-            neighboring_tile_rects, _ = self.tilemap.get_unwalkable_rects(
+            neighboring_tile_rects = self.tilemap.get_unwalkable_rects(
                 self.tilemap.get_neighboring_tile_entities(2, projectile_pos)
             )
             for neighboring_tile_rect in neighboring_tile_rects:

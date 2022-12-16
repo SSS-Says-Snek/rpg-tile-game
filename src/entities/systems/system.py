@@ -42,8 +42,8 @@ class System(esper.Processor):
         self.imgs = self.level.imgs
         self.camera = self.level.camera
         self.tilemap = self.level.tilemap
-        self.particle_system = self.level.particle_system
-        self.effect_system = self.level.effect_manager
+        self.particle_manager = self.level.particle_manager
+        self.effect_manager = self.level.effect_manager
 
         self.world: esper.World = self.world
         self.ui = self.level.ui

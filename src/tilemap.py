@@ -192,37 +192,52 @@ class TileMap:
 
     def get_unwalkable_rects(
         self, neighboring_tiles: list[Entity]
-    ) -> tuple[list[pygame.Rect], list[tuple[pygame.Rect, tile_component.Type]]]:
+    ) -> list[pygame.Rect]:
         """
-        Gets unwalkable tile rects and ramps given list of entity IDs
+        Gets unwalkable tile rects that aren't "special" given list of entity IDs
 
         Args:
             neighboring_tiles: List of neighboring tiles' entity IDs
 
         Returns:
-            A list of unwalkable rects, as well as a list of ramps
+            A list of unwalkable rects
         """
-        # TODO: Separate into two functions for unwalkables and ramps
 
         unwalkable_tile_rects = []
+
+        for tile_entity in neighboring_tiles:
+            tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
+            unwalkable_tile_rect = tile.rect
+
+            # We only care about tiles that are ONLY collidable, nothing else
+            if tile.type ^ tile_component.Type.COLLIDABLE == tile_component.Type.DEFAULT:
+                unwalkable_tile_rects.append(unwalkable_tile_rect)
+
+        return unwalkable_tile_rects
+
+    def get_ramps(self, neighboring_tiles: list[Entity]) -> list[tuple[pygame.Rect, tile_component.Type]]:
+        """
+        Gets ramps given list of entity IDs
+
+        Args:
+            neighboring_tiles: List of neighboring tiles' entity IDs
+
+        Returns:
+            A list of ramps
+        """
+
         ramps = []
 
         for tile_entity in neighboring_tiles:
             tile = self.world.component_for_entity(tile_entity, tile_component.Tile)
-            unwalkable_tile_rect = pygame.Rect(
-                tile.x * tile.width,
-                tile.y * tile.height,
-                tile.width,
-                tile.height,
-            )
+            unwalkable_tile_rect = tile.rect
+
             if tile_component.Type.RAMP_UP in tile.type:
                 ramps.append((unwalkable_tile_rect, tile_component.Type.RAMP_UP))
             elif tile_component.Type.RAMP_DOWN in tile.type:
                 ramps.append((unwalkable_tile_rect, tile_component.Type.RAMP_DOWN))
-            elif tile_component.Type.COLLIDABLE in tile.type:
-                unwalkable_tile_rects.append(unwalkable_tile_rect)
 
-        return unwalkable_tile_rects, ramps
+        return ramps
 
     def get_tile(self, tile_x: Union[int, float], tile_y: Union[int, float]) -> Optional[dict]:
         """

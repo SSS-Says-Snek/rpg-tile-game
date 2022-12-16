@@ -124,7 +124,7 @@ class HealthBar(Widget):
 
             if self.ui.world.has_component(self.entity, Position):
                 entity_pos = self.ui.world.component_for_entity(self.entity, Position)
-                self.ui.particle_system.create_text_particle(entity_pos.pos, hurt_txt)
+                self.ui.particle_manager.create_text_particle(entity_pos.pos, hurt_txt)
 
         if self.flash_duration <= 0:
             if self.health_component.hp > 0:

@@ -24,7 +24,7 @@ class EffectManager:
         self.effect_dict: dict[int, Effect] = {}
 
         self.level = level_state
-        self.particle_system = self.level.particle_system
+        self.particle_system = self.level.particle_manager
         self.camera = self.level.camera
 
     def add_effect(self, entity: Entity, effect: Effect):
@@ -115,7 +115,7 @@ class BurnEffect(Effect):
         if random.random() < 0.7:
             pos = self.level.world.component_for_entity(entity, Position).pos
             size = self.level.world.component_for_entity(entity, Graphics).size
-            self.level.particle_system.create_fire_particle(
+            self.level.particle_manager.create_fire_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
 
@@ -128,7 +128,7 @@ class RegenEffect(Effect):
         if random.random() < 0.12:
             pos = self.level.world.component_for_entity(entity, Position).pos
             size = self.level.world.component_for_entity(entity, Graphics).size
-            self.level.particle_system.create_regen_particle(
+            self.level.particle_manager.create_regen_particle(
                 pos, offset=(random.randint(0, size[0]), random.randint(0, size[1]))
             )
 

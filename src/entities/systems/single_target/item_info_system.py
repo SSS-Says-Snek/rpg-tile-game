@@ -28,7 +28,7 @@ class ItemInfoSystem(System):
         self.fade = FadeTransition(
             FadeTransition.FADE_OUT,
             700,
-            fade_out_frac=0.9,
+            fade_out_frac=0.7,
             finish_out_callback=self.on_fade_out,
             finish_in_callback=self.on_fade_in,
         )
