@@ -7,7 +7,8 @@ This file defines the UI class, used to handle... the game UI
 """
 from __future__ import annotations
 
-from typing import NamedTuple, Optional
+from dataclasses import dataclass
+from typing import Optional, Iterable
 
 import esper
 
@@ -15,10 +16,16 @@ from src.display.camera import Camera
 from src.display.particle import ParticleManager
 from src.display.widgets.widget import Widget
 
-
-class WidgetInfo(NamedTuple):
+@dataclass
+class WidgetInfo:
     widget: Widget
     visible: bool
+    when: str
+
+    def __iter__(self) -> Iterable:
+        yield self.widget
+        yield self.visible
+        yield self.when
 
 
 class UI:
@@ -42,8 +49,15 @@ class UI:
     def draw(self):
         """Draws all widgets"""
 
-        for widget, visible in self.widgets.copy().values():
-            if not visible:
+        for widget, visible, when in self.widgets.copy().values():
+            if not visible or when != "graphics_system":
+                continue
+
+            widget.draw(self.camera)
+
+    def draw_post_graphics_system(self):
+        for widget, visible, when in self.widgets.copy().values():
+            if not visible or when != "post_graphics_system":
                 continue
 
             widget.draw(self.camera)
@@ -51,7 +65,7 @@ class UI:
     def update(self):
         """Updates all widgets in the user interface"""
 
-        for widget, visible in self.widgets.values():
+        for widget, visible, _ in self.widgets.values():
             if not visible:
                 continue
 
@@ -61,6 +75,7 @@ class UI:
         self,
         widget: Widget,
         visible: bool = True,
+        when: str = "graphics_system"
     ) -> int:
         """
         Adds a widget to the UI
@@ -68,18 +83,19 @@ class UI:
         Args:
             widget: The widget to add
             visible: Whether it is currently visible or not
+            when: When to render the widget
 
         Returns:
             An ID for the widget
         """
 
         widget.uuid = self.current_uuid
-        self.widgets[self.current_uuid] = WidgetInfo(widget, visible)
+        self.widgets[self.current_uuid] = WidgetInfo(widget, visible, when)
 
         self.current_uuid += 1
         return widget.uuid
 
-    def add_hud_widget(self, widget, hud_name: str, visible: bool = True):
+    def add_hud_widget(self, widget, hud_name: str, visible: bool = True, when: str = "graphics_system"):
         """
         Adds an HUD widget to the UI
 
@@ -87,11 +103,12 @@ class UI:
             widget: The HUD widget to add
             hud_name: The HUD name to reference it elsewhere
             visible: Whether it is currently visible or not
+            when: When to render the widget
 
         Returns:
             An ID for the widget
         """
-        self.hud_widgets[hud_name] = WidgetInfo(widget, visible)
+        self.hud_widgets[hud_name] = WidgetInfo(widget, visible, when)
         self.add_widget(widget, visible)
 
     def remove_widget(self, uuid: int):

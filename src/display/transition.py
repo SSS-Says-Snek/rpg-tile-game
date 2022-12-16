@@ -19,46 +19,59 @@ class FadeTransition:
     FADE_OUT = 1
     FADE_OUT_IN = 2
 
-    def __init__(self, mode: int, duration: int, fade_out_frac: float = 1, screen_to_fade: pygame.Surface = screen):
+    def __init__(self, mode: int, duration: int, fade_out_frac: float = 1, finish_out_callback: Optional[VoidFunc] = None, surf: pygame.Surface = screen):
         """
-        Provides an easy way to
+        Provides an easy way to darken a desired surface with linear interpolation
+
         Args:
-            mode:
-            duration:
-            fade_out_frac:
-            screen_to_fade:
+            mode: Mode to fade
+            duration: How long, in milliseconds, the transition should last
+            fade_out_frac: At what level it should stop getting darker
+            surf: What surface to fade. Defaults to `screen`
         """
+
         self.mode = mode
         self.duration = duration
-        self.screen_to_fade = screen_to_fade
+        self.screen_to_fade = surf
 
         self.alpha = 255 if mode == self.FADE_IN else 0
         self.fade_out = fade_out_frac * 255
 
         self.time_started = 0
         self.transitioning = False
+        self.finish_out_callback = finish_out_callback
 
-        self.darkness = pygame.Surface(screen_to_fade.get_size())
+        self.darkness = pygame.Surface(surf.get_size())
         self.darkness.set_alpha(self.alpha)
 
     def start(self):
+        """Starts a transition"""
+
         self.transitioning = True
         self.time_started = core.time.get_raw_ticks()
 
     def draw(self):
+        """Draws (and updates) darkening"""
+
         if self.transitioning:
             time_elapsed = core.time.get_raw_ticks() - self.time_started
             duration_frac = time_elapsed / self.duration
 
             if self.mode == self.FADE_IN:
-                self.alpha = (1 - duration_frac) * 255
+                self.alpha = 255 - (duration_frac * 255)
             else:
                 self.alpha = duration_frac * self.fade_out
 
             if duration_frac > 1:
+                if self.finish_out_callback is not None and self.mode == self.FADE_OUT:
+                    self.finish_out_callback()
+
                 self.transitioning = False
                 # Just in case it overreached
-                self.alpha = self.fade_out
+                if self.mode == self.FADE_OUT:
+                    self.alpha = self.fade_out
+                else:
+                    self.alpha = 0
 
             self.darkness.set_alpha(self.alpha)
         self.screen_to_fade.blit(self.darkness, (0, 0))

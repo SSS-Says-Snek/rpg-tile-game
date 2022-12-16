@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from src.display.transition import FadeTransition
+from src.display.widgets.button import DefaultButton
 from src.types import Entity
 
 if TYPE_CHECKING:
@@ -24,11 +25,40 @@ class ItemInfoSystem(System):
         self.weapon_entity: Optional[Entity] = None
         self.subscribe("player_get_item", self.on_player_get_item)
 
-        self.fade = FadeTransition(FadeTransition.FADE_OUT, 500, fade_out_frac=0.8)
+        self.fade = FadeTransition(
+            FadeTransition.FADE_OUT, 200, fade_out_frac=0.9,
+            finish_out_callback=self.on_fade_finish
+        )
+
+        self.ok_button = self.ui.add_widget(
+            DefaultButton(
+                self.ui,
+                (100, 100),
+                (100, 50),
+                border_width=3,
+                border_roundness=5,
+                hover_color=(80, 80, 80),
+                click_callback=self.on_button_click,
+            ), visible=False, when="post_graphics_system"
+        )
+
+    def on_fade_finish(self):
+        self.ui.toggle_visible(self.ok_button)
+        self.level.pause()
 
     def on_player_get_item(self, weapon_entity: Entity):
         self.weapon_entity = weapon_entity
+
+        self.fade.mode = FadeTransition.FADE_OUT
         self.fade.start()
+
+    def on_button_click(self):
+        self.ui.toggle_visible(self.ok_button)
+
+        self.fade.mode = FadeTransition.FADE_IN
+        self.fade.start()
+
+        self.level.unpause()
 
     def process(self):
         if self.weapon_entity is not None:

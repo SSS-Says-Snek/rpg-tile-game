@@ -14,7 +14,7 @@ from src import core, pygame, screen
 from src.display.transition import EaseTransition
 from src.display.ui import UI
 from src.display.widgets.widget import Widget
-from src.types import Dts, Events, Pos, TupColor, TupSize, VoidFunc
+from src.types import Pos, TupColor, TupSize, VoidFunc
 
 
 class DefaultButton(Widget):
@@ -107,3 +107,6 @@ class DefaultButton(Widget):
                 self.border_clicked = True
                 self.border_fade.start()
                 self.border_expand.start()
+
+                if self.click_callback is not None:
+                    self.click_callback()

@@ -284,11 +284,23 @@ class LevelState(State):
     def reset(self):
         self.world.clear_database()
 
+    def pause(self):
+        core.time.pause()
+        for pausable_process in self.pausable_processes:
+            self.world.remove_processor(type(pausable_process))
+
+    def unpause(self):
+        core.time.unpause()
+        for pausable_process in self.pausable_processes:
+            self.world.add_processor(pausable_process)
+
     def draw(self):
         self.effect_manager.draw()
 
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
+
+        self.ui.draw_post_graphics_system()
 
     def handle_event(self, event: pygame.event.Event):
         # self.change_state("level_state.TestState")
@@ -296,13 +308,9 @@ class LevelState(State):
             if event.key == pygame.K_F1:
                 self.debug = not self.debug
             elif event.key == pygame.K_F6 and not core.time.paused:
-                core.time.pause()
-                for pausable_process in self.pausable_processes:
-                    self.world.remove_processor(type(pausable_process))
+                self.pause()
             elif event.key == pygame.K_F7 and core.time.paused:
-                core.time.unpause()
-                for pausable_process in self.pausable_processes:
-                    self.world.add_processor(pausable_process)
+                self.unpause()
             elif event.key == pygame.K_F8:
                 core.time.pause()
                 self.change_state("level_state.TestState")
