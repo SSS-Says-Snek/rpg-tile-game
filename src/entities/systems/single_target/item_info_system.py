@@ -28,7 +28,7 @@ class ItemInfoSystem(System):
         self.fade = FadeTransition(
             FadeTransition.FADE_OUT,
             700,
-            fade_out_frac=0.7,
+            fade_out_frac=0.8,
             finish_out_callback=self.on_fade_out,
             finish_in_callback=self.on_fade_in,
         )
@@ -36,11 +36,15 @@ class ItemInfoSystem(System):
         self.ok_button = self.ui.add_widget(
             DefaultButton(
                 self.ui,
-                (100, 100),
+                (600, 600),
                 (100, 50),
+                text="Okay",
+                text_size=32,
                 border_width=3,
                 border_roundness=5,
+                color=(100, 100, 100),
                 hover_color=(80, 80, 80),
+                fade_duration=200,
                 click_callback=self.on_button_click,
                 fade_callback=self.on_button_fade
             ),

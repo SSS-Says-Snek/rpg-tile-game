@@ -53,7 +53,7 @@ class NPCCombatSystem(System):
                         melee_weapon_attack = self.world.component_for_entity(entity, ai_component.MeleeWeaponAttack)
                         inventory = self.world.component_for_entity(entity, Inventory)
                         equipped_item = self.world.component_for_entity(
-                            inventory[inventory.equipped_item_idx], item_component.Item
+                            inventory.equipped_item, item_component.Item
                         )
 
                         if (

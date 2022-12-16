@@ -68,6 +68,10 @@ class FollowsEntityClose:
         self.follow_range = follow_range
 
 
+class Patroller:
+    pass
+
+
 class MeleeAttack:
     def __init__(
         self,

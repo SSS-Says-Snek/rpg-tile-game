@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from src import core, pygame, screen
+from src import core, pygame, screen, utils
 from src.display.transition import EaseTransition
 from src.display.ui import UI
 from src.display.widgets.widget import Widget
@@ -33,6 +33,7 @@ class DefaultButton(Widget):
         border_color: TupColor = (60, 60, 60),
         border_roundness: int = 0,
         hover_color: Optional[TupColor] = None,
+        fade_duration: int = 500,
         click_callback: Optional[VoidFunc] = None,
         fade_callback: Optional[VoidFunc] = None
     ):
@@ -58,9 +59,17 @@ class DefaultButton(Widget):
 
         self.border_clicked = False
         self.border_fade = EaseTransition(
-            255, 0, 500, EaseTransition.ease_out_quad, default_end=0, callback=self._fade_callback
+            255, 0, fade_duration, EaseTransition.ease_out_quad, default_end=0, callback=self._fade_callback
         )
-        self.border_expand = EaseTransition(0, 40, 800, EaseTransition.ease_out_cub, default_end=40)
+        self.border_expand = EaseTransition(0, 40, fade_duration, EaseTransition.ease_out_cub, default_end=40)
+
+        if self.text:
+            text_font = utils.load_font(self.text_size)
+            self.text_surf = text_font.render(self.text, True, self.text_color)
+            self.text_surf_center = self.text_surf.get_rect(center=self.rect.center)
+        else:
+            self.text_surf = None
+            self.text_surf_center = None
 
     def _fade_callback(self):
         self.border_clicked = False
@@ -104,6 +113,9 @@ class DefaultButton(Widget):
             width=self.border_width,
             border_radius=self.border_roundness,
         )
+
+        if self.text_surf is not None:
+            screen.blit(self.text_surf, self.text_surf_center)
 
     def update(self):
         for event in core.event.get():

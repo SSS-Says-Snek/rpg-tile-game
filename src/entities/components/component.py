@@ -35,13 +35,9 @@ class References:  # Thinking about it
 class Flags:
     def __init__(
         self,
-        mob_type: Optional[str] = None,
         collide_with_player: bool = False,
     ):
         self.collide_with_player = collide_with_player
-
-        # TODO: Remove in favor of components
-        self.mob_type = mob_type
 
 
 class Graphics:
@@ -120,7 +116,7 @@ class Inventory:
         self.size = size
         self.hotbar_size = hotbar_size
 
-        self.inventory = [None for _ in range(size)]
+        self.inventory: list[Optional[int]] = [None for _ in range(size)]
         self.equipped_item_idx = 0
 
         self.cooldown = 0  # Changes based on equipped item
@@ -132,6 +128,10 @@ class Inventory:
             if item is None:
                 return i
         return None
+
+    @property
+    def equipped_item(self):
+        return self.inventory[self.equipped_item_idx]
 
     def remove_item(self, idx: int):
         self.inventory[idx] = None

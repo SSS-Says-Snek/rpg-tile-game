@@ -13,7 +13,7 @@ import math
 from src import core, pygame, utils
 from src.display.particle import RoundParticle
 from src.entities.components import ai_component, component
-from src.entities.components.component import Flags, Movement, Position
+from src.entities.components.component import Movement, Position
 from src.entities.systems.system import System
 from src.types import Events
 
@@ -47,6 +47,7 @@ class VelocitySystem(System):
                     player_pos.on_ground = False
                     player_movement.vel.y = self.player_settings["jump_vel"]
 
+                    # Jump effects
                     for angle in range(-1, 1 + 1):
                         self.particle_manager.add(
                             RoundParticle()
@@ -64,7 +65,7 @@ class VelocitySystem(System):
     def process(self):
         self.handle_player_keys(core.event.get())
 
-        for entity, (flags, pos, movement) in self.world.get_components(Flags, Position, Movement):
+        for entity, (pos, movement) in self.world.get_components(Position, Movement):
             if entity == self.player:
                 continue
 
@@ -124,8 +125,7 @@ class VelocitySystem(System):
                         # Just go back and forth until timer expires
                         pos.direction *= -1
 
-            # TODO: ABANDON flags.mob_type
-            if flags.mob_type == "walker_enemy":
+            if self.world.has_component(entity, ai_component.Patroller):
                 movement.vel.x = movement.speed * pos.direction
 
                 mob_tile = utils.pixel_to_tile(pos.pos)

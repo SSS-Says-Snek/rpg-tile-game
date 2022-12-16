@@ -71,12 +71,13 @@ class LevelState(State):
 
         # Add ECS systems
         self.core_processes = list(
-            map(lambda tup: (tup[0](self), tup[1]), ((InputSystem, 0), (GraphicsSystem, -9), (ItemInfoSystem, -10)))
+            map(lambda tup: (tup[0](self), tup[1]), ((GraphicsSystem, -9), (ItemInfoSystem, -10)))
         )
         self.pausable_processes = list(
             map(
                 lambda tup: (tup[0](self), tup[1]),
                 (
+                    (InputSystem, 0),
                     (VelocitySystem, -1),
                     (CollisionSystem, -2),
                     (TileInteractionSystem, -3),
@@ -150,7 +151,7 @@ class LevelState(State):
             walker_anims, walker_anim_speeds = utils.load_mob_animations(walker_settings)
 
             walker_enemy = self.world.create_entity(
-                Flags(mob_type="walker_enemy"),
+                Flags(),
                 Graphics(animations=walker_anims, animation_speeds=walker_anim_speeds),
                 Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(walker_anims)),
                 Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
@@ -161,6 +162,7 @@ class LevelState(State):
                     damage=walker_settings["attack_damage"],
                     collision=walker_settings["attack_collision"],
                 ),
+                ai_component.Patroller(),
             )
             self.ui.add_widget(MobHealthBar(self.ui, walker_enemy, 40, 10))
 

@@ -144,7 +144,7 @@ class GraphicsSystem(System):
 
         if self.world.has_component(entity, Inventory):
             inventory = self.world.component_for_entity(entity, Inventory)
-            equipped_item = inventory[inventory.equipped_item_idx]
+            equipped_item = inventory.equipped_item
 
             if equipped_item is not None:
                 item_graphics = self.world.component_for_entity(equipped_item, item_component.ItemGraphics)

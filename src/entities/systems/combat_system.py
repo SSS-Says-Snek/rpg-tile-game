@@ -167,8 +167,8 @@ class ItemUsages(types.SimpleNamespace):
         owner_health.hp += health_potion.heal_power
 
         # Particles
-        self.particle_system.create_hit_particles(8, pos, [(255, 255, 255)])
-        self.effect_system.add_effect(item.owner, RegenEffect(self.level).builder().heal(10).duration(8, 2).build())
+        self.particle_manager.create_hit_particles(8, pos, [(255, 255, 255)])
+        self.effect_manager.add_effect(item.owner, RegenEffect(self.level).builder().heal(10).duration(8, 2).build())
 
         item.used = False
 
@@ -236,7 +236,7 @@ class CombatSystem(System):
                 continue
 
             inventory = self.world.component_for_entity(entity, Inventory)
-            equipped_item = inventory[inventory.equipped_item_idx]
+            equipped_item = inventory.equipped_item
 
             # No equipped item = no combat
             if equipped_item is None:

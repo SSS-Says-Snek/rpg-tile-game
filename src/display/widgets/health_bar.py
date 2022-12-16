@@ -182,7 +182,7 @@ class MobHealthBar(HealthBar):
         entity: int,
         width: int,
         height: int,
-        border_width: int = 2,
+        border_width: int = 1,
         center: bool = False,
     ):
         super().__init__(
