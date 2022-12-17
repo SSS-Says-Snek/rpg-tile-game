@@ -9,7 +9,7 @@ This file defines the TileMap class, which is used to further interact with pytm
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, NewType, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from src.entities.components.component import Position
 from src.types import Entity
@@ -190,9 +190,7 @@ class TileMap:
 
         return neighboring_tile_entities
 
-    def get_unwalkable_rects(
-        self, neighboring_tiles: list[Entity]
-    ) -> list[pygame.Rect]:
+    def get_unwalkable_rects(self, neighboring_tiles: list[Entity]) -> list[pygame.Rect]:
         """
         Gets unwalkable tile rects that aren't "special" given list of entity IDs
 

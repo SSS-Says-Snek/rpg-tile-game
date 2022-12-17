@@ -52,9 +52,7 @@ class NPCCombatSystem(System):
                     elif self.world.has_component(entity, ai_component.MeleeWeaponAttack):
                         melee_weapon_attack = self.world.component_for_entity(entity, ai_component.MeleeWeaponAttack)
                         inventory = self.world.component_for_entity(entity, Inventory)
-                        equipped_item = self.world.component_for_entity(
-                            inventory.equipped_item, item_component.Item
-                        )
+                        equipped_item = self.world.component_for_entity(inventory.equipped_item, item_component.Item)
 
                         if (
                             pos.in_range(nested_pos.tile_pos, melee_weapon_attack.attack_range)

@@ -38,11 +38,7 @@ class ItemInfoSystem(System):
             finish_darken_callback=self.on_finish_darken_game,
             finish_lighten_callback=self.on_finish_lighten_game,
         )
-        self.fade_self = FadeTransition(
-            mode=FadeTransition.FADE_IN,
-            duration=duration,
-            screen=self.screen
-        )
+        self.fade_self = FadeTransition(mode=FadeTransition.FADE_IN, duration=duration, screen=self.screen)
 
         self.ok_button = self.ui.add_widget(
             DefaultButton(
@@ -57,10 +53,10 @@ class ItemInfoSystem(System):
                 hover_color=(80, 80, 80),
                 fade_duration=700,
                 click_callback=self.on_button_click,
-                screen=self.screen
+                screen=self.screen,
             ),
             visible=False,
-            manual_draw=True
+            manual_draw=True,
         )
 
     def on_finish_darken_game(self):

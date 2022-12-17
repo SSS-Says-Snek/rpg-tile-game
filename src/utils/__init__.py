@@ -214,3 +214,5 @@ def get_size(graphics_unit: Union[pygame.Surface, dict[str, animation.Animation]
         return graphics_unit.get_size()
     elif isinstance(graphics_unit, dict):
         return max(graphics_unit.values(), key=operator.attrgetter("sprite_size")).sprite_size
+    else:
+        raise NotImplemented

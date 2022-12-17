@@ -36,7 +36,7 @@ class DefaultButton(Widget):
         fade_duration: int = 500,
         click_callback: Optional[VoidFunc] = None,
         fade_callback: Optional[VoidFunc] = None,
-        screen: pygame.Surface = screen
+        screen: pygame.Surface = screen,
     ):
         super().__init__()
 

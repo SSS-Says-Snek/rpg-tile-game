@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 import random
 from math import cos, radians, sin
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 
 import pygame.gfxdraw
 
@@ -246,7 +246,7 @@ class Particle:
 
         # CUSTOM EFFECTS
 
-        def _effect(self, effect: Callable, *args):
+        def _effect(self, effect: Callable):
             self.particle.effects.add(effect)
             return self
 
