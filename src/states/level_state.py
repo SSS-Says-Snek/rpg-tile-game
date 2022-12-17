@@ -277,18 +277,17 @@ class LevelState(State):
             self.load_spawn(obj)
             self.load_item(obj)
 
-    def reset(self):
-        self.world.clear_database()
-
     def pause(self):
-        core.time.pause()
-        for pausable_process in self.pausable_processes:
-            self.world.remove_processor(type(pausable_process))
+        if not core.time.paused:
+            core.time.pause()
+            for pausable_process in self.pausable_processes:
+                self.world.remove_processor(type(pausable_process))
 
     def unpause(self):
-        core.time.unpause()
-        for pausable_process in self.pausable_processes:
-            self.world.add_processor(pausable_process)
+        if core.time.paused:
+            core.time.unpause()
+            for pausable_process in self.pausable_processes:
+                self.world.add_processor(pausable_process)
 
     def draw(self):
         self.effect_manager.draw()
@@ -297,8 +296,10 @@ class LevelState(State):
             self.camera.do_shake()
 
     def handle_event(self, event: pygame.event.Event):
-        # self.change_state("level_state.TestState")
         if event.type == pygame.KEYDOWN:
+            # DEBUG stuff: F1 -> debug mode, F6 -> pause, F7 -> unpause, F8 -> transition state
+            # F9 -> toggle FPS cap
+
             if event.key == pygame.K_F1:
                 self.debug = not self.debug
             elif event.key == pygame.K_F6 and not core.time.paused:

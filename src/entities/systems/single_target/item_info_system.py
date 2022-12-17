@@ -67,10 +67,12 @@ class ItemInfoSystem(System):
         """Activated when the game finished darkening"""
 
         self.level.pause()
+        print("PAUSE")
 
     def on_finish_lighten_game(self):
         """Activated when the game finished lightening"""
 
+        print("UNPAUSE")
         self.level.unpause()
         self.item = None
         self.ui.toggle_visible(self.ok_button)
