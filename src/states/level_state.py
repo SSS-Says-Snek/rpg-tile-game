@@ -296,8 +296,6 @@ class LevelState(State):
         if self.camera.shake_frames > 0:
             self.camera.do_shake()
 
-        self.ui.draw_post_graphics_system()
-
     def handle_event(self, event: pygame.event.Event):
         # self.change_state("level_state.TestState")
         if event.type == pygame.KEYDOWN:

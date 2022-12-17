@@ -14,19 +14,18 @@ from src import core, pygame, screen
 from src.types import VoidFunc
 
 
-class FadeTransition:
-    FADE_IN = 0
-    FADE_OUT = 1
-    FADE_OUT_IN = 2
+class DarkenTransition:
+    DARKEN = 0
+    LIGHTEN = 1
 
     def __init__(
         self,
         mode: int,
         duration: int,
-        fade_out_frac: float = 1,
-        finish_out_callback: Optional[VoidFunc] = None,
-        finish_in_callback: Optional[VoidFunc] = None,
-        surf: pygame.Surface = screen,
+        darken_threshold: float = 1,
+        finish_darken_callback: Optional[VoidFunc] = None,
+        finish_lighten_callback: Optional[VoidFunc] = None,
+        screen: pygame.Surface = screen,
     ):
         """
         Provides an easy way to darken a desired surface with linear interpolation
@@ -34,24 +33,24 @@ class FadeTransition:
         Args:
             mode: Mode to fade
             duration: How long, in milliseconds, the transition should last
-            fade_out_frac: At what level it should stop getting darker
-            surf: What surface to fade. Defaults to `screen`
+            darken_threshold: At what level it should stop getting darker
+            screen: What surface to fade. Defaults to `screen`
         """
 
         self.mode = mode
         self.duration = duration
-        self.screen_to_fade = surf
+        self.screen = screen
 
-        self.alpha = 255 if mode == self.FADE_IN else 0
-        self.fade_out = fade_out_frac * 255
+        self.alpha = 255 if mode == self.LIGHTEN else 0
+        self.fade_out = darken_threshold * 255
 
         self.time_started = 0
         self.transitioning = False
-        self.finish_out_callback = finish_out_callback
-        self.finish_in_callback = finish_in_callback
+        self.finish_out_callback = finish_darken_callback
+        self.finish_in_callback = finish_lighten_callback
 
-        self.darkness = pygame.Surface(surf.get_size())
-        self.darkness.set_alpha(self.alpha)
+        self.darken = pygame.Surface(screen.get_size())
+        self.darken.set_alpha(self.alpha)
 
     def start(self):
         """Starts a transition"""
@@ -59,33 +58,48 @@ class FadeTransition:
         self.transitioning = True
         self.time_started = core.time.get_raw_ticks()
 
-    def draw(self):
-        """Draws (and updates) darkening"""
-
+    def update(self):
         if self.transitioning:
             time_elapsed = core.time.get_raw_ticks() - self.time_started
             duration_frac = time_elapsed / self.duration
 
-            if self.mode == self.FADE_IN:
+            if self.mode == self.LIGHTEN:
                 self.alpha = self.fade_out - (duration_frac * 255)
             else:
                 self.alpha = duration_frac * self.fade_out
 
             if duration_frac > 1:
-                if self.finish_out_callback is not None and self.mode == self.FADE_OUT:
+                if self.finish_out_callback is not None and self.mode == self.DARKEN:
                     self.finish_out_callback()
-                elif self.finish_in_callback is not None and self.mode == self.FADE_IN:
+                elif self.finish_in_callback is not None and self.mode == self.LIGHTEN:
                     self.finish_in_callback()
 
                 self.transitioning = False
                 # Just in case it overreached
-                if self.mode == self.FADE_OUT:
+                if self.mode == self.DARKEN:
                     self.alpha = self.fade_out
                 else:
                     self.alpha = 0
 
-            self.darkness.set_alpha(self.alpha)
-        self.screen_to_fade.blit(self.darkness, (0, 0))
+            self.darken.set_alpha(self.alpha)
+
+    def draw(self):
+        """Draws (and updates) darkening"""
+
+        self.update()
+        self.screen.blit(self.darken, (0, 0))
+
+
+class FadeTransition(DarkenTransition):
+    FADE_IN = 0
+    FADE_OUT = 1
+
+    DARKEN = FADE_IN
+    LIGHTEN = FADE_OUT
+
+    def draw(self):
+        # Basically everything is reversed because of some naming discrepancies for DarkenTransition
+        self.update()
 
 
 class EaseTransition:
@@ -99,7 +113,8 @@ class EaseTransition:
         callback: Optional[VoidFunc] = None,
     ):
         """
-        Provides an easy way to obtain numbers in a range from various easing functions
+        Provides an easy way to obtain numbers in a range from various easing functions.
+        This does NOT have anything to do with the actual blitting of transitions.
 
         Args:
             begin: The beginning

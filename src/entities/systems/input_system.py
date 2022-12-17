@@ -27,7 +27,7 @@ class InputSystem(System):
                 cont = False
                 for widget_info in self.ui.widgets.values():
                     interact_rect = widget_info.widget.interact_rect
-                    if interact_rect is not None and interact_rect.collidepoint(event.pos):
+                    if interact_rect is not None and interact_rect.collidepoint(event.pos) and widget_info.visible:
                         cont = True
                         break
                 if cont:

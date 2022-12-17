@@ -35,7 +35,8 @@ class DefaultButton(Widget):
         hover_color: Optional[TupColor] = None,
         fade_duration: int = 500,
         click_callback: Optional[VoidFunc] = None,
-        fade_callback: Optional[VoidFunc] = None
+        fade_callback: Optional[VoidFunc] = None,
+        screen: pygame.Surface = screen
     ):
         super().__init__()
 
@@ -71,6 +72,8 @@ class DefaultButton(Widget):
             self.text_surf = None
             self.text_surf_center = None
 
+        self.screen = screen
+
     def _fade_callback(self):
         self.border_clicked = False
 
@@ -89,7 +92,7 @@ class DefaultButton(Widget):
             fade_surf.get_rect(),
             border_radius=self.border_roundness * 2,
         )
-        screen.blit(fade_surf, fade_surf.get_rect(center=self.rect.center))
+        self.screen.blit(fade_surf, fade_surf.get_rect(center=self.rect.center))
 
         self.border_fade.update()
         self.border_expand.update()
@@ -103,11 +106,11 @@ class DefaultButton(Widget):
             bg_color = self.hover_color
         else:
             bg_color = self.color
-        pygame.draw.rect(screen, bg_color, self.rect, border_radius=self.border_roundness)
+        pygame.draw.rect(self.screen, bg_color, self.rect, border_radius=self.border_roundness)
 
         # Main rect
         pygame.draw.rect(
-            screen,
+            self.screen,
             self.border_color,
             self.rect,
             width=self.border_width,
@@ -115,7 +118,7 @@ class DefaultButton(Widget):
         )
 
         if self.text_surf is not None:
-            screen.blit(self.text_surf, self.text_surf_center)
+            self.screen.blit(self.text_surf, self.text_surf_center)
 
     def update(self):
         for event in core.event.get():

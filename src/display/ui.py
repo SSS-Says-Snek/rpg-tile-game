@@ -21,12 +21,12 @@ from src.display.widgets.widget import Widget
 class WidgetInfo:
     widget: Widget
     visible: bool
-    when: str
+    manual_draw: bool
 
     def __iter__(self) -> Iterable:
         yield self.widget
         yield self.visible
-        yield self.when
+        yield self.manual_draw
 
 
 class UI:
@@ -50,15 +50,8 @@ class UI:
     def draw(self):
         """Draws all widgets"""
 
-        for widget, visible, when in self.widgets.copy().values():
-            if not visible or when != "graphics_system":
-                continue
-
-            widget.draw(self.camera)
-
-    def draw_post_graphics_system(self):
-        for widget, visible, when in self.widgets.copy().values():
-            if not visible or when != "post_graphics_system":
+        for widget, visible, manual_draw in self.widgets.copy().values():
+            if not visible or manual_draw:
                 continue
 
             widget.draw(self.camera)
@@ -66,32 +59,32 @@ class UI:
     def update(self):
         """Updates all widgets in the user interface"""
 
-        for widget, visible, _ in self.widgets.values():
-            if not visible:
+        for widget, visible, manual_draw in self.widgets.values():
+            if not visible or manual_draw:
                 continue
 
             widget.update()
 
-    def add_widget(self, widget: Widget, visible: bool = True, when: str = "graphics_system") -> int:
+    def add_widget(self, widget: Widget, visible: bool = True, manual_draw: bool = False) -> int:
         """
         Adds a widget to the UI
 
         Args:
             widget: The widget to add
             visible: Whether it is currently visible or not
-            when: When to render the widget
+            manual_draw: Whether to let the user handle it with `handle_widget` or not
 
         Returns:
             An ID for the widget
         """
 
         widget.uuid = self.current_uuid
-        self.widgets[self.current_uuid] = WidgetInfo(widget, visible, when)
+        self.widgets[self.current_uuid] = WidgetInfo(widget, visible, manual_draw)
 
         self.current_uuid += 1
         return widget.uuid
 
-    def add_hud_widget(self, widget, hud_name: str, visible: bool = True, when: str = "graphics_system"):
+    def add_hud_widget(self, widget, hud_name: str, visible: bool = True, manual_draw: bool = False):
         """
         Adds an HUD widget to the UI
 
@@ -99,12 +92,12 @@ class UI:
             widget: The HUD widget to add
             hud_name: The HUD name to reference it elsewhere
             visible: Whether it is currently visible or not
-            when: When to render the widget
+            manual_draw: Whether to let the user handle it with `handle_widget` or not
 
         Returns:
             An ID for the widget
         """
-        self.hud_widgets[hud_name] = WidgetInfo(widget, visible, when)
+        self.hud_widgets[hud_name] = WidgetInfo(widget, visible, manual_draw)
         self.add_widget(widget, visible)
 
     def remove_widget(self, uuid: int):
@@ -126,3 +119,18 @@ class UI:
         """
 
         self.widgets[uuid].visible = not self.widgets[uuid].visible
+
+    def handle_widget(self, uuid: int):
+        """
+        Handles widget directly
+        TODO: Find a better way than this heheheha
+
+        Args:
+            uuid: ID of widget
+        """
+
+        widget = self.widgets[uuid]
+
+        if widget.visible:
+            widget.widget.update()
+            widget.widget.draw(self.camera)

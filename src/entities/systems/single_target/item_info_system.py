@@ -8,7 +8,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from src.display.transition import FadeTransition
+import pygame
+
+from src.common import RES, screen
+from src.display.transition import DarkenTransition, FadeTransition
 from src.display.widgets.button import DefaultButton
 from src.types import Entity
 
@@ -22,15 +25,23 @@ class ItemInfoSystem(System):
     def __init__(self, level_state: LevelState):
         super().__init__(level_state)
 
-        self.weapon_entity: Optional[Entity] = None
+        self.item: Optional[Entity] = None
         self.subscribe("player_get_item", self.on_player_get_item)
 
-        self.fade = FadeTransition(
-            FadeTransition.FADE_OUT,
-            700,
-            fade_out_frac=0.8,
-            finish_out_callback=self.on_fade_out,
-            finish_in_callback=self.on_fade_in,
+        self.screen = pygame.Surface(RES, pygame.SRCALPHA)
+
+        duration = 400
+        self.darken_game = DarkenTransition(
+            mode=DarkenTransition.DARKEN,
+            duration=duration,
+            darken_threshold=0.8,
+            finish_darken_callback=self.on_finish_darken_game,
+            finish_lighten_callback=self.on_finish_lighten_game,
+        )
+        self.fade_self = FadeTransition(
+            mode=FadeTransition.FADE_IN,
+            duration=duration,
+            screen=self.screen
         )
 
         self.ok_button = self.ui.add_widget(
@@ -44,34 +55,57 @@ class ItemInfoSystem(System):
                 border_roundness=5,
                 color=(100, 100, 100),
                 hover_color=(80, 80, 80),
-                fade_duration=200,
+                fade_duration=700,
                 click_callback=self.on_button_click,
-                fade_callback=self.on_button_fade
+                screen=self.screen
             ),
             visible=False,
-            when="post_graphics_system",
+            manual_draw=True
         )
 
-    def on_fade_out(self):
-        self.ui.toggle_visible(self.ok_button)
+    def on_finish_darken_game(self):
+        """Activated when the game finished darkening"""
+
         self.level.pause()
 
-    def on_fade_in(self):
+    def on_finish_lighten_game(self):
+        """Activated when the game finished lightening"""
+
         self.level.unpause()
-
-    def on_player_get_item(self, weapon_entity: Entity):
-        self.weapon_entity = weapon_entity
-
-        self.fade.mode = FadeTransition.FADE_OUT
-        self.fade.start()
-
-    def on_button_click(self):
-        self.fade.mode = FadeTransition.FADE_IN
-        self.fade.start()
-
-    def on_button_fade(self):
+        self.item = None
         self.ui.toggle_visible(self.ok_button)
 
+    def on_player_get_item(self, item: Entity):
+        """Activated when the player gets an item"""
+
+        self.item = item
+
+        self.darken_game.mode = DarkenTransition.DARKEN
+        self.darken_game.start()
+
+        self.fade_self.mode = FadeTransition.FADE_IN
+        self.fade_self.start()
+
+        self.ui.toggle_visible(self.ok_button)
+
+    def on_button_click(self):
+        """Activated when the okay button's clicked"""
+
+        self.darken_game.mode = DarkenTransition.LIGHTEN
+        self.darken_game.start()
+
+        self.fade_self.mode = FadeTransition.FADE_OUT
+        self.fade_self.start()
+
     def process(self):
-        if self.weapon_entity is not None:
-            self.fade.draw()
+        if self.item is not None:
+            # Clears screen
+            self.screen.fill(0)
+
+            self.darken_game.draw()
+            self.fade_self.draw()
+
+            # Separately handles widget
+            self.ui.handle_widget(self.ok_button)
+
+            screen.blit(self.screen, (0, 0))
