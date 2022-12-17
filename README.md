@@ -10,12 +10,16 @@
 
 ## Screenshots
 
+![Screenshot 1](screenshots/ss_1.png)
+
 ---
 ## Requirements
 
 This game requires:
 - Python 3.7+
 - Pygame 2.0+
+- Esper
+- ModernGL
 
 ---
 ## Installation
