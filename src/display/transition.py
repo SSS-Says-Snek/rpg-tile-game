@@ -14,97 +14,6 @@ from src import core, pygame, screen
 from src.types import VoidFunc
 
 
-class DarkenTransition:
-    DARKEN = 0
-    LIGHTEN = 1
-
-    def __init__(
-        self,
-        mode: int,
-        duration: int,
-        darken_threshold: float = 1,
-        finish_darken_callback: Optional[VoidFunc] = None,
-        finish_lighten_callback: Optional[VoidFunc] = None,
-        screen: pygame.Surface = screen,
-    ):
-        """
-        Provides an easy way to darken a desired surface with linear interpolation
-
-        Args:
-            mode: Mode to fade
-            duration: How long, in milliseconds, the transition should last
-            darken_threshold: At what level it should stop getting darker
-            screen: What surface to fade. Defaults to `screen`
-        """
-
-        self.mode = mode
-        self.duration = duration
-        self.screen = screen
-
-        self.alpha = 255 if mode == self.LIGHTEN else 0
-        self.fade_out = darken_threshold * 255
-
-        self.time_started = 0
-        self.transitioning = False
-        self.finish_out_callback = finish_darken_callback
-        self.finish_in_callback = finish_lighten_callback
-
-        self.darken = pygame.Surface(screen.get_size())
-        self.darken.set_alpha(self.alpha)
-
-    def start(self):
-        """Starts a transition"""
-
-        self.transitioning = True
-        self.time_started = core.time.get_raw_ticks()
-
-    def update(self):
-        if self.transitioning:
-            time_elapsed = core.time.get_raw_ticks() - self.time_started
-            duration_frac = time_elapsed / self.duration
-
-            if self.mode == self.LIGHTEN:
-                self.alpha = self.fade_out - (duration_frac * 255)
-            else:
-                self.alpha = duration_frac * self.fade_out
-
-            if duration_frac > 1:
-                if self.finish_out_callback is not None and self.mode == self.DARKEN:
-                    self.finish_out_callback()
-                elif self.finish_in_callback is not None and self.mode == self.LIGHTEN:
-                    self.finish_in_callback()
-
-                self.transitioning = False
-                # Just in case it overreached
-                if self.mode == self.DARKEN:
-                    self.alpha = self.fade_out
-                else:
-                    self.alpha = 0
-
-            self.darken.set_alpha(self.alpha)
-
-    def draw(self):
-        """Draws (and updates) darkening"""
-
-        self.update()
-        self.screen.blit(self.darken, (0, 0))
-
-
-class FadeTransition(DarkenTransition):
-    FADE_IN = 0
-    FADE_OUT = 1
-
-    DARKEN = FADE_IN
-    LIGHTEN = FADE_OUT
-
-    def draw(self):
-        # Basically everything is reversed because of some naming discrepancies for DarkenTransition
-        self.update()
-        
-        if self.transitioning:
-            self.screen.set_alpha(self.alpha)
-
-
 class EaseTransition:
     def __init__(
         self,
@@ -167,6 +76,10 @@ class EaseTransition:
             return 1
         return 1 - (2 ** (-10 * x))
 
+    @staticmethod
+    def ease_linear(x: float) -> float:
+        return x
+
     def start(self):
         self.transitioning = True
         self.time_started = core.time.get_raw_ticks()
@@ -187,3 +100,97 @@ class EaseTransition:
             self.value = self.default_end
             if self.callback is not None:
                 self.callback()
+
+
+class DarkenTransition:
+    DARKEN = 0
+    LIGHTEN = 1
+
+    def __init__(
+        self,
+        mode: int,
+        duration: int,
+        darken_threshold: float = 1,
+        ease_function: Callable[[float], float] = EaseTransition.ease_linear,
+        finish_darken_callback: Optional[VoidFunc] = None,
+        finish_lighten_callback: Optional[VoidFunc] = None,
+        screen: pygame.Surface = screen,
+    ):
+        """
+        Provides an easy way to darken a desired surface with linear interpolation
+
+        Args:
+            mode: Mode to fade
+            duration: How long, in milliseconds, the transition should last
+            darken_threshold: At what level it should stop getting darker
+            screen: What surface to fade. Defaults to `screen`
+        """
+
+        self.mode = mode
+        self.duration = duration
+        self.screen = screen
+
+        self.alpha = 255 if mode == self.LIGHTEN else 0
+        self.fade_out = darken_threshold * 255
+        self.ease_function = ease_function
+
+        self.time_started = 0
+        self.transitioning = False
+        self.finish_out_callback = finish_darken_callback
+        self.finish_in_callback = finish_lighten_callback
+
+        self.darken = pygame.Surface(screen.get_size())
+        self.darken.set_alpha(self.alpha)
+
+    def start(self):
+        """Starts a transition"""
+
+        self.transitioning = True
+        self.time_started = core.time.get_raw_ticks()
+
+    def update(self):
+        if self.transitioning:
+            time_elapsed = core.time.get_raw_ticks() - self.time_started
+            duration_frac = time_elapsed / self.duration
+            eased_frac = self.ease_function(duration_frac)
+
+            if self.mode == self.LIGHTEN:
+                self.alpha = self.fade_out - (eased_frac * 255)
+            else:
+                self.alpha = eased_frac * self.fade_out
+
+            if duration_frac > 1:
+                if self.finish_out_callback is not None and self.mode == self.DARKEN:
+                    self.finish_out_callback()
+                elif self.finish_in_callback is not None and self.mode == self.LIGHTEN:
+                    self.finish_in_callback()
+
+                self.transitioning = False
+                # Just in case it overreached
+                if self.mode == self.DARKEN:
+                    self.alpha = self.fade_out
+                else:
+                    self.alpha = 0
+
+            self.darken.set_alpha(self.alpha)
+
+    def draw(self):
+        """Draws (and updates) darkening"""
+
+        self.update()
+        self.screen.blit(self.darken, (0, 0))
+
+
+class FadeTransition(DarkenTransition):
+    FADE_IN = 0
+    FADE_OUT = 1
+
+    DARKEN = FADE_IN
+    LIGHTEN = FADE_OUT
+
+    def draw(self):
+        # Basically everything is reversed because of some naming discrepancies for DarkenTransition
+        self.update()
+        
+        if self.transitioning:
+            self.screen.set_alpha(self.alpha)

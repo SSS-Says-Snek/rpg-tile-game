@@ -11,8 +11,10 @@ from typing import TYPE_CHECKING, Optional
 import pygame
 
 from src.common import RES, screen
-from src.display.transition import DarkenTransition, FadeTransition
+from src.display.transition import DarkenTransition, FadeTransition, EaseTransition
 from src.display.widgets.button import DefaultButton
+from src.entities.components import item_component
+from src.entities.components.component import Position
 from src.types import Entity
 
 if TYPE_CHECKING:
@@ -30,15 +32,21 @@ class ItemInfoSystem(System):
 
         self.screen = pygame.Surface(RES, pygame.SRCALPHA)
 
-        duration = 400
+        duration = 500
         self.darken_game = DarkenTransition(
             mode=DarkenTransition.DARKEN,
             duration=duration,
             darken_threshold=0.8,
+            ease_function=EaseTransition.ease_out_cub,
             finish_darken_callback=self.on_finish_darken_game,
             finish_lighten_callback=self.on_finish_lighten_game,
         )
-        self.fade_self = FadeTransition(mode=FadeTransition.FADE_IN, duration=duration, screen=self.screen)
+        self.fade_self = FadeTransition(
+            mode=FadeTransition.FADE_IN,
+            duration=duration,
+            ease_function=EaseTransition.ease_out_cub,
+            screen=self.screen
+        )
 
         self.ok_button = self.ui.add_widget(
             DefaultButton(
@@ -63,15 +71,18 @@ class ItemInfoSystem(System):
         """Activated when the game finished darkening"""
 
         self.level.pause()
-        print("PAUSE")
 
     def on_finish_lighten_game(self):
         """Activated when the game finished lightening"""
 
-        print("UNPAUSE")
         self.level.unpause()
-        self.item = None
         self.ui.toggle_visible(self.ok_button)
+
+        item = self.world.component_for_entity(self.item, item_component.Item)
+        owner_pos = self.world.component_for_entity(item.owner, Position)
+        self.particle_manager.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
+
+        self.item = None
 
     def on_player_get_item(self, item: Entity):
         """Activated when the player gets an item"""
