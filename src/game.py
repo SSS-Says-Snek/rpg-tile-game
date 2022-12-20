@@ -32,7 +32,7 @@ class Game:
         self.ui = UI()
 
         # Shader manager to handle shaders and actually draw proxy screen onto actual screen
-        self.shader_manager = ShaderManager()
+        # self.shader_manager = ShaderManager()
 
         # self.ui.add_widget(
         #     DefaultButton(
@@ -84,7 +84,8 @@ class Game:
             self.state.draw()
 
             # Renders screen
-            self.shader_manager.render()
+            # self.shader_manager.render()
+            pygame.display.update()
 
             # State detector/switcher
             if self.state.next_state != type(self.state):

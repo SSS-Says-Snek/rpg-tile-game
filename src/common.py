@@ -25,8 +25,9 @@ RES = (WIDTH, HEIGHT)
 FPS = 60
 BASE_FPS = 60
 
-screen = pygame.Surface(RES)
-pygame.display.set_mode(RES, pygame.DOUBLEBUF | pygame.OPENGL)
+screen = pygame.display.set_mode(RES)
+# screen = pygame.Surface(RES)
+# pygame.display.set_mode(RES, pygame.DOUBLEBUF | pygame.OPENGL)
 
 SOURCE_DIR = pathlib.Path("src")
 ASSETS_DIR = pathlib.Path("assets")
