@@ -100,6 +100,9 @@ class FadeTransition(DarkenTransition):
     def draw(self):
         # Basically everything is reversed because of some naming discrepancies for DarkenTransition
         self.update()
+        
+        if self.transitioning:
+            self.screen.set_alpha(self.alpha)
 
 
 class EaseTransition:
