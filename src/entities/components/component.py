@@ -8,36 +8,10 @@ This file defines components (data-only) for the game entities (integer IDs)
 
 from __future__ import annotations
 
-__all__ = [
-    "References",
-    "Flags",
-    "Graphics",
-    "Position",
-    "Movement",
-    "Health",
-    "Inventory",
-]
-
 from typing import Optional
 
 from src import pygame, utils
 from src.types import Entity
-
-
-class References:  # Thinking about it
-    def __init__(self, reference_dict: Optional[dict] = None):
-        if reference_dict is None:
-            self.references = {}
-        else:
-            self.references = reference_dict
-
-
-class Flags:
-    def __init__(
-        self,
-        collide_with_player: bool = False,
-    ):
-        self.collide_with_player = collide_with_player
 
 
 class Graphics:
@@ -141,3 +115,7 @@ class Inventory:
 
     def __setitem__(self, key: int, value: Entity):
         self.inventory[key] = value
+
+
+class NoCollidePlayer:
+    pass

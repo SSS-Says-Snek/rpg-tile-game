@@ -33,7 +33,7 @@ class InputSystem(System):
                 if cont:
                     continue
 
-                hotbar_widget = self.ui.hud_widgets["hotbar"].widget
+                hotbar_widget = self.ui.get_hud_widget("hotbar").widget
 
                 if hotbar_widget.frame_rect.collidepoint(event.pos):
                     for i, hotbar_rect in enumerate(hotbar_widget.hotbar_rects):

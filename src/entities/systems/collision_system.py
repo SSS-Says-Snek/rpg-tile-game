@@ -12,8 +12,8 @@ import pygame
 
 from src import core, utils
 from src.entities.components import item_component, tile_component
-from src.entities.components.component import (Flags, Graphics, Inventory,
-                                               Movement, Position)
+from src.entities.components.component import (Graphics, Inventory,
+                                               Movement, Position, NoCollidePlayer)
 from src.entities.systems.system import System
 
 
@@ -71,21 +71,23 @@ class CollisionSystem(System):
 
     def process(self):
         # Mob
-        for entity, (flags, pos, movement, graphics) in self.world.get_components(Flags, Position, Movement, Graphics):
+        for entity, (pos, movement, graphics) in self.world.get_components(Position, Movement, Graphics):
             neighboring_tile_entities = self.tilemap.get_neighboring_tile_entities(3, pos)
             neighboring_tile_rects = self.tilemap.get_unwalkable_rects(neighboring_tile_entities)
             neighboring_ramps = self.tilemap.get_ramps(neighboring_tile_entities)
 
             # Obvs, if it's gonna collide with player, player should be in it
-            if flags.collide_with_player:
+            collide_with_player = not self.world.has_component(entity, NoCollidePlayer)
+            if entity != self.player and collide_with_player:
                 neighboring_tile_rects.append(self.component_for_player(Position).rect)
 
             # Player collides with collide_with_player entities
             # Player can also go on ramps
             if entity == self.player:
                 # Still super inefficient
-                for nested_entity, (nested_flags, nested_pos) in self.world.get_components(Flags, Position):
-                    if nested_flags.collide_with_player:
+                for nested_entity, nested_pos in self.world.get_component(Position):
+                    collide_with_player = not self.world.has_component(nested_entity, NoCollidePlayer)
+                    if nested_entity != self.player and collide_with_player:
                         neighboring_tile_rects.append(nested_pos.rect)
 
             # Apply gravity

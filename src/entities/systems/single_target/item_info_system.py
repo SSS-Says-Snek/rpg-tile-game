@@ -37,14 +37,14 @@ class ItemInfoSystem(System):
             mode=DarkenTransition.DARKEN,
             duration=duration,
             darken_threshold=0.8,
-            ease_function=EaseTransition.ease_out_cub,
+            ease_function=EaseTransition.ease_in_out_pow(1.5),
             finish_darken_callback=self.on_finish_darken_game,
             finish_lighten_callback=self.on_finish_lighten_game,
         )
         self.fade_self = FadeTransition(
             mode=FadeTransition.FADE_IN,
             duration=duration,
-            ease_function=EaseTransition.ease_out_cub,
+            ease_function=EaseTransition.ease_in_out_pow(1.5),
             screen=self.screen
         )
 
@@ -113,7 +113,6 @@ class ItemInfoSystem(System):
 
             self.darken_game.draw()
             self.fade_self.draw()
-
             # Separately handles widget
             self.ui.handle_widget(self.ok_button)
 

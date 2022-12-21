@@ -45,7 +45,7 @@ class UI:
         self.particle_manager: Optional[ParticleManager] = None
 
         self.widgets: dict[int, WidgetInfo] = {}
-        self.hud_widgets: dict[str, WidgetInfo] = {}
+        self.hud_widgets: dict[str, int] = {}
 
     def draw(self):
         """Draws all widgets"""
@@ -84,21 +84,19 @@ class UI:
         self.current_uuid += 1
         return widget.uuid
 
-    def add_hud_widget(self, widget, hud_name: str, visible: bool = True, manual_draw: bool = False):
+    def add_hud_widget(self, uuid: int, hud_name: str):
         """
         Adds an HUD widget to the UI
 
         Args:
-            widget: The HUD widget to add
-            hud_name: The HUD name to reference it elsewhere
-            visible: Whether it is currently visible or not
-            manual_draw: Whether to let the user handle it with `handle_widget` or not
-
-        Returns:
-            An ID for the widget
+            uuid: UUID
+            hud_name: String of name to refer to widget
         """
-        self.hud_widgets[hud_name] = WidgetInfo(widget, visible, manual_draw)
-        self.add_widget(widget, visible)
+
+        self.hud_widgets[hud_name] = uuid
+
+    def get_hud_widget(self, hud_name: str) -> WidgetInfo:
+        return self.widgets[self.hud_widgets[hud_name]]
 
     def remove_widget(self, uuid: int):
         """

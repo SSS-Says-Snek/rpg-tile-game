@@ -65,8 +65,17 @@ class EaseTransition:
 
     @staticmethod
     def ease_out_pow(power: int) -> Callable[[float], float]:
-        def inner(x: float):
+        def inner(x: float) -> float:
             return 1 - (1 - x) ** power
+
+        return inner
+
+    @staticmethod
+    def ease_in_out_pow(power: float) -> Callable[[float], float]:
+        def inner(x: float) -> float:
+            if x < 0.5:
+                return 2 ** (power - 1) * x ** power
+            return 1 - (-2 * x + 2) ** power / 2
 
         return inner
 

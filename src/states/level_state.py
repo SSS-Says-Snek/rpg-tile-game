@@ -24,8 +24,8 @@ from src.display.widgets.inventory import Hotbar
 from src.entities import effect
 # Components
 from src.entities.components import ai_component, item_component
-from src.entities.components.component import (Flags, Graphics, Health,
-                                               Inventory, Movement, Position)
+from src.entities.components.component import (Graphics, Health,
+                                               Inventory, Movement, Position, NoCollidePlayer)
 # Systems
 from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, HitSystem, InputSystem,
@@ -116,7 +116,6 @@ class LevelState(State):
                 Movement(speed=player_settings["speed"]),
                 Health(hp=player_settings["hp"], max_hp=player_settings["max_hp"]),
                 Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(player_anims)),
-                Flags(),
                 Graphics(animations=player_anims, animation_speeds=player_anim_speeds),
                 inventory,
             )
@@ -137,10 +136,10 @@ class LevelState(State):
             )
 
             self.ui.add_widget(PlayerHealthBar(self.ui, self.player, (700, 10), 230, 20))
-            self.ui.add_hud_widget(
+            hotbar = self.ui.add_widget(
                 Hotbar(self.ui, self.player, (common.WIDTH // 2, 40), (64, 64)),
-                hud_name="hotbar",
             )
+            self.ui.add_hud_widget(hotbar, "hotbar")
             # self.effect_manager.add_effect(
             #     self.player,
             #     effect.BurnEffect(self).builder().damage(10).duration(5, 1).build(),
@@ -151,11 +150,11 @@ class LevelState(State):
             walker_anims, walker_anim_speeds = utils.load_mob_animations(walker_settings)
 
             walker_enemy = self.world.create_entity(
-                Flags(),
                 Graphics(animations=walker_anims, animation_speeds=walker_anim_speeds),
                 Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(walker_anims)),
                 Health(hp=walker_settings["hp"], max_hp=walker_settings["max_hp"]),
                 Movement(walker_settings["speed"]),
+                NoCollidePlayer(),
                 ai_component.MeleeAttack(
                     attack_range=0,
                     attack_cooldown=walker_settings["attack_cooldown"],
@@ -178,7 +177,6 @@ class LevelState(State):
             inventory = Inventory(size=1, hotbar_size=1)
 
             simple_melee_enemy = self.world.create_entity(
-                Flags(collide_with_player=True),
                 Graphics(animations=simple_melee_animations, animation_speeds=simple_melee_animation_speeds),
                 Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(simple_melee_animations)),
                 Health(hp=simple_melee_settings["hp"], max_hp=simple_melee_settings["max_hp"]),
@@ -220,7 +218,6 @@ class LevelState(State):
 
         elif obj.name == "test_shooter_enemy_spawn":
             test_shooter_enemy = self.world.create_entity(
-                Flags(collide_with_player=True),
                 Graphics(sprite=self.imgs["mobs/test_shooter"]),
                 Position(pos=pygame.Vector2(obj.x, obj.y), rect_size=utils.get_size(self.imgs["mobs/test_shooter"])),
                 Health(hp=10000, max_hp=10000),
