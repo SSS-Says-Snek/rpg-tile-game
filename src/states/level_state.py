@@ -174,7 +174,7 @@ class LevelState(State):
             weapon_surf = self.imgs["items/bronze_sword"]
             speed = simple_melee_settings["speed"]
 
-            inventory = Inventory(size=1, hotbar_size=1)
+            inventory = Inventory(size=1)
 
             simple_melee_enemy = self.world.create_entity(
                 Graphics(animations=simple_melee_animations, animation_speeds=simple_melee_animation_speeds),

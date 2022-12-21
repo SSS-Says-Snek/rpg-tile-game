@@ -151,7 +151,7 @@ class ItemUsages(types.SimpleNamespace):
                 shot_by=entity,
             ),
             projectile_component.ProjectilePosition(item_pos.pos.copy()),
-            projectile_component.ProjectileGraphics(self.imgs["items/arrows_sprite"]),
+            projectile_component.ProjectileGraphics(self.imgs["projectiles/arrows_sprite"]),
         )
 
         item.used = False

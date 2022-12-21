@@ -78,8 +78,12 @@ class DirLoader(Generic[_T]):
         """Utilizes dict references to grab a portion of settings to be updated"""
 
         current_dict = self.data
-        for part in parts:
-            current_dict = current_dict[part]
+        try:
+            for part in parts:
+                current_dict = current_dict[part]
+        except KeyError:
+            reconnected = '/'.join(parts)
+            raise KeyError(f"No record of \"{reconnected}\" in the loader. Perhaps it was moved?") from None
         return current_dict
 
 

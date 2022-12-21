@@ -122,7 +122,7 @@ class NPCCombatSystem(System):
                                 projectile_component.ProjectilePosition(
                                     pygame.Vector2(target_pos.x - x_target, target_pos.y + y_target)
                                 ),
-                                projectile_component.ProjectileGraphics(self.imgs["items/arrows_sprite"]),
+                                projectile_component.ProjectileGraphics(self.imgs["projectiles/arrows_sprite"]),
                             )
 
                             range_attack.last_attacked = core.time.get_ticks()
