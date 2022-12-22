@@ -170,8 +170,6 @@ class ItemUsages(types.SimpleNamespace):
         self.particle_manager.create_hit_particles(8, pos, [(255, 255, 255)])
         self.effect_manager.add_effect(item.owner, RegenEffect(self.level).builder().heal(10).duration(8, 2).build())
 
-        item.used = False
-
 
 class CombatSystem(System):
     def __init__(self, level_state):
@@ -224,6 +222,8 @@ class CombatSystem(System):
 
             if self.world.has_component(equipped_item, item_component.HealthPotion) and item.used:
                 self.item_usages.handle_health_potion(item_data)
+
+            item.used = False
 
     # Actual processing
     def process(self):

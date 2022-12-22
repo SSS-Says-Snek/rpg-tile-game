@@ -18,7 +18,7 @@ from src.entities.systems.system import System
 from src.types import Events
 
 
-class VelocitySystem(System):
+class MovementSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
@@ -66,6 +66,11 @@ class VelocitySystem(System):
         self.handle_player_keys(core.event.get())
 
         for entity, (pos, movement) in self.world.get_components(Position, Movement):
+            # Apply gravity
+            # Cap vel so it doesn't just fly straight through the tiles
+            movement.vel.y += movement.gravity_acc.y / 2 * core.dt.dt
+            movement.vel.y = min(movement.vel.y, 170)
+
             if entity == self.player:
                 continue
 

@@ -11,9 +11,8 @@ import json
 
 from src import common, core, pygame
 from src.common import IMG_DIR, SETTINGS_DIR
-from src.display.shaders import ShaderManager
+# from src.display.shaders import ShaderManager
 from src.types import JSONSerializable
-# from src.display.widgets.button import DefaultButton
 from src.utils.loaders import DirLoader
 
 pygame.init()
@@ -33,17 +32,6 @@ class Game:
 
         # Shader manager to handle shaders and actually draw proxy screen onto actual screen
         # self.shader_manager = ShaderManager()
-
-        # self.ui.add_widget(
-        #     DefaultButton(
-        #         self.ui,
-        #         (100, 100),
-        #         (100, 50),
-        #         border_width=3,
-        #         border_roundness=5,
-        #         hover_color=(80, 80, 80),
-        #     )
-        # )
 
         # Loaders
         self.settings: DirLoader[JSONSerializable] = DirLoader(SETTINGS_DIR, ".json", json.load)

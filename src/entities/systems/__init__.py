@@ -15,4 +15,4 @@ from .npc_combat_system import NPCCombatSystem
 from .particle_gen_system import ParticleGenSystem
 from .projectile_system import ProjectileSystem
 from .tile_interaction_system import TileInteractionSystem
-from .velocity_system import VelocitySystem
+from .movement_system import MovementSystem

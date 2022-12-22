@@ -35,7 +35,7 @@ class CollisionSystem(System):
                 elif movement.vel.x < 0:
                     rect.left = neighboring_tile_rect.right
 
-        rect.y += round(movement.vel.y)
+        rect.y += round(movement.vel.y * dt)
 
         for neighboring_tile_rect in neighboring_tile_rects:
             if neighboring_tile_rect.colliderect(rect):
@@ -89,12 +89,6 @@ class CollisionSystem(System):
                     collide_with_player = not self.world.has_component(nested_entity, NoCollidePlayer)
                     if nested_entity != self.player and collide_with_player:
                         neighboring_tile_rects.append(nested_pos.rect)
-
-            # Apply gravity
-            # Cap vel so it doesn't just fly straight
-            movement.vel.y += movement.gravity_acc.y / 2 * core.dt.dt
-            movement.vel.y = min(movement.vel.y, 170)
-            pos.pos.y += movement.vel.y
 
             collide_bottom_tiles = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, core.dt.dt)
             collide_bottom_ramps = self.collide_with_ramps(pos, neighboring_ramps)

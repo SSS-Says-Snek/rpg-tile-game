@@ -31,7 +31,7 @@ from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, HitSystem, InputSystem,
                                   NPCCombatSystem, ParticleGenSystem,
                                   ProjectileSystem, TileInteractionSystem,
-                                  VelocitySystem)
+                                  MovementSystem)
 from src.entities.systems.single_target import ItemInfoSystem
 from src.tilemap import TileMap
 from src.types import Entity
@@ -78,7 +78,7 @@ class LevelState(State):
                 lambda tup: (tup[0](self), tup[1]),
                 (
                     (InputSystem, 0),
-                    (VelocitySystem, -1),
+                    (MovementSystem, -1),
                     (CollisionSystem, -2),
                     (TileInteractionSystem, -3),
                     (NPCCombatSystem, -4),
