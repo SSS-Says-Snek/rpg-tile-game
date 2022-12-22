@@ -60,9 +60,9 @@ class DefaultButton(Widget):
 
         self.border_clicked = False
         self.border_fade = EaseTransition(
-            255, 0, fade_duration, EaseTransition.ease_out_quad, default_end=0, callback=self._fade_callback
+            255, 0, fade_duration, EaseTransition.ease_out_quad, callback=self._fade_callback
         )
-        self.border_expand = EaseTransition(0, 40, fade_duration, EaseTransition.ease_out_cub, default_end=40)
+        self.border_expand = EaseTransition(0, 40, fade_duration, EaseTransition.ease_out_cub)
 
         if self.text:
             text_font = utils.load_font(self.text_size)

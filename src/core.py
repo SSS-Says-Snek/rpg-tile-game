@@ -13,8 +13,11 @@ Attributes:
 
 from __future__ import annotations
 
+from typing import Callable
+
 from src import pygame
 from src.common import BASE_FPS
+from src.display.transition import EaseTransition
 from src.types import Events
 
 
@@ -77,6 +80,24 @@ class DT:
         self.threshold_factor = threshold_factor
         self._dts = {"raw_dt": 0.0, "dt": 0.0}
 
+        self.slowdown_factor = EaseTransition(1, 0, 690, EaseTransition.ease_linear)
+
+    def pause(self, duration: int, easing_func: Callable[[float], float]):
+        self.slowdown_factor.begin = 1
+        self.slowdown_factor.end = 0
+
+        self.slowdown_factor.duration = duration
+        self.slowdown_factor.ease_func = easing_func
+        self.slowdown_factor.start()
+
+    def unpause(self, duration: int, easing_func: Callable[[float], float]):
+        self.slowdown_factor.begin = 0
+        self.slowdown_factor.end = 1
+
+        self.slowdown_factor.duration = duration
+        self.slowdown_factor.ease_func = easing_func
+        self.slowdown_factor.start()
+
     @property
     def dt(self) -> float:
         """
@@ -108,8 +129,10 @@ class DT:
             raw_dt: Raw deltatime
         """
 
-        self._dts["raw_dt"] = min(raw_dt, self.threshold_factor / BASE_FPS)
-        self._dts["dt"] = self._dts["raw_dt"] * BASE_FPS
+        self.slowdown_factor.update()
+
+        self._dts["raw_dt"] = min(raw_dt, self.threshold_factor / BASE_FPS * self.slowdown_factor.value)
+        self._dts["dt"] = self._dts["raw_dt"] * BASE_FPS * self.slowdown_factor.value
 
 
 class Event:

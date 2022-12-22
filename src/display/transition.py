@@ -21,7 +21,6 @@ class EaseTransition:
         end: float,
         duration: int,
         ease_func: Callable[[float], float],
-        default_end: Optional[float] = None,
         callback: Optional[VoidFunc] = None,
     ):
         """
@@ -33,7 +32,6 @@ class EaseTransition:
             end: The end
             duration: The duration
             ease_func: The easing function
-            default_end: What the value will default to after each transition
             callback: A function that is called when each transition is finished
         """
 
@@ -42,18 +40,22 @@ class EaseTransition:
         self.range = end - begin
         self.duration = duration
         self.ease_func = ease_func
-        self.default_end = default_end
         self.callback = callback
 
         self.transitioning = False
         self.time_started = 0
-        self.value = None
+        self.value = self.begin
 
     @staticmethod
-    def ease_in_out_quad(x: float) -> float:
-        if x < 0.5:
-            return 2 * x**2
-        return 1 - (-x * 2 + 2) ** 2 / 2
+    def ease_linear(x: float) -> float:
+        return x
+
+    @staticmethod
+    def ease_in_pow(power: float) -> Callable[[float], float]:
+        def inner(x: float) -> float:
+            return x ** power
+
+        return inner
 
     @staticmethod
     def ease_out_quad(x: float) -> float:
@@ -64,11 +66,23 @@ class EaseTransition:
         return 1 - (1 - x) ** 3
 
     @staticmethod
-    def ease_out_pow(power: int) -> Callable[[float], float]:
+    def ease_out_exp(x: float) -> float:
+        if x == 1:
+            return 1
+        return 1 - (2 ** (-10 * x))
+
+    @staticmethod
+    def ease_out_pow(power: float) -> Callable[[float], float]:
         def inner(x: float) -> float:
             return 1 - (1 - x) ** power
 
         return inner
+
+    @staticmethod
+    def ease_in_out_quad(x: float) -> float:
+        if x < 0.5:
+            return 2 * x**2
+        return 1 - (-x * 2 + 2) ** 2 / 2
 
     @staticmethod
     def ease_in_out_pow(power: float) -> Callable[[float], float]:
@@ -79,23 +93,13 @@ class EaseTransition:
 
         return inner
 
-    @staticmethod
-    def ease_out_exp(x: float) -> float:
-        if x == 1:
-            return 1
-        return 1 - (2 ** (-10 * x))
-
-    @staticmethod
-    def ease_linear(x: float) -> float:
-        return x
-
     def start(self):
         self.transitioning = True
         self.time_started = core.time.get_raw_ticks()
 
     def stop(self):
         self.transitioning = False
-        self.value = self.default_end
+        self.value = self.end
 
     def update(self):
         if not self.transitioning:
@@ -106,7 +110,7 @@ class EaseTransition:
 
         if core.time.get_raw_ticks() - self.time_started > self.duration:
             self.transitioning = False
-            self.value = self.default_end
+            self.value = self.end
             if self.callback is not None:
                 self.callback()
 

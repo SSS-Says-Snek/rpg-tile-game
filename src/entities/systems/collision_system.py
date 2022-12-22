@@ -23,29 +23,35 @@ class CollisionSystem(System):
 
     @staticmethod
     def collide_with_tiles(
-        rect: pygame.Rect, movement: Movement, neighboring_tile_rects: list[pygame.Rect], dt: float
+        pos: Position, movement: Movement, neighboring_tile_rects: list[pygame.Rect]
     ) -> bool:
         collide_bottom = False
-        rect.x += round(movement.vel.x * dt)
+
+        pos.pos.x += movement.vel.x * core.dt.dt
+        pos.rect.x = round(pos.pos.x)
 
         for neighboring_tile_rect in neighboring_tile_rects:
-            if neighboring_tile_rect.colliderect(rect):
+            if neighboring_tile_rect.colliderect(pos.rect):
                 if movement.vel.x > 0:
-                    rect.right = neighboring_tile_rect.left
+                    pos.rect.right = neighboring_tile_rect.left
+                    pos.pos.x = pos.rect.x
                 elif movement.vel.x < 0:
-                    rect.left = neighboring_tile_rect.right
+                    pos.rect.left = neighboring_tile_rect.right
+                    pos.pos.x = pos.rect.x
 
-        rect.y += round(movement.vel.y * dt)
+        pos.pos.y += movement.vel.y * core.dt.dt
+        pos.rect.y = round(pos.pos.y)
 
         for neighboring_tile_rect in neighboring_tile_rects:
-            if neighboring_tile_rect.colliderect(rect):
+            if neighboring_tile_rect.colliderect(pos.rect):
                 if movement.vel.y > 0:
-                    movement.vel.y = 0
-                    rect.bottom = neighboring_tile_rect.top
+                    pos.rect.bottom = neighboring_tile_rect.top
+                    pos.pos.y = pos.rect.y
                     collide_bottom = True
                 elif movement.vel.y < 0:
+                    pos.rect.top = neighboring_tile_rect.bottom
+                    pos.pos.y = pos.rect.y
                     movement.vel.y = 0
-                    rect.top = neighboring_tile_rect.bottom
         return collide_bottom
 
     @staticmethod
@@ -65,10 +71,10 @@ class CollisionSystem(System):
                 actual_y = ramp_rect.y + ramp_rect.height - pos_height
                 if pos.rect.bottom > actual_y:
                     pos.rect.bottom = actual_y
+                    pos.pos.y = pos.rect.y
                     collide_bottom = True
 
         return collide_bottom
-
     def process(self):
         # Mob
         for entity, (pos, movement, graphics) in self.world.get_components(Position, Movement, Graphics):
@@ -90,14 +96,12 @@ class CollisionSystem(System):
                     if nested_entity != self.player and collide_with_player:
                         neighboring_tile_rects.append(nested_pos.rect)
 
-            collide_bottom_tiles = self.collide_with_tiles(pos.rect, movement, neighboring_tile_rects, core.dt.dt)
+            collide_bottom_tiles = self.collide_with_tiles(pos, movement, neighboring_tile_rects)
             collide_bottom_ramps = self.collide_with_ramps(pos, neighboring_ramps)
             if collide_bottom_tiles or collide_bottom_ramps:
                 pos.on_ground = True
                 movement.vel.y = 0
 
-            pos.pos.x = pos.rect.x
-            pos.pos.y = pos.rect.y
             pos.tile_pos = utils.pixel_to_tile(pos.pos)
 
         # Item pickup

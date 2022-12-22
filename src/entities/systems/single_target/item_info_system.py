@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Optional
 
 import pygame
 
+from src import core
 from src.common import RES, screen
 from src.display.transition import DarkenTransition, FadeTransition, EaseTransition
 from src.display.widgets.button import DefaultButton
@@ -32,10 +33,10 @@ class ItemInfoSystem(System):
 
         self.screen = pygame.Surface(RES, pygame.SRCALPHA)
 
-        duration = 500
+        self.transition_duration = 800
         self.darken_game = DarkenTransition(
             mode=DarkenTransition.DARKEN,
-            duration=duration,
+            duration=self.transition_duration,
             darken_threshold=0.8,
             ease_function=EaseTransition.ease_in_out_pow(1.5),
             finish_darken_callback=self.on_finish_darken_game,
@@ -43,7 +44,7 @@ class ItemInfoSystem(System):
         )
         self.fade_self = FadeTransition(
             mode=FadeTransition.FADE_IN,
-            duration=duration,
+            duration=self.transition_duration,
             ease_function=EaseTransition.ease_in_out_pow(1.5),
             screen=self.screen
         )
@@ -75,7 +76,6 @@ class ItemInfoSystem(System):
     def on_finish_lighten_game(self):
         """Activated when the game finished lightening"""
 
-        self.level.unpause()
         self.ui.toggle_visible(self.ok_button)
 
         item = self.world.component_for_entity(self.item, item_component.Item)
@@ -95,6 +95,8 @@ class ItemInfoSystem(System):
         self.fade_self.mode = FadeTransition.FADE_IN
         self.fade_self.start()
 
+        core.dt.pause(self.transition_duration, EaseTransition.ease_out_pow(1.5))
+
         self.ui.toggle_visible(self.ok_button)
 
     def on_button_click(self):
@@ -105,6 +107,9 @@ class ItemInfoSystem(System):
 
         self.fade_self.mode = FadeTransition.FADE_OUT
         self.fade_self.start()
+
+        self.level.unpause()
+        core.dt.unpause(self.transition_duration, EaseTransition.ease_in_pow(1.5))
 
     def process(self):
         if self.item is not None:

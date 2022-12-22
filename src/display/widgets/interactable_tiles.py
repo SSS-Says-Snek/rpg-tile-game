@@ -90,9 +90,9 @@ class SignDialogue(Widget):
 
         # Easing transitions
         self.transition_up = EaseTransition(
-            800, self.rect.y, 1000, EaseTransition.ease_out_exp, default_end=self.rect.y
+            800, self.rect.y, 1000, EaseTransition.ease_out_exp
         )
-        self.transition_down = EaseTransition(self.rect.y, 800, 1000, EaseTransition.ease_out_exp, default_end=800)
+        self.transition_down = EaseTransition(self.rect.y, 800, 1000, EaseTransition.ease_out_exp)
 
     def wrap_text(self, text: str):
         wrapped_text = []

@@ -279,15 +279,15 @@ class Particle:
 
     def update(self):
         self.life += 1
-        self.gravity_vel += self.gravity
+        self.gravity_vel += self.gravity * core.dt.dt
 
         if self.angular_speed is not None:
-            self.pos += (
-                cos(radians(self.angle)) * self.angular_speed,
-                sin(radians(self.angle)) * self.angular_speed,
-            )
-        self.pos += self.vel
-        self.pos.y += self.gravity_vel
+            self.pos += pygame.Vector2(
+                cos(radians(self.angle)),
+                sin(radians(self.angle)),
+            ) * self.angular_speed * core.dt.dt
+        self.pos += self.vel * core.dt.dt
+        self.pos.y += self.gravity_vel * core.dt.dt
 
         if (
             (self.lifespan is not None and self.life >= self.lifespan)
