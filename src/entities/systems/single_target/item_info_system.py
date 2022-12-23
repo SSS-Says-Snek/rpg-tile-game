@@ -10,9 +10,10 @@ from typing import TYPE_CHECKING, Optional
 
 import pygame
 
-from src import core
+from src import core, utils
 from src.common import RES, screen
-from src.display.transition import DarkenTransition, FadeTransition, EaseTransition
+from src.display.transition import (DarkenTransition, EaseTransition,
+                                    FadeTransition)
 from src.display.widgets.button import DefaultButton
 from src.entities.components import item_component
 from src.entities.components.component import Position
@@ -32,6 +33,7 @@ class ItemInfoSystem(System):
         self.subscribe("player_get_item", self.on_player_get_item)
 
         self.screen = pygame.Surface(RES, pygame.SRCALPHA)
+        self.title_font = utils.load_font(60)
 
         self.transition_duration = 800
         self.darken_game = DarkenTransition(
@@ -46,7 +48,7 @@ class ItemInfoSystem(System):
             mode=FadeTransition.FADE_IN,
             duration=self.transition_duration,
             ease_function=EaseTransition.ease_in_out_pow(1.5),
-            screen=self.screen
+            screen=self.screen,
         )
 
         self.ok_button = self.ui.add_widget(
@@ -69,23 +71,22 @@ class ItemInfoSystem(System):
         )
 
     def on_finish_darken_game(self):
-        """Activated when the game finished darkening"""
+        """Called when the game finished darkening"""
 
         self.level.pause()
 
     def on_finish_lighten_game(self):
-        """Activated when the game finished lightening"""
-
-        self.ui.toggle_visible(self.ok_button)
+        """Called when the game finished lightening"""
 
         item = self.world.component_for_entity(self.item, item_component.Item)
         owner_pos = self.world.component_for_entity(item.owner, Position)
         self.particle_manager.create_text_particle(owner_pos.pos, f"Acquired: {item.name}")
 
         self.item = None
+        self.ui.toggle_visible(self.ok_button)
 
     def on_player_get_item(self, item: Entity):
-        """Activated when the player gets an item"""
+        """Called when the player gets an item"""
 
         self.item = item
 
@@ -100,7 +101,7 @@ class ItemInfoSystem(System):
         self.ui.toggle_visible(self.ok_button)
 
     def on_button_click(self):
-        """Activated when the okay button's clicked"""
+        """Called when the okay button's clicked"""
 
         self.darken_game.mode = DarkenTransition.LIGHTEN
         self.darken_game.start()
@@ -118,6 +119,7 @@ class ItemInfoSystem(System):
 
             self.darken_game.draw()
             self.fade_self.draw()
+
             # Separately handles widget
             self.ui.handle_widget(self.ok_button)
 

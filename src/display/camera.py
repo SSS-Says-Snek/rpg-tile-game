@@ -77,6 +77,8 @@ class Camera:
             target = pygame.Rect(target_pos[0], target_pos[1], 0, 0)
         elif isinstance(target_pos, pygame.Vector2):
             target = pygame.Rect(target_pos.x, target_pos.y, 0, 0)
+        else:
+            raise NotImplementedError
 
         return target.move(self.camera.topleft)
 
@@ -88,11 +90,13 @@ class Camera:
             dt: DT for framerate independence
             target_pos: Target position of game object
         """
-
         self.camera.x += dt * (target_pos.x - self.camera.x - self.camera_width // 2) // 20
 
         # 0.65 makes the player slightly off center on the y axis, which shows less ground
         self.camera.y += dt * (target_pos.y - self.camera.y - self.camera_height * 0.65) // 20
+
+        # Restrict camera movement
+        self.camera.x = max(self.camera.x, 0)
 
     def hard_adjust_to(self, target_pos: pygame.Vector2):
         """

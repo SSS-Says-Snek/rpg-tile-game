@@ -30,9 +30,9 @@ class Projectile:
         self.t = 0
 
         # Calculate velocity direction
-        if -180 <= math.degrees(self.initial_angle) < -90 or 90 <= math.degrees(self.initial_angle) <= 180:
+        if math.cos(self.initial_angle) > 0:
             self.vel_dir = 1
-        elif -90 <= math.degrees(self.initial_angle) < 0 or 0 <= math.degrees(self.initial_angle) < 90:
+        else:
             self.vel_dir = -1
 
     def rel_x(self, t: int):
@@ -56,7 +56,7 @@ class ProjectilePosition:
         self.tile_pos = utils.pixel_to_tile(self.pos)
         self.rect = None
 
-        self.spawn_pos = pygame.Vector2(self.pos.xy)
+        self.spawn_pos = pygame.Vector2(self.pos)
 
 
 class ProjectileGraphics:

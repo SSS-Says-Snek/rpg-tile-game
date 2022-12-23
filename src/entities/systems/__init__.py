@@ -11,8 +11,8 @@ from .combat_system import CombatSystem
 from .graphics_system import GraphicsSystem
 from .hit_system import HitSystem
 from .input_system import InputSystem
+from .movement_system import MovementSystem
 from .npc_combat_system import NPCCombatSystem
 from .particle_gen_system import ParticleGenSystem
 from .projectile_system import ProjectileSystem
 from .tile_interaction_system import TileInteractionSystem
-from .movement_system import MovementSystem

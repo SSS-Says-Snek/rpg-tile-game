@@ -22,6 +22,8 @@ class NPCCombatSystem(System):
         super().__init__(level_state)
 
     def process(self):
+        # TODO: Rethink AI system completely soon (TM)
+
         for entity, pos in self.world.get_component(Position):
             # Non-player to entity (including player) damage interaction
             # FOR NOW! SUPER INEFFICIENT
@@ -114,7 +116,7 @@ class NPCCombatSystem(System):
                             self.world.create_entity(
                                 projectile_component.Projectile(
                                     vel=v,
-                                    angle=-theta if x_target > 0 else -math.pi - theta,
+                                    angle=-theta if x_target > 0 else math.pi * 2 + (-math.pi - theta),
                                     damage=1,
                                     gravity=g,
                                     shot_by=entity,

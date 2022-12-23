@@ -12,8 +12,8 @@ import pygame
 
 from src import core, utils
 from src.entities.components import item_component, tile_component
-from src.entities.components.component import (Graphics, Inventory,
-                                               Movement, Position, NoCollidePlayer)
+from src.entities.components.component import (Graphics, Inventory, Movement,
+                                               NoCollidePlayer, Position)
 from src.entities.systems.system import System
 
 
@@ -21,13 +21,11 @@ class CollisionSystem(System):
     def __init__(self, level_state):
         super().__init__(level_state)
 
-    @staticmethod
-    def collide_with_tiles(
-        pos: Position, movement: Movement, neighboring_tile_rects: list[pygame.Rect]
-    ) -> bool:
+    def collide_with_tiles(self, pos: Position, movement: Movement, neighboring_tile_rects: list[pygame.Rect]) -> bool:
         collide_bottom = False
 
         pos.pos.x += movement.vel.x * core.dt.dt
+        pos.pos.x = min(max(pos.pos.x, 0), self.tilemap.width - pos.rect.width)
         pos.rect.x = round(pos.pos.x)
 
         for neighboring_tile_rect in neighboring_tile_rects:
@@ -75,6 +73,7 @@ class CollisionSystem(System):
                     collide_bottom = True
 
         return collide_bottom
+
     def process(self):
         # Mob
         for entity, (pos, movement, graphics) in self.world.get_components(Position, Movement, Graphics):

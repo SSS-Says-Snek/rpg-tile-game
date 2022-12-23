@@ -82,8 +82,8 @@ class DirLoader(Generic[_T]):
             for part in parts:
                 current_dict = current_dict[part]
         except KeyError:
-            reconnected = '/'.join(parts)
-            raise KeyError(f"No record of \"{reconnected}\" in the loader. Perhaps it was moved?") from None
+            reconnected = "/".join(parts)
+            raise KeyError(f'No record of "{reconnected}" in the loader. Perhaps it was moved?') from None
         return current_dict
 
 

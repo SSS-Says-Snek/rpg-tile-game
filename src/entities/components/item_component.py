@@ -31,7 +31,7 @@ class Item:
 class ItemPosition:
     def __init__(self, pos: pygame.Vector2, rect_size: tuple[int, int], in_inventory: bool = False):
         self.pos = pos
-        self.rect = pygame.Rect(*self.pos, *rect_size)
+        self.rect = pygame.Rect(self.pos, rect_size)
         self.in_inventory = in_inventory
 
 

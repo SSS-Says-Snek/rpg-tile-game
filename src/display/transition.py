@@ -53,7 +53,7 @@ class EaseTransition:
     @staticmethod
     def ease_in_pow(power: float) -> Callable[[float], float]:
         def inner(x: float) -> float:
-            return x ** power
+            return x**power
 
         return inner
 
@@ -88,7 +88,7 @@ class EaseTransition:
     def ease_in_out_pow(power: float) -> Callable[[float], float]:
         def inner(x: float) -> float:
             if x < 0.5:
-                return 2 ** (power - 1) * x ** power
+                return 2 ** (power - 1) * x**power
             return 1 - (-2 * x + 2) ** power / 2
 
         return inner
@@ -204,6 +204,6 @@ class FadeTransition(DarkenTransition):
     def draw(self):
         # Basically everything is reversed because of some naming discrepancies for DarkenTransition
         self.update()
-        
+
         if self.transitioning:
             self.screen.set_alpha(self.alpha)

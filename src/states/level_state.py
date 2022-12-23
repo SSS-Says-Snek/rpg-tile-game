@@ -24,14 +24,15 @@ from src.display.widgets.inventory import Hotbar
 from src.entities import effect
 # Components
 from src.entities.components import ai_component, item_component
-from src.entities.components.component import (Graphics, Health,
-                                               Inventory, Movement, Position, NoCollidePlayer)
+from src.entities.components.component import (Graphics, Health, Inventory,
+                                               Movement, NoCollidePlayer,
+                                               Position)
 # Systems
 from src.entities.systems import (CollisionSystem, CombatSystem,
                                   GraphicsSystem, HitSystem, InputSystem,
-                                  NPCCombatSystem, ParticleGenSystem,
-                                  ProjectileSystem, TileInteractionSystem,
-                                  MovementSystem)
+                                  MovementSystem, NPCCombatSystem,
+                                  ParticleGenSystem, ProjectileSystem,
+                                  TileInteractionSystem)
 from src.entities.systems.single_target import ItemInfoSystem
 from src.tilemap import TileMap
 from src.types import Entity

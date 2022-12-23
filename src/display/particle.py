@@ -282,10 +282,14 @@ class Particle:
         self.gravity_vel += self.gravity * core.dt.dt
 
         if self.angular_speed is not None:
-            self.pos += pygame.Vector2(
-                cos(radians(self.angle)),
-                sin(radians(self.angle)),
-            ) * self.angular_speed * core.dt.dt
+            self.pos += (
+                pygame.Vector2(
+                    cos(radians(self.angle)),
+                    sin(radians(self.angle)),
+                )
+                * self.angular_speed
+                * core.dt.dt
+            )
         self.pos += self.vel * core.dt.dt
         self.pos.y += self.gravity_vel * core.dt.dt
 
@@ -334,6 +338,8 @@ class RoundParticle(Particle):
             self.size,
             self.color,
         )
+
+        # TODO: Fix goofy ahh OverflowError when falling too much
 
 
 class ImageParticle(Particle):
