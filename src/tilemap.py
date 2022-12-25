@@ -65,7 +65,7 @@ class TileMap:
         normal_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         interactable_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-        for layer_id, layer in enumerate(self.tilemap.visible_layers):
+        for layer in self.tilemap.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
                     tile_img = self.tilemap.get_tile_image_by_gid(gid)
@@ -78,7 +78,7 @@ class TileMap:
                     if tile_props is None:
                         tile_props = {}
 
-                    self.tiles[(layer_id, (x, y))] = tile_props
+                    self.tiles[(x, y)] = tile_props
                     blit_surf = normal_surf
 
                     tile_type = tile_component.Type.DEFAULT
@@ -99,7 +99,7 @@ class TileMap:
 
                     tile = tile_component.Tile(x, y, self.tilemap.tilewidth, self.tilemap.tileheight, tile_type)
                     entity_id = self.world.create_entity(tile)
-                    self.entity_tiles[(layer_id, (x, y))] = entity_id
+                    self.entity_tiles[(x, y)] = entity_id
 
                     blit_surf.blit(
                         tile_img,
@@ -153,9 +153,6 @@ class TileMap:
 
         return normal_surf, interactable_surf
 
-    def get_visible_tile_layers(self) -> list[pytmx.TiledTileLayer]:
-        return [layer for layer in self.tilemap.visible_layers if isinstance(layer, pytmx.TiledTileLayer)]
-
     def get_neighboring_tile_entities(
         self, radius: int, pos: Position, interacting_tiles: bool = False
     ) -> list[Entity]:
@@ -174,19 +171,18 @@ class TileMap:
 
         neighboring_tile_entities = []
 
-        for layer_id in range(len(self.get_visible_tile_layers())):
-            for x in range(int(pos.tile_pos.x) - radius, int(pos.tile_pos.x) + radius + 1):
-                for y in range(int(pos.tile_pos.y) - radius, int(pos.tile_pos.y) + radius + 1):
-                    try:
-                        if not interacting_tiles:
-                            tile_entity = self.entity_tiles[(layer_id, (x, y))]
-                        else:
-                            tile_entity = self.interactable_tiles[(x, y)]
-                    except KeyError:
-                        # Outside map boundaries (for some reason)
-                        continue
+        for x in range(int(pos.tile_pos.x) - radius, int(pos.tile_pos.x) + radius + 1):
+            for y in range(int(pos.tile_pos.y) - radius, int(pos.tile_pos.y) + radius + 1):
+                try:
+                    if not interacting_tiles:
+                        tile_entity = self.entity_tiles[(x, y)]
+                    else:
+                        tile_entity = self.interactable_tiles[(x, y)]
+                except KeyError:
+                    # Outside map boundaries (for some reason)
+                    continue
 
-                    neighboring_tile_entities.append(tile_entity)
+                neighboring_tile_entities.append(tile_entity)
 
         return neighboring_tile_entities
 
@@ -249,4 +245,4 @@ class TileMap:
             Properties of tile
         """
 
-        return self.tiles.get((0, (tile_x, tile_y)))
+        return self.tiles.get((tile_x, tile_y))
