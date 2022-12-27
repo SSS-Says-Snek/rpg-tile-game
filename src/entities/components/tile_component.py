@@ -82,7 +82,7 @@ class GrassBlades:
         self.tile_y = tile_y
         self.tile_grass_section_width = grass_section_width // TILE_WIDTH
         self.grass_section_width = grass_section_width
-        self.num_blades = random.randint(3, 6)  # Blades per tile
+        self.num_blades = random.randint(6, 10)  # Blades per tile
 
         self.blades = [
             self.Blade(

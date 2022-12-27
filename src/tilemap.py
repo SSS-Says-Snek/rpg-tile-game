@@ -125,7 +125,11 @@ class TileMap:
                 )
 
             if obj.name.startswith("tree"):
-                tree_layer_col = [[192, 199, 65], [100, 125, 52], [23, 67, 75]]
+                # tree_layer_col = [[192, 199, 65], [100, 125, 52], [23, 67, 75]]
+                tree_layer_col = (
+                    [[192, 199, 65], [100, 125, 52], [23, 67, 75]],
+                    [(23, 75, 56), (54, 128, 66), (137, 201, 66)][::-1]
+                )[int(obj.name.replace("tree_", ""))]
                 img = utils.load_img(IMG_DIR / "deco" / "foliage" / f"{obj.name}.png")
                 img = pygame.transform.scale2x(img)
                 img.set_colorkey((0, 0, 0))

@@ -47,7 +47,7 @@ class LevelState(State):
 
         # esper and tilemap stuff
         self.world = esper.World()
-        self.tilemap = TileMap(common.MAP_DIR / "map2.tmx", self)
+        self.tilemap = TileMap(common.MAP_DIR / "map.tmx", self)
 
         # Stuff
         self.camera = Camera(common.WIDTH, common.HEIGHT, self.tilemap.width, self.tilemap.height)
